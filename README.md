@@ -1,70 +1,199 @@
-# Getting Started with Create React App
+# Inventory App - Lead Management System
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A full-stack React application with Node.js/Express backend for managing leads with MongoDB database.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- **Frontend**: React with React Hook Form for lead creation
+- **Backend**: Express.js API with MongoDB/Mongoose
+- **Styling**: Tailwind CSS for modern UI
+- **Validation**: Yup schema validation
+- **Database**: MongoDB with Mongoose ODM
 
-### `npm start`
+## Prerequisites
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- Node.js (v14 or higher)
+- MongoDB (local installation or MongoDB Atlas)
+- npm or yarn
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Installation
 
-### `npm test`
+1. **Clone the repository** (if applicable)
+2. **Install dependencies**:
+   ```bash
+   npm install
+   ```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Setup
 
-### `npm run build`
+### 1. MongoDB Setup
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+**Option A: Local MongoDB**
+- Install MongoDB locally
+- Start MongoDB service
+- The app will connect to `mongodb://localhost:27017/inventoryapp`
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+**Option B: MongoDB Atlas**
+- Create a MongoDB Atlas account
+- Create a cluster
+- Get your connection string
+- Update the `MONGODB_URI` in your environment variables
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### 2. Environment Variables
 
-### `npm run eject`
+Create a `.env` file in the root directory:
+```env
+PORT=5000
+MONGODB_URI=mongodb://localhost:27017/inventoryapp
+NODE_ENV=development
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### 3. Running the Application
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+**Development Mode (Frontend + Backend)**
+```bash
+npm run dev
+```
+This will start both the React frontend (port 3000) and Express backend (port 5000).
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+**Frontend Only**
+```bash
+npm start
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+**Backend Only**
+```bash
+npm run server
+```
 
-## Learn More
+## API Endpoints
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### POST /api/leads
+Creates a new lead in the database.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+**Request Body:**
+```json
+{
+  "customerName": "John Doe",
+  "phone": "+1234567890",
+  "productInterest": "electronics",
+  "leadSource": "website",
+  "notes": "Interested in latest smartphones"
+}
+```
 
-### Code Splitting
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Lead created successfully!",
+  "data": {
+    "id": "60f7b3b3b3b3b3b3b3b3b3b3",
+    "name": "John Doe",
+    "phone": "+1234567890",
+    "product": "electronics",
+    "source": "website",
+    "notes": "Interested in latest smartphones",
+    "createdAt": "2023-07-20T10:30:00.000Z",
+    "formattedCreatedAt": "July 20, 2023 at 10:30 AM"
+  }
+}
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+### GET /api/leads
+Retrieves all leads from the database.
 
-### Analyzing the Bundle Size
+### GET /api/leads/:id
+Retrieves a specific lead by ID.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+### GET /api/health
+Health check endpoint for the API.
 
-### Making a Progressive Web App
+## Database Schema
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+### Lead Model
+```javascript
+{
+  name: String (required, max 100 chars),
+  phone: String (required, max 20 chars),
+  product: String (required, enum),
+  source: String (required, enum),
+  notes: String (optional, max 1000 chars),
+  createdAt: Date (auto-generated),
+  updatedAt: Date (auto-generated)
+}
+```
 
-### Advanced Configuration
+**Product Categories:**
+- electronics
+- clothing
+- home-garden
+- sports
+- books
+- automotive
+- health-beauty
+- toys-games
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+**Lead Sources:**
+- website
+- social-media
+- referral
+- cold-call
+- email-campaign
+- trade-show
+- advertising
+- other
 
-### Deployment
+## Project Structure
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+```
+inventoryapp/
+├── backend/
+│   ├── models/
+│   │   └── Lead.js          # Mongoose schema
+│   ├── routes/
+│   │   └── leads.js         # API routes
+│   └── server.js            # Express server
+├── src/
+│   ├── components/
+│   │   └── LeadCreationForm.js  # React form component
+│   ├── App.js
+│   └── index.js
+├── package.json
+└── README.md
+```
 
-### `npm run build` fails to minify
+## Technologies Used
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- **Frontend**: React, React Hook Form, Yup, Tailwind CSS
+- **Backend**: Node.js, Express.js, Mongoose
+- **Database**: MongoDB
+- **Development**: Concurrently (for running both servers)
+
+## Error Handling
+
+The API includes comprehensive error handling for:
+- Validation errors
+- Database connection issues
+- Duplicate entries
+- Missing required fields
+- Invalid data types
+
+## Development
+
+- Frontend runs on `http://localhost:3000`
+- Backend API runs on `http://localhost:5000`
+- MongoDB should be running on `mongodb://localhost:27017`
+
+## Production
+
+For production deployment:
+1. Set `NODE_ENV=production`
+2. Use a production MongoDB instance
+3. Configure CORS appropriately
+4. Set up proper environment variables
+5. Build the React app: `npm run build`
+
+## License
+
+MIT License
