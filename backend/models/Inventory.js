@@ -133,6 +133,9 @@ inventorySchema.virtual('stockStatus').get(function() {
 
 // Virtual for formatted last updated
 inventorySchema.virtual('formattedLastUpdated').get(function() {
+  if (!this.lastUpdated) {
+    return 'Not available';
+  }
   return this.lastUpdated.toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',

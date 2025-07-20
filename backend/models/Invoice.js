@@ -114,6 +114,7 @@ invoiceSchema.pre('save', async function(next) {
 
 // Virtual for formatted date
 invoiceSchema.virtual('formattedDate').get(function() {
+  if (!this.date) return 'Not available';
   return this.date.toLocaleDateString('en-IN', {
     year: 'numeric',
     month: 'long',
@@ -123,6 +124,7 @@ invoiceSchema.virtual('formattedDate').get(function() {
 
 // Virtual for formatted generated date
 invoiceSchema.virtual('formattedGeneratedAt').get(function() {
+  if (!this.generatedAt) return 'Not available';
   return this.generatedAt.toLocaleDateString('en-IN', {
     year: 'numeric',
     month: 'long',
@@ -134,7 +136,7 @@ invoiceSchema.virtual('formattedGeneratedAt').get(function() {
 
 // Virtual for formatted pushed to tally date
 invoiceSchema.virtual('formattedPushedToTallyAt').get(function() {
-  if (!this.pushedToTallyAt) return null;
+  if (!this.pushedToTallyAt) return 'Not available';
   return this.pushedToTallyAt.toLocaleDateString('en-IN', {
     year: 'numeric',
     month: 'long',

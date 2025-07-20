@@ -87,6 +87,9 @@ leadSchema.index({ name: 1, phone: 1 });
 
 // Add a virtual field for formatted creation date
 leadSchema.virtual('formattedCreatedAt').get(function() {
+  if (!this.createdAt) {
+    return 'Not available';
+  }
   return this.createdAt.toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',

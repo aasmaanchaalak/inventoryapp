@@ -152,6 +152,7 @@ purchaseOrderSchema.pre('save', async function(next) {
 
 // Virtual for formatted PO date
 purchaseOrderSchema.virtual('formattedPoDate').get(function() {
+  if (!this.poDate) return 'Not available';
   return this.poDate.toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',

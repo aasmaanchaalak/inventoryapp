@@ -165,6 +165,7 @@ do1Schema.pre('save', async function(next) {
 
 // Virtual for formatted dispatch date
 do1Schema.virtual('formattedDispatchDate').get(function() {
+  if (!this.dispatchDate) return 'Not available';
   return this.dispatchDate.toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',

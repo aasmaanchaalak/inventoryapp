@@ -94,7 +94,7 @@ const quotationSchema = new mongoose.Schema({
   quotationNumber: {
     type: String,
     unique: true,
-    required: true
+    required: false  // Will be set by pre-save middleware
   },
   status: {
     type: String,
@@ -103,7 +103,7 @@ const quotationSchema = new mongoose.Schema({
   },
   validUntil: {
     type: Date,
-    required: true
+    required: false  // Will be set by pre-save middleware
   },
   companyInfo: {
     name: {
@@ -135,22 +135,28 @@ const quotationSchema = new mongoose.Schema({
   timestamps: true
 });
 
-// Generate quotation number before saving
+// Generate quotation number and validUntil before saving
 quotationSchema.pre('save', async function(next) {
-  if (this.isNew) {
+  if (this.isNew && !this.quotationNumber) {
     const count = await this.constructor.countDocuments();
     const year = new Date().getFullYear();
     this.quotationNumber = `QT-${year}-${String(count + 1).padStart(4, '0')}`;
-    
-    // Calculate valid until date
+  }
+  
+  // Calculate valid until date if not set
+  if (!this.validUntil && this.validity) {
     this.validUntil = new Date();
     this.validUntil.setDate(this.validUntil.getDate() + this.validity);
   }
+  
   next();
 });
 
 // Virtual for formatted valid until date
 quotationSchema.virtual('formattedValidUntil').get(function() {
+  if (!this.validUntil) {
+    return 'Not available';
+  }
   return this.validUntil.toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',

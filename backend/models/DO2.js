@@ -189,6 +189,7 @@ do2Schema.pre('save', async function(next) {
 
 // Virtual for formatted creation date
 do2Schema.virtual('formattedCreatedAt').get(function() {
+  if (!this.createdAt) return 'Not available';
   return this.createdAt.toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
