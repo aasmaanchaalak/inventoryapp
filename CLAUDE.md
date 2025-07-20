@@ -25,6 +25,60 @@ npm test
 npm run build
 ```
 
+## Testing Guidelines with Playwright MCP
+
+### IMPORTANT: Always Test Changes with Playwright MCP
+When working on this application, you MUST use the Playwright MCP tools to test your changes thoroughly. This is critical for ensuring code quality and catching issues early.
+
+#### Testing Workflow
+1. **Before Making Changes**: Take baseline screenshots and document current behavior
+2. **After Making Changes**: Test the affected functionality extensively
+3. **Iterative Testing**: Use test findings to refine and correct your changes
+4. **Comprehensive Validation**: Test related workflows that might be impacted
+
+#### Required Testing Steps
+```bash
+# 1. Start the development server first
+npm run dev
+
+# 2. Use Playwright MCP tools to:
+# - Navigate to affected pages/components
+# - Take screenshots for visual verification
+# - Test form submissions and user interactions
+# - Verify API responses and error handling
+# - Check console for errors or warnings
+```
+
+#### Testing Best Practices
+- **Test Critical User Flows**: Lead Creation → Quotation → PO → DO1 → DO2 → Invoice
+- **Verify Data Integrity**: Ensure changes don't break existing functionality
+- **Check Error States**: Test invalid inputs and network failures
+- **Validate UI/UX**: Ensure responsive design and accessibility
+- **Monitor Console**: Watch for JavaScript errors, API failures, and warnings
+
+#### When to Test
+- **Always**: After fixing bugs or adding features
+- **Required**: Before marking any TODO item as complete
+- **Critical**: When modifying:
+  - API endpoints or database schemas
+  - Form validation or submission logic
+  - Navigation or routing components
+  - Data fetching or state management
+
+#### Test Documentation
+- Take screenshots of before/after states
+- Document any issues found during testing
+- Update APP_ISSUES.md if new problems are discovered
+- Include test results in commit messages when applicable
+
+#### Failure Response
+If Playwright testing reveals issues:
+1. **Stop immediately** - Do not proceed with other changes
+2. **Analyze the root cause** of the failure
+3. **Fix the underlying issue** - don't just patch symptoms
+4. **Re-test thoroughly** to ensure the fix works
+5. **Test related functionality** that might be affected
+
 ### Individual Testing
 ```bash
 # Test specific API endpoints using curl or Postman

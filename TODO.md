@@ -4,8 +4,8 @@
 - [x] Setup MongoDB for database
 
 ## Critical Bug Fixes (Immediate Priority)
-- [ ] Fix inventory API connection failures - investigate backend inventory endpoint
-- [ ] Fix inventory dashboard showing all zeros and infinite loading
+- [x] Fix inventory API connection failures - investigate backend inventory endpoint
+- [x] Fix inventory dashboard showing all zeros and infinite loading
 - [ ] Implement lead deduplication logic to remove duplicate entries in dropdowns
 - [ ] Add proper error handling for failed API calls across the application
 
@@ -23,6 +23,8 @@
 
 ## UI/UX Improvements
 - [ ] Improve error message styling and positioning consistency across all forms
+- [ ] Implement responsive design for better mobile compatibility
+- [ ] Implement toast notifiacations for user feedback on actions (success, error, info)
 - [ ] Make tax rate configurable instead of defaulting to 18%
 - [ ] Implement comprehensive error boundaries for better user experience
 

@@ -54,18 +54,28 @@ const InventoryDashboard = () => {
   // Fetch inventory on component mount
   useEffect(() => {
     fetchInventory();
-  }, []);
+  }, []); // Empty dependency array for initial load only
 
-  // Apply filters when they change
+  // Apply filters when they change (debounced to avoid infinite requests)
   useEffect(() => {
-    const filterParams = {};
-    Object.entries(watchedFilters).forEach(([key, value]) => {
-      if (value && value !== '') {
-        filterParams[key] = value;
+    const timeoutId = setTimeout(() => {
+      const filterParams = {};
+      Object.entries(watchedFilters).forEach(([key, value]) => {
+        if (value && value !== '') {
+          filterParams[key] = value;
+        }
+      });
+      
+      // Only fetch if there are actual filter values
+      const hasActualFilters = Object.keys(filterParams).length > 0;
+      if (hasActualFilters) {
+        fetchInventory(filterParams);
       }
-    });
-    fetchInventory(filterParams);
-  }, [watchedFilters]);
+    }, 300); // 300ms debounce
+
+    return () => clearTimeout(timeoutId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [watchedFilters]); // Only depend on watchedFilters
 
   // Get stock status color
   const getStockStatusColor = (item) => {
