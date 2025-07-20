@@ -69,7 +69,9 @@ const purchaseOrderSchema = new mongoose.Schema({
   poNumber: {
     type: String,
     unique: true,
-    required: true
+    required: function() {
+      return !this.isNew; // Only require after document is created
+    }
   },
   poDate: {
     type: Date,
@@ -142,10 +144,14 @@ const purchaseOrderSchema = new mongoose.Schema({
 
 // Generate PO number before saving
 purchaseOrderSchema.pre('save', async function(next) {
-  if (this.isNew) {
-    const count = await this.constructor.countDocuments();
-    const year = new Date().getFullYear();
-    this.poNumber = `PO-${year}-${String(count + 1).padStart(4, '0')}`;
+  if (this.isNew && !this.poNumber) {
+    try {
+      const count = await this.constructor.countDocuments();
+      const year = new Date().getFullYear();
+      this.poNumber = `PO-${year}-${String(count + 1).padStart(4, '0')}`;
+    } catch (error) {
+      return next(error);
+    }
   }
   next();
 });
