@@ -79,6 +79,124 @@ If Playwright testing reveals issues:
 4. **Re-test thoroughly** to ensure the fix works
 5. **Test related functionality** that might be affected
 
+## Task Management and Git Workflow
+
+### TODO.md Task Completion
+When you complete a task during development:
+
+1. **Check TODO.md**: Search for the completed task in the TODO.md file
+2. **Mark as Complete**: If the task exists in TODO.md, change `- [ ]` to `- [x]` to mark it complete
+3. **Update Task Status**: This provides clear progress tracking for the project
+
+#### Example Task Completion
+```markdown
+# Before completion
+- [ ] **Fix inventory items flickering bug on Inventory Dashboard page**
+
+# After completion
+- [x] **Fix inventory items flickering bug on Inventory Dashboard page**
+```
+
+### Git Commit Guidelines
+After successfully testing changes with Playwright MCP:
+
+#### When to Commit
+- **REQUIRED**: After Playwright testing confirms changes work correctly
+- **REQUIRED**: Before marking any TODO item as complete
+- **ALWAYS**: Include test results in commit verification
+
+#### Terminal Workflow for Testing and Committing
+```bash
+# 1. Start development server in one terminal (keep running)
+npm run dev
+
+# 2. In ANOTHER terminal window, run git commands:
+git status
+git diff
+git add .
+git commit -m "..."
+```
+
+#### Commit Message Format
+```bash
+git commit -m "$(cat <<'EOF'
+[Component/Feature]: Brief description of changes
+
+- Specific change 1
+- Specific change 2
+- Specific change 3
+
+✅ Tested with Playwright MCP:
+- [Test scenario 1 result]
+- [Test scenario 2 result]
+- Screenshots verified in: [location]
+
+Fixes: [Related TODO item if applicable]
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+EOF
+)"
+```
+
+#### Git Commands - IMPORTANT RESTRICTIONS
+**✅ ALLOWED Git Operations:**
+- `git status` - Check working tree status
+- `git diff` - View changes made
+- `git add` - Stage files for commit
+- `git commit` - Create commits with detailed messages
+- `git log` - View commit history
+
+**❌ FORBIDDEN Git Operations:**
+- `git push` - NEVER push to remote repository
+- `git checkout` - NEVER change branches
+- `git merge` - NEVER merge branches
+- `git rebase` - NEVER rebase commits
+- Any commands that modify remote state or branch structure
+
+#### Example Complete Workflow
+```bash
+# 1. Make code changes
+# 2. Test with Playwright MCP (verify functionality)
+# 3. Check TODO.md and mark task complete if applicable
+# 4. Commit changes in separate terminal:
+
+git status
+git diff
+git add .
+git commit -m "$(cat <<'EOF'
+Fix: Update product categories to steel tube industry specific
+
+- Replace generic categories (Electronics, Clothing) with steel tube products
+- Add Square Tubes, Rectangular Tubes, Round Tubes, Oval Tubes, Custom Steel Products
+- Update LeadCreation.jsx product dropdown options
+- Ensure form validation accepts new categories
+
+✅ Tested with Playwright MCP:
+- Verified new categories appear in Lead Creation form
+- Tested form submission with new product types
+- Screenshots confirmed UI displays correctly
+
+Fixes: TODO.md - Update product categories task
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+EOF
+)"
+```
+
+### Development Server Management
+**CRITICAL**: When testing server functionality:
+
+1. **Terminal 1**: Keep `npm run dev` running continuously
+2. **Terminal 2**: Use for git commands, file operations, and other tasks
+3. **Never stop the dev server** during testing - Playwright MCP needs it running
+4. **Restart server only** if code changes require it (backend modifications)
+
+This ensures consistent testing environment and prevents connection issues during Playwright testing.
+
 ### Individual Testing
 ```bash
 # Test specific API endpoints using curl or Postman
