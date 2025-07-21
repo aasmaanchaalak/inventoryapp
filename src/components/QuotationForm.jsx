@@ -11,6 +11,7 @@ import { FormError } from './common';
 const schema = yup.object({
   leadId: yup.string().required('Please select a lead'),
   validity: yup.number()
+    .typeError('Quotation validity is required')
     .required('Quotation validity is required')
     .min(1, 'Validity must be at least 1 day')
     .max(365, 'Validity cannot exceed 365 days'),
@@ -25,18 +26,22 @@ const schema = yup.object({
         ),
       size: yup.string().required('Size is required'),
       thickness: yup.number()
+        .typeError('Thickness is required')
         .required('Thickness is required')
         .min(0.1, 'Thickness must be at least 0.1mm')
         .max(50, 'Thickness cannot exceed 50mm'),
       quantity: yup.number()
+        .typeError('Quantity is required')
         .required('Quantity is required')
         .min(0.1, 'Quantity must be at least 0.1 tons')
         .max(10000, 'Quantity cannot exceed 10,000 tons'),
       rate: yup.number()
+        .typeError('Rate is required')
         .required('Rate is required')
         .min(1, 'Rate must be at least ₹1')
         .max(1000000, 'Rate cannot exceed ₹10,00,000'),
       tax: yup.number()
+        .typeError('Tax percentage is required')
         .required('Tax percentage is required')
         .min(0, 'Tax percentage cannot be negative')
         .max(100, 'Tax percentage cannot exceed 100%')

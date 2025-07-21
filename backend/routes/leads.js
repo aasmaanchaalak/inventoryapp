@@ -10,7 +10,7 @@ const router = express.Router();
 // POST /api/leads - Create a new lead
 router.post('/', async (req, res) => {
   try {
-    const { customerName, phone, productInterest, leadSource, notes } = req.body;
+    const { customerName, phone, email, address, gstin, pan, productInterest, leadSource, notes } = req.body;
 
     // Validate required fields
     if (!customerName || !phone || !productInterest || !leadSource) {
@@ -24,6 +24,10 @@ router.post('/', async (req, res) => {
     const newLead = new Lead({
       name: customerName,
       phone: phone,
+      email: email || undefined,
+      address: address || undefined,
+      gstin: gstin || undefined,
+      pan: pan || undefined,
       product: productInterest,
       source: leadSource,
       notes: notes || ''
@@ -40,6 +44,10 @@ router.post('/', async (req, res) => {
         id: savedLead._id,
         name: savedLead.name,
         phone: savedLead.phone,
+        email: savedLead.email,
+        address: savedLead.address,
+        gstin: savedLead.gstin,
+        pan: savedLead.pan,
         product: savedLead.product,
         source: savedLead.source,
         notes: savedLead.notes,

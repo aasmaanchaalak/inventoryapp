@@ -16,17 +16,26 @@ const schema = yup.object({
       itemId: yup.string().required(),
       type: yup.string().required(),
       size: yup.string().required(),
-      thickness: yup.number().required(),
-      availableStock: yup.number().required(),
+      thickness: yup.number()
+        .typeError('Thickness is required')
+        .required('Thickness is required'),
+      availableStock: yup.number()
+        .typeError('Available stock is required')
+        .required('Available stock is required'),
       dispatchedQuantity: yup.number()
+        .typeError('Dispatched quantity is required')
         .required('Dispatched quantity is required')
         .min(0.1, 'Minimum 0.1 tons')
         .test('max-stock', 'Cannot dispatch more than available stock', function(value) {
           const availableStock = this.parent.availableStock;
           return value <= availableStock;
         }),
-      rate: yup.number().required(),
-      total: yup.number().required()
+      rate: yup.number()
+        .typeError('Rate is required')
+        .required('Rate is required'),
+      total: yup.number()
+        .typeError('Total is required')
+        .required('Total is required')
     })
   ).min(1, 'At least one item must be dispatched')
 }).required();

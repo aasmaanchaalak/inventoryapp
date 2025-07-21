@@ -4,20 +4,41 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useApi } from '../hooks/useApi';
 import { STEEL_TUBE_CATEGORIES } from '../config/productCategories';
+import { LEAD_SOURCES } from '../config/leadSources';
 import { FormError } from './common';
 
 // Validation schema
 const schema = yup.object({
-  customerName: yup.string().required('Customer name is required'),
-  phone: yup.string().required('Phone number is required'),
+  customerName: yup.string()
+    .required('Customer name is required')
+    .max(100, 'Customer name cannot be more than 100 characters'),
+  phone: yup.string()
+    .required('Phone number is required')
+    .max(20, 'Phone number cannot be more than 20 characters')
+    .matches(/^[\+]?[1-9][\d]{0,15}$/, 'Please enter a valid phone number'),
+  email: yup.string()
+    .email('Please enter a valid email address')
+    .max(100, 'Email cannot be more than 100 characters'),
+  address: yup.string()
+    .max(500, 'Address cannot be more than 500 characters'),
+  gstin: yup.string()
+    .max(15, 'GSTIN cannot be more than 15 characters'),
+  pan: yup.string()
+    .max(10, 'PAN cannot be more than 10 characters'),
   productInterest: yup.string()
     .required('Please select a product interest')
     .oneOf(
       STEEL_TUBE_CATEGORIES.map(cat => cat.value),
       'Please select a valid steel tube product category'
     ),
-  leadSource: yup.string().required('Please select a lead source'),
-  notes: yup.string().optional(),
+  leadSource: yup.string()
+    .required('Please select a lead source')
+    .oneOf(
+      LEAD_SOURCES.map(source => source.value),
+      'Please select a valid lead source'
+    ),
+  notes: yup.string()
+    .max(1000, 'Notes cannot be more than 1000 characters'),
 }).required();
 
 const LeadCreationForm = () => {
@@ -97,6 +118,83 @@ const LeadCreationForm = () => {
           )}
         </div>
 
+        {/* Email */}
+        <div>
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+            Email
+          </label>
+          <input
+            type="email"
+            id="email"
+            {...register('email')}
+            className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+              errors.email ? 'border-red-500' : 'border-gray-300'
+            }`}
+            placeholder="Enter email address"
+          />
+          {errors.email && (
+            <FormError error={errors.email} />
+          )}
+        </div>
+
+        {/* Address */}
+        <div>
+          <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-2">
+            Address
+          </label>
+          <textarea
+            id="address"
+            {...register('address')}
+            rows={3}
+            className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+              errors.address ? 'border-red-500' : 'border-gray-300'
+            }`}
+            placeholder="Enter address"
+          />
+          {errors.address && (
+            <FormError error={errors.address} />
+          )}
+        </div>
+
+        {/* GSTIN and PAN in same row */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label htmlFor="gstin" className="block text-sm font-medium text-gray-700 mb-2">
+              GSTIN
+            </label>
+            <input
+              type="text"
+              id="gstin"
+              {...register('gstin')}
+              className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                errors.gstin ? 'border-red-500' : 'border-gray-300'
+              }`}
+              placeholder="Enter GSTIN"
+            />
+            {errors.gstin && (
+              <FormError error={errors.gstin} />
+            )}
+          </div>
+
+          <div>
+            <label htmlFor="pan" className="block text-sm font-medium text-gray-700 mb-2">
+              PAN
+            </label>
+            <input
+              type="text"
+              id="pan"
+              {...register('pan')}
+              className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                errors.pan ? 'border-red-500' : 'border-gray-300'
+              }`}
+              placeholder="Enter PAN"
+            />
+            {errors.pan && (
+              <FormError error={errors.pan} />
+            )}
+          </div>
+        </div>
+
         {/* Product Interest */}
         <div>
           <label htmlFor="productInterest" className="block text-sm font-medium text-gray-700 mb-2">
@@ -134,14 +232,11 @@ const LeadCreationForm = () => {
             }`}
           >
             <option value="">Select a lead source</option>
-            <option value="website">Website</option>
-            <option value="social-media">Social Media</option>
-            <option value="referral">Referral</option>
-            <option value="cold-call">Cold Call</option>
-            <option value="email-campaign">Email Campaign</option>
-            <option value="trade-show">Trade Show</option>
-            <option value="advertising">Advertising</option>
-            <option value="other">Other</option>
+            {LEAD_SOURCES.map((source) => (
+              <option key={source.value} value={source.value}>
+                {source.label}
+              </option>
+            ))}
           </select>
           {errors.leadSource && (
             <FormError error={errors.leadSource} />

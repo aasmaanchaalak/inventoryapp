@@ -18,21 +18,26 @@ const schema = yup.object({
     .required('Size is required')
     .max(50, 'Size cannot be more than 50 characters'),
   thickness: yup.number()
+    .typeError('Thickness is required')
     .required('Thickness is required')
     .min(0.1, 'Thickness must be at least 0.1mm')
     .max(50, 'Thickness cannot exceed 50mm'),
   availableQty: yup.number()
+    .typeError('Available quantity is required')
     .required('Available quantity is required')
     .min(0.1, 'Quantity must be at least 0.1 tons')
     .max(10000, 'Quantity cannot exceed 10,000 tons'),
   rate: yup.number()
+    .typeError('Rate must be a valid number')
     .min(1, 'Rate must be at least ₹1')
     .max(1000000, 'Rate cannot exceed ₹10,00,000'),
   hsnCode: yup.string()
     .max(8, 'HSN code cannot be more than 8 characters'),
   minStockLevel: yup.number()
+    .typeError('Minimum stock level must be a valid number')
     .min(0, 'Minimum stock level cannot be negative'),
   maxStockLevel: yup.number()
+    .typeError('Maximum stock level must be a valid number')
     .min(0, 'Maximum stock level cannot be negative'),
   warehouseName: yup.string()
     .max(100, 'Warehouse name cannot be more than 100 characters'),
