@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { STEEL_TUBE_TAX_RATE, calculateTaxAmount } from '../config/taxRates';
 import * as yup from 'yup';
+import { FormError } from './common';
 
 // Validation schema
 const schema = yup.object({
@@ -157,9 +159,12 @@ const DO1Generator = () => {
     
     const totals = fields.map(item => {
       const subtotal = item.dispatchedQuantity * item.rate;
-      const taxAmount = subtotal * 0.18; // 18% GST
-      const total = subtotal + taxAmount;
-      return { subtotal, taxAmount, total };
+      const calculation = calculateTaxAmount(subtotal, STEEL_TUBE_TAX_RATE, item.type);
+      return {
+        subtotal: calculation.subtotal,
+        taxAmount: calculation.taxAmount,
+        total: calculation.total
+      };
     });
     
     const subtotal = totals.reduce((sum, item) => sum + item.subtotal, 0);
@@ -255,7 +260,7 @@ const DO1Generator = () => {
             ))}
           </select>
           {errors.poId && (
-            <p className="mt-1 text-sm text-red-600">{errors.poId.message}</p>
+            <FormError error={errors.poId} />
           )}
         </div>
 
@@ -275,7 +280,7 @@ const DO1Generator = () => {
               placeholder="DO-2024-001"
             />
             {errors.doNumber && (
-              <p className="mt-1 text-sm text-red-600">{errors.doNumber.message}</p>
+              <FormError error={errors.doNumber} />
             )}
           </div>
 
@@ -292,7 +297,7 @@ const DO1Generator = () => {
               }`}
             />
             {errors.dispatchDate && (
-              <p className="mt-1 text-sm text-red-600">{errors.dispatchDate.message}</p>
+              <FormError error={errors.dispatchDate} />
             )}
           </div>
 
@@ -360,7 +365,7 @@ const DO1Generator = () => {
                       <td className="px-3 py-2 text-sm text-gray-900">{item.thickness}mm</td>
                       <td className="px-3 py-2 text-sm text-gray-900">
                         <span className={`font-medium ${
-                          item.availableStock > 0 ? 'text-green-600' : 'text-red-600'
+                          item.availableStock > 0 ? 'text-green-600' : 'text-red-500'
                         }`}>
                           {item.availableStock} tons
                         </span>
@@ -379,7 +384,7 @@ const DO1Generator = () => {
                           disabled={item.availableStock <= 0}
                         />
                         {errors.items?.[index]?.dispatchedQuantity && (
-                          <p className="text-xs text-red-600 mt-1">
+                          <p className="text-xs text-red-500 mt-1">
                             {errors.items[index].dispatchedQuantity.message}
                           </p>
                         )}
@@ -402,7 +407,7 @@ const DO1Generator = () => {
                   <p className="text-lg font-semibold">{formatCurrency(overallTotals.subtotal)}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Tax (18%)</p>
+                  <p className="text-sm text-gray-600">Tax ({STEEL_TUBE_TAX_RATE}%)</p>
                   <p className="text-lg font-semibold">{formatCurrency(overallTotals.totalTax)}</p>
                 </div>
                 <div>

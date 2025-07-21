@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { FormError } from './common';
 
 const SMSTester = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -9,8 +10,7 @@ const SMSTester = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
-    reset
+    formState: { errors }
   } = useForm();
 
   const onSubmit = async (data) => {
@@ -123,7 +123,7 @@ const SMSTester = () => {
                   placeholder="9876543210 or +919876543210"
                 />
                 {errors.phone && (
-                  <p className="text-red-600 text-sm mt-1">{errors.phone.message}</p>
+                  <FormError error={errors.phone} />
                 )}
               </div>
 
@@ -138,7 +138,7 @@ const SMSTester = () => {
                   placeholder="John Doe"
                 />
                 {errors.clientName && (
-                  <p className="text-red-600 text-sm mt-1">{errors.clientName.message}</p>
+                  <FormError error={errors.clientName} />
                 )}
               </div>
 
@@ -153,7 +153,7 @@ const SMSTester = () => {
                   placeholder="DO2-2024-001"
                 />
                 {errors.do2Id && (
-                  <p className="text-red-600 text-sm mt-1">{errors.do2Id.message}</p>
+                  <FormError error={errors.do2Id} />
                 )}
               </div>
 
@@ -168,7 +168,7 @@ const SMSTester = () => {
                   placeholder="Steel Tubes Co."
                 />
                 {errors.companyName && (
-                  <p className="text-red-600 text-sm mt-1">{errors.companyName.message}</p>
+                  <FormError error={errors.companyName} />
                 )}
               </div>
             </div>

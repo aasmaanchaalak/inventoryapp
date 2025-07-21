@@ -2,17 +2,31 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import { useApi } from '../hooks/useApi';
+import { STEEL_TUBE_CATEGORIES } from '../config/productCategories';
+import { FormError } from './common';
 
 // Validation schema
 const schema = yup.object({
   customerName: yup.string().required('Customer name is required'),
   phone: yup.string().required('Phone number is required'),
-  productInterest: yup.string().required('Please select a product interest'),
+  productInterest: yup.string()
+    .required('Please select a product interest')
+    .oneOf(
+      STEEL_TUBE_CATEGORIES.map(cat => cat.value),
+      'Please select a valid steel tube product category'
+    ),
   leadSource: yup.string().required('Please select a lead source'),
   notes: yup.string().optional(),
 }).required();
 
 const LeadCreationForm = () => {
+  // API hook for creating leads
+  const { 
+    post: createLead, 
+    isLoading: isCreatingLead
+  } = useApi();
+
   const {
     register,
     handleSubmit,
@@ -24,25 +38,19 @@ const LeadCreationForm = () => {
 
   const onSubmit = async (data) => {
     try {
-      const response = await fetch('http://localhost:5000/api/leads', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
+      const result = await createLead('http://localhost:5000/api/leads', data);
 
-      const result = await response.json();
-
-      if (response.ok) {
+      if (result.success) {
         alert(result.message || 'Lead created successfully!');
         reset();
       } else {
-        throw new Error(result.message || 'Failed to create lead');
+        // Handle API-level errors
+        alert(result.message || 'Failed to create lead. Please try again.');
       }
     } catch (error) {
-      console.error('Error creating lead:', error);
-      alert(error.message || 'Failed to create lead. Please try again.');
+      // Error already handled by useApi hook with toast notification
+      // Additional user feedback if needed
+      console.error('Lead creation failed:', error);
     }
   };
 
@@ -66,7 +74,7 @@ const LeadCreationForm = () => {
             placeholder="Enter customer name"
           />
           {errors.customerName && (
-            <p className="mt-1 text-sm text-red-600">{errors.customerName.message}</p>
+            <FormError error={errors.customerName} />
           )}
         </div>
 
@@ -85,7 +93,7 @@ const LeadCreationForm = () => {
             placeholder="Enter phone number"
           />
           {errors.phone && (
-            <p className="mt-1 text-sm text-red-600">{errors.phone.message}</p>
+            <FormError error={errors.phone} />
           )}
         </div>
 
@@ -102,17 +110,14 @@ const LeadCreationForm = () => {
             }`}
           >
             <option value="">Select a product</option>
-            <option value="electronics">Electronics</option>
-            <option value="clothing">Clothing</option>
-            <option value="home-garden">Home & Garden</option>
-            <option value="sports">Sports & Outdoors</option>
-            <option value="books">Books & Media</option>
-            <option value="automotive">Automotive</option>
-            <option value="health-beauty">Health & Beauty</option>
-            <option value="toys-games">Toys & Games</option>
+            {STEEL_TUBE_CATEGORIES.map((category) => (
+              <option key={category.value} value={category.value}>
+                {category.label}
+              </option>
+            ))}
           </select>
           {errors.productInterest && (
-            <p className="mt-1 text-sm text-red-600">{errors.productInterest.message}</p>
+            <FormError error={errors.productInterest} />
           )}
         </div>
 
@@ -139,7 +144,7 @@ const LeadCreationForm = () => {
             <option value="other">Other</option>
           </select>
           {errors.leadSource && (
-            <p className="mt-1 text-sm text-red-600">{errors.leadSource.message}</p>
+            <FormError error={errors.leadSource} />
           )}
         </div>
 
@@ -168,10 +173,10 @@ const LeadCreationForm = () => {
           </button>
           <button
             type="submit"
-            disabled={isSubmitting}
+            disabled={isCreatingLead || isSubmitting}
             className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isSubmitting ? 'Creating Lead...' : 'Create Lead'}
+            {isCreatingLead ? 'Creating Lead...' : 'Create Lead'}
           </button>
         </div>
       </form>

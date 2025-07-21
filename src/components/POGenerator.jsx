@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import { useApi } from '../hooks/useApi';
+import { FormError } from './common';
 
 // Validation schema
 const schema = yup.object({
@@ -15,9 +17,24 @@ const POGenerator = () => {
   const [leads, setLeads] = useState([]);
   const [quotations, setQuotations] = useState([]);
   const [selectedQuotation, setSelectedQuotation] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
   const [poNumber, setPoNumber] = useState(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
+
+  // API hooks for different operations
+  const { 
+    get: fetchLeadsData, 
+    isLoading: isLoadingLeads,
+    error: leadsError
+  } = useApi();
+  
+  const { 
+    get: fetchQuotationsData
+  } = useApi();
+  
+  const { 
+    post: createPO, 
+    isLoading: isCreatingPO
+  } = useApi();
 
   const {
     register,
@@ -39,18 +56,34 @@ const POGenerator = () => {
   useEffect(() => {
     const fetchLeads = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/leads');
-        if (response.ok) {
-          const data = await response.json();
-          setLeads(data.data || []);
+        const data = await fetchLeadsData('http://localhost:5000/api/leads');
+        if (data.success) {
+          const allLeads = data.data || [];
+          
+          // Deduplicate leads based on name and normalized phone number
+          const uniqueLeads = allLeads.filter((lead, index, self) => {
+            // Normalize phone number by removing all non-digits
+            const normalizePhone = (phone) => phone.replace(/\D/g, '');
+            const currentPhone = normalizePhone(lead.phone);
+            const currentName = lead.name.toLowerCase().trim();
+            
+            // Find the first occurrence of this name+phone combination
+            return index === self.findIndex(l => 
+              l.name.toLowerCase().trim() === currentName && 
+              normalizePhone(l.phone) === currentPhone
+            );
+          });
+          
+          setLeads(uniqueLeads);
         }
       } catch (error) {
-        console.error('Error fetching leads:', error);
+        // Error already handled by useApi hook
+        setLeads([]);
       }
     };
 
     fetchLeads();
-  }, []);
+  }, []); // Remove fetchLeadsData dependency to prevent infinite re-renders
 
   // Fetch quotations when lead is selected
   useEffect(() => {
@@ -61,18 +94,18 @@ const POGenerator = () => {
       }
 
       try {
-        const response = await fetch(`http://localhost:5000/api/quotations?leadId=${watchedLeadId}`);
-        if (response.ok) {
-          const data = await response.json();
+        const data = await fetchQuotationsData(`http://localhost:5000/api/quotations?leadId=${watchedLeadId}`);
+        if (data.success) {
           setQuotations(data.data || []);
         }
       } catch (error) {
-        console.error('Error fetching quotations:', error);
+        // Error already handled by useApi hook
+        setQuotations([]);
       }
     };
 
     fetchQuotations();
-  }, [watchedLeadId]);
+  }, [watchedLeadId]); // Remove fetchQuotationsData dependency to prevent infinite re-renders
 
   // Update selected quotation when quotation is selected
   useEffect(() => {
@@ -85,7 +118,6 @@ const POGenerator = () => {
   }, [watchedQuotationId, quotations]);
 
   const onSubmit = async (data) => {
-    setIsLoading(true);
     try {
       const poData = {
         quotationId: watchedQuotationId,
@@ -93,29 +125,21 @@ const POGenerator = () => {
         remarks: data.remarks || ''
       };
 
-      const response = await fetch('http://localhost:5000/api/pos', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(poData),
-      });
+      const result = await createPO('http://localhost:5000/api/pos', poData);
 
-      const result = await response.json();
-
-      if (response.ok) {
+      if (result.success) {
         setPoNumber(result.data.poNumber);
         setShowConfirmation(true);
         reset();
         setSelectedQuotation(null);
       } else {
-        throw new Error(result.message || 'Failed to create PO');
+        // Handle API-level errors
+        alert(result.message || 'Failed to create PO. Please try again.');
       }
     } catch (error) {
-      console.error('Error creating PO:', error);
-      alert(error.message || 'Failed to create PO. Please try again.');
-    } finally {
-      setIsLoading(false);
+      // Error already handled by useApi hook with toast notification
+      // Additional user feedback if needed
+      console.error('PO creation failed:', error);
     }
   };
 
@@ -141,22 +165,40 @@ const POGenerator = () => {
           <label htmlFor="leadId" className="block text-sm font-medium text-gray-700 mb-2">
             Select Lead *
           </label>
-          <select
-            id="leadId"
-            {...register('leadId')}
-            className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-              errors.leadId ? 'border-red-500' : 'border-gray-300'
-            }`}
-          >
-            <option value="">Select a lead</option>
-            {leads.map((lead) => (
-              <option key={lead._id} value={lead._id}>
-                {lead.name} - {lead.phone} ({lead.product})
+          {leadsError ? (
+            <div className="p-3 bg-red-50 border border-red-200 rounded-md">
+              <p className="text-sm text-red-500 mb-2">
+                Failed to load leads: {leadsError?.message || 'Unknown error'}
+              </p>
+              <button
+                type="button"
+                onClick={() => window.location.reload()}
+                className="text-sm text-red-700 underline hover:text-red-900"
+              >
+                Retry
+              </button>
+            </div>
+          ) : (
+            <select
+              id="leadId"
+              {...register('leadId')}
+              disabled={isLoadingLeads}
+              className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                errors.leadId ? 'border-red-500' : 'border-gray-300'
+              } ${isLoadingLeads ? 'opacity-50 cursor-not-allowed' : ''}`}
+            >
+              <option value="">
+                {isLoadingLeads ? 'Loading leads...' : 'Select a lead'}
               </option>
-            ))}
-          </select>
+              {leads.map((lead) => (
+                <option key={lead._id} value={lead._id}>
+                  {lead.name} - {lead.phone} ({lead.product})
+                </option>
+              ))}
+            </select>
+          )}
           {errors.leadId && (
-            <p className="mt-1 text-sm text-red-600">{errors.leadId.message}</p>
+            <FormError error={errors.leadId} />
           )}
         </div>
 
@@ -184,7 +226,7 @@ const POGenerator = () => {
             ))}
           </select>
           {errors.quotationId && (
-            <p className="mt-1 text-sm text-red-600">{errors.quotationId.message}</p>
+            <FormError error={errors.quotationId} />
           )}
         </div>
 
@@ -202,7 +244,7 @@ const POGenerator = () => {
             }`}
           />
           {errors.poDate && (
-            <p className="mt-1 text-sm text-red-600">{errors.poDate.message}</p>
+            <FormError error={errors.poDate} />
           )}
         </div>
 
@@ -292,10 +334,10 @@ const POGenerator = () => {
           
           <button
             type="submit"
-            disabled={isLoading || isSubmitting || !selectedQuotation}
+            disabled={isCreatingPO || isSubmitting || !selectedQuotation}
             className="px-6 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isLoading ? 'Generating PO...' : 'Generate Purchase Order'}
+            {isCreatingPO ? 'Generating PO...' : 'Generate Purchase Order'}
           </button>
         </div>
       </form>

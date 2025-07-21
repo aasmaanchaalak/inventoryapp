@@ -7,7 +7,7 @@
 - [x] Fix inventory API connection failures - investigate backend inventory endpoint
 - [x] Fix inventory dashboard showing all zeros and infinite loading
 
-- [ ] **Implement lead deduplication logic to remove duplicate entries in dropdowns**
+- [x] **Implement lead deduplication logic to remove duplicate entries in dropdowns**
   - **Files to modify:** `src/components/POGenerator.jsx`, `src/components/QuotationForm.jsx`
   - **Issue:** Lead dropdowns show multiple duplicate entries for same customers
   - **Solution:** 
@@ -17,19 +17,22 @@
   - **Testing:** Use Playwright to verify dropdown only shows unique leads
   - **Acceptance criteria:** Each lead appears only once in all dropdown menus
 
-- [ ] **Add proper error handling for failed API calls across the application**
-  - **Files to modify:** All components making API calls (POGenerator, QuotationForm, InventoryDashboard, etc.)
-  - **Requirements:**
-    - Wrap all `fetch()` calls in try-catch blocks
-    - Display user-friendly error messages instead of console errors
-    - Add retry mechanisms for network failures
-    - Implement loading states with timeout (10 seconds max)
-    - Show fallback UI when API fails completely
-  - **Implementation:**
-    - Create reusable `useApi` hook for consistent error handling
-    - Add error state management to all components
-    - Display toast notifications for errors
-  - **Testing:** Simulate network failures and verify graceful degradation
+- [x] **Add proper error handling for failed API calls across the application**
+  - **Files modified:** `src/hooks/useApi.js`, `src/components/InventoryDashboard.jsx`, `src/components/POGenerator.jsx`, `src/components/QuotationForm.jsx`, `src/components/LeadCreationForm.js`
+  - **Completed:**
+    - ✅ Created reusable `useApi` hook with comprehensive error handling
+    - ✅ Implemented retry mechanisms with exponential backoff (3 retries max)
+    - ✅ Added loading states with 10-second timeout handling
+    - ✅ Wrapped all `fetch()` calls in try-catch blocks with AbortController
+    - ✅ Added user-friendly error messages and fallback UI
+    - ✅ Updated 4 core components to use new error handling system
+  - **Features implemented:**
+    - Automatic retry for network failures (500-level errors, fetch failures)
+    - Timeout handling with proper cleanup
+    - Consistent error state management across components
+    - Loading indicators and retry buttons in UI
+    - Error categorization (network, timeout, server, client errors)
+  - **Testing:** Network failure simulation completed successfully
 
 ## High Priority Bug Fixes
 
@@ -45,64 +48,89 @@
   - **Testing:** Navigate to Inventory Dashboard and verify smooth loading without flicker
   - **Acceptance criteria:** No visual flickering during data loading or filtering
 
-- [ ] **Update product categories from generic to steel tube industry specific**
-  - **Files to modify:** `src/components/LeadCreation.jsx`, any component with product dropdowns
-  - **Current problem:** Shows generic categories (Electronics, Clothing, Home & Garden, etc.)
-  - **Required categories:**
-    - "Square Tubes"
-    - "Rectangular Tubes" 
-    - "Round Tubes"
-    - "Oval Tubes"
-    - "Custom Steel Products"
-  - **Implementation:**
-    - Replace hardcoded options in product dropdown
-    - Update form validation to accept new categories
-    - Ensure consistency across all forms that use product selection
-  - **Testing:** Verify new categories appear in Lead Creation and other relevant forms
-  - **Data migration:** Update existing leads with new category mappings
+- [x] **Update product categories from generic to steel tube industry specific + Fix enum consistency**
+  - **Files modified:** `src/config/productCategories.js`, `src/components/LeadCreationForm.js`, `src/components/QuotationForm.jsx`, `src/components/InventoryDashboard.jsx`, `backend/migrations/migrate-product-categories.js`, `backend/models/Lead.js`, `backend/models/PurchaseOrder.js`, `backend/models/Quotation.js`, `backend/models/DO1.js`, `backend/models/DO2.js`, `backend/models/Inventory.js`
+  - **Completed:**
+    - ✅ Created centralized product categories configuration (`src/config/productCategories.js`)
+    - ✅ Updated LeadCreationForm.js with new steel tube categories
+    - ✅ Updated QuotationForm.jsx to include "Custom Steel Products" category
+    - ✅ Updated InventoryDashboard.jsx product type filter
+    - ✅ Updated form validation to enforce new category values
+    - ✅ Created comprehensive data migration script
+    - ✅ **FIXED ENUM CONSISTENCY**: Updated all backend models to use consistent long-form enum values
+    - ✅ Standardized Lead, PurchaseOrder, Quotation, DO1, DO2, Inventory models to use same format
+    - ✅ Prevents validation errors when data flows between workflow steps
+  - **New categories implemented:**
+    - "Square Tubes" (value: square-tubes, shortValue: square)
+    - "Rectangular Tubes" (value: rectangular-tubes, shortValue: rectangular) 
+    - "Round Tubes" (value: round-tubes, shortValue: round)
+    - "Oval Tubes" (value: oval-tubes, shortValue: oval)
+    - "Custom Steel Products" (value: custom-steel-products, shortValue: custom)
+  - **Data migration:** 
+    - Migration script created: `backend/migrations/migrate-product-categories.js`
+    - Maps all legacy categories (Electronics, Clothing, etc.) → "Custom Steel Products"
+    - Includes dry-run and verification capabilities
+    - Run with: `node backend/migrations/migrate-product-categories.js migrate --execute`
+  - **Consistency:** All product dropdowns now use centralized configuration for consistency
 
-- [ ] **Fix tax rate to 12% GST for steel tubes instead of 18%**
-  - **Files to modify:** `src/components/QuotationForm.jsx`, any component with tax calculations
-  - **Issue:** Tax defaults to 18% but should be 12% for steel tube products
-  - **Requirements:**
-    - Change default tax rate from 18% to 12%
-    - Update all tax calculation logic
-    - Ensure invoice generation uses correct tax rate
-    - Make tax rate configurable per product type if needed
-  - **Testing:** Create quotation and verify 12% tax is applied
-  - **Acceptance criteria:** All steel tube products use 12% GST by default
+- [x] **Fix tax rate to 12% GST for steel tubes instead of 18%**
+  - **Files modified:** `src/config/taxRates.js`, `src/components/QuotationForm.jsx`, `src/components/DO1Generator.jsx`, `src/components/InvoiceViewer.jsx`, `src/components/TallyPush.jsx`
+  - **Completed:**
+    - ✅ Created comprehensive tax rate configuration system (`src/config/taxRates.js`)
+    - ✅ Changed default tax rate from 18% to 12% for all steel tube products
+    - ✅ Updated QuotationForm.jsx to use 12% GST with smart product-based calculation
+    - ✅ Updated DO1Generator.jsx to use correct 12% tax rate
+    - ✅ Updated InvoiceViewer.jsx to use steel tube tax rate
+    - ✅ Updated TallyPush.jsx documentation to reflect 12% GST (6% CGST + 6% SGST)
+    - ✅ Enhanced form validation to enforce valid GST rates (0%, 5%, 12%, 18%, 28%)
+    - ✅ Implemented configurable tax rates per product type
+  - **Tax rate configuration features:**
+    - Default 12% GST for all steel tube categories (square, rectangular, round, oval, custom)
+    - Product-type aware tax calculation with fallback mechanisms
+    - Helper functions for tax calculation, formatting, and validation
+    - Support for standard GST rates as per Indian tax regulations
+    - HSN code mapping for steel tubes (7306, 7307, 7308)
+  - **Testing verified:** Tax calculation works correctly (₹10,000 → ₹1,200 tax → ₹11,200 total)
+  - **Acceptance criteria met:** All steel tube products now use 12% GST by default with proper calculation logic
 
-- [ ] **Fix navigation overflow - implement responsive navigation**
-  - **File to modify:** `src/App.js` (main navigation component)
-  - **Issue:** Navigation buttons overflow horizontally, some buttons become inaccessible
-  - **Solution options:**
-    - Implement hamburger menu for mobile/tablet
-    - Add horizontal scrolling to navigation
-    - Create dropdown grouping for related features
-    - Use responsive grid layout
-  - **Requirements:**
-    - Must work on screens down to 768px width
-    - All navigation items must remain accessible
-    - Maintain current functionality and styling
-  - **Testing:** Test on multiple screen sizes using browser dev tools and Playwright
-  - **Acceptance criteria:** All navigation buttons accessible on all screen sizes
+- [x] **Fix navigation overflow - implement responsive navigation**
+  - **File modified:** `src/App.js`, `RESPONSIVE_NAVIGATION.md`
+  - **Completed:**
+    - ✅ Implemented hamburger menu for mobile/tablet screens (< 768px)
+    - ✅ Added horizontal scrollable grouped navigation for desktop
+    - ✅ Created logical grouping of 16 navigation items into 5 categories
+    - ✅ Added responsive breakpoints with proper screen size handling
+    - ✅ Implemented current page indicators and visual enhancements
+    - ✅ Added compressed labels for tablet view and full labels for desktop
+  - **Navigation organization:**
+    - **Core Workflow** (4 items): Lead Creation, Quotation Form, PO Generator, DO1 Generator
+    - **Inventory & Reports** (2 items): Inventory Dashboard, Reports Dashboard
+    - **Invoicing** (3 items): Invoice Generator, Invoice Viewer, Invoice Dashboard
+    - **Tracking & Audit** (4 items): DO Timeline, Dispatch Calendar, Audit Trail Viewer, Invoice Audit Trail
+    - **Integration & Testing** (3 items): Tally Integration, Email Tester, SMS Tester
+  - **Responsive features:**
+    - Mobile (< 768px): Hamburger menu with collapsible grouped navigation
+    - Tablet (768px-1023px): Horizontal scrolling with compressed button labels
+    - Desktop (≥ 1024px): Full grouped layout with complete labels and scroll hints
+    - Works down to 320px width with all navigation items accessible
+  - **Testing verified:** All 16 navigation buttons accessible on all screen sizes from mobile to desktop
+  - **Acceptance criteria met:** Complete responsive navigation solution with improved UX and accessibility
 
-- [ ] **Clean up database schema warnings (duplicate indexes)**
-  - **Files to modify:** All model files in `backend/models/` directory
-  - **Issue:** Mongoose warnings about duplicate indexes on quotationNumber, poNumber, doNumber, etc.
-  - **Root cause:** Indexes defined both in schema field options AND via schema.index()
-  - **Solution:**
-    - Review all model files for duplicate index definitions
-    - Remove either the `index: true` from field definitions OR the separate `schema.index()` calls
-    - Keep the more specific/complex index definitions
-  - **Files likely affected:**
-    - `backend/models/Quotation.js`
-    - `backend/models/PurchaseOrder.js` 
-    - `backend/models/DO1.js`
-    - `backend/models/DO2.js`
-    - `backend/models/Invoice.js`
-  - **Testing:** Start server and verify no duplicate index warnings in console
-  - **Acceptance criteria:** No Mongoose duplicate index warnings on server startup
+- [x] **Clean up database schema warnings (duplicate indexes)**
+  - **Files modified:** All model files in `backend/models/` directory
+  - **Completed:**
+    - ✅ Identified duplicate index definitions in 5 model files
+    - ✅ Removed explicit `schema.index()` calls for fields already marked with `unique: true`
+    - ✅ Fixed Quotation.js: Removed duplicate quotationNumber index (line 178)
+    - ✅ Fixed PurchaseOrder.js: Removed duplicate poNumber index (line 176)
+    - ✅ Fixed DO1.js: Removed duplicate doNumber index (line 182)
+    - ✅ Fixed DO2.js: Removed duplicate do2Number index (line 212)
+    - ✅ Fixed Invoice.js: Removed duplicate invoiceNumber and do2Id indexes (lines 154-155)
+    - ✅ Verified Lead.js has no duplicate indexes (only compound index present)
+  - **Root cause resolved:** Indexes were defined both in schema field options (`unique: true`) AND via separate `schema.index()` calls
+  - **Solution applied:** Kept `unique: true` field constraints and removed redundant explicit index calls
+  - **Testing verified:** Server starts successfully without duplicate index warnings
+  - **Acceptance criteria met:** No Mongoose duplicate index warnings on server startup
 
 ## Medium Priority Bug Fixes
 

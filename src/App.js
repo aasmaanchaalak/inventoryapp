@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, useNavigate, useLocation, useParams } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useParams } from 'react-router-dom';
 import './App.css';
 import LeadCreationForm from './components/LeadCreationForm';
 import QuotationForm from './components/QuotationForm';
@@ -21,177 +21,156 @@ import InvoiceAuditTrail from './components/InvoiceAuditTrail';
 // Main Dashboard Component
 function Dashboard() {
   const [activeForm, setActiveForm] = useState('inventory');
-  const navigate = useNavigate();
-  const location = useLocation();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  // Navigation items organized by category
+  const navigationGroups = [
+    {
+      title: "Core Workflow",
+      items: [
+        { key: 'leads', label: 'Lead Creation', icon: '👥' },
+        { key: 'quotations', label: 'Quotation Form', icon: '📋' },
+        { key: 'pos', label: 'PO Generator', icon: '📄' },
+        { key: 'do1', label: 'DO1 Generator', icon: '📦' }
+      ]
+    },
+    {
+      title: "Inventory & Reports",
+      items: [
+        { key: 'inventory', label: 'Inventory Dashboard', icon: '📊' },
+        { key: 'reports', label: 'Reports Dashboard', icon: '📈' }
+      ]
+    },
+    {
+      title: "Invoicing",
+      items: [
+        { key: 'invoice', label: 'Invoice Generator', icon: '🧾' },
+        { key: 'invoiceViewer', label: 'Invoice Viewer', icon: '👁️' },
+        { key: 'invoiceDashboard', label: 'Invoice Dashboard', icon: '📋' }
+      ]
+    },
+    {
+      title: "Tracking & Audit",
+      items: [
+        { key: 'timeline', label: 'DO Timeline', icon: '📅' },
+        { key: 'calendar', label: 'Dispatch Calendar', icon: '🗓️' },
+        { key: 'auditTrail', label: 'Audit Trail Viewer', icon: '🔍' },
+        { key: 'invoiceAuditTrail', label: 'Invoice Audit Trail', icon: '📝' }
+      ]
+    },
+    {
+      title: "Integration & Testing",
+      items: [
+        { key: 'tally', label: 'Tally Integration', icon: '🔗' },
+        { key: 'emailTester', label: 'Email Tester', icon: '📧' },
+        { key: 'smsTester', label: 'SMS Tester', icon: '💬' }
+      ]
+    }
+  ];
+
+
+  const NavButton = ({ item, onClick, isActive }) => (
+    <button
+      onClick={onClick}
+      className={`w-full text-left px-4 py-3 rounded-md font-medium transition-colors flex items-center space-x-3 ${
+        isActive
+          ? 'bg-blue-600 text-white shadow-md'
+          : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900'
+      }`}
+    >
+      <span className="text-lg">{item.icon}</span>
+      <span>{item.label}</span>
+    </button>
+  );
 
   return (
     <div className="App">
-      <div className="min-h-screen bg-gray-100 py-8">
-        <div className="container mx-auto">
+      <div className="min-h-screen bg-gray-100 py-4 md:py-8">
+        <div className="container mx-auto px-4">
           {/* Navigation */}
           <div className="mb-8">
-            <nav className="bg-white shadow-md rounded-lg p-4">
-              <div className="flex space-x-4">
+            <nav className="bg-white shadow-md rounded-lg">
+              {/* Mobile Header */}
+              <div className="md:hidden flex items-center justify-between p-4 border-b">
+                <div>
+                  <h1 className="text-lg font-bold text-gray-900">Steel Tube ERP</h1>
+                  <p className="text-sm text-gray-600">
+                    {navigationGroups.flatMap(g => g.items).find(item => item.key === activeForm)?.label || 'Dashboard'}
+                  </p>
+                </div>
                 <button
-                  onClick={() => setActiveForm('leads')}
-                  className={`px-4 py-2 rounded-md font-medium transition-colors ${
-                    activeForm === 'leads'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                  }`}
+                  onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                  className="p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
+                  aria-label="Toggle navigation menu"
                 >
-                  Lead Creation
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    {isMobileMenuOpen ? (
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    ) : (
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                    )}
+                  </svg>
                 </button>
-                <button
-                  onClick={() => setActiveForm('quotations')}
-                  className={`px-4 py-2 rounded-md font-medium transition-colors ${
-                    activeForm === 'quotations'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                  }`}
-                >
-                  Quotation Form
-                </button>
-                <button
-                  onClick={() => setActiveForm('pos')}
-                  className={`px-4 py-2 rounded-md font-medium transition-colors ${
-                    activeForm === 'pos'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                  }`}
-                >
-                  PO Generator
-                </button>
-                <button
-                  onClick={() => setActiveForm('do1')}
-                  className={`px-4 py-2 rounded-md font-medium transition-colors ${
-                    activeForm === 'do1'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                  }`}
-                >
-                  DO1 Generator
-                </button>
-                <button
-                  onClick={() => setActiveForm('inventory')}
-                  className={`px-4 py-2 rounded-md font-medium transition-colors ${
-                    activeForm === 'inventory'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                  }`}
-                >
-                  Inventory Dashboard
-                </button>
-                <button
-                  onClick={() => setActiveForm('tally')}
-                  className={`px-4 py-2 rounded-md font-medium transition-colors ${
-                    activeForm === 'tally'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                  }`}
-                >
-                  Tally Integration
-                </button>
-                <button
-                  onClick={() => setActiveForm('invoice')}
-                  className={`px-4 py-2 rounded-md font-medium transition-colors ${
-                    activeForm === 'invoice'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                  }`}
-                >
-                  Invoice Generator
-                </button>
-                <button
-                  onClick={() => setActiveForm('invoiceViewer')}
-                  className={`px-4 py-2 rounded-md font-medium transition-colors ${
-                    activeForm === 'invoiceViewer'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                  }`}
-                >
-                  Invoice Viewer
-                </button>
-                <button
-                  onClick={() => setActiveForm('invoiceDashboard')}
-                  className={`px-4 py-2 rounded-md font-medium transition-colors ${
-                    activeForm === 'invoiceDashboard'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                  }`}
-                >
-                  Invoice Dashboard
-                </button>
-                <button
-                  onClick={() => setActiveForm('timeline')}
-                  className={`px-4 py-2 rounded-md font-medium transition-colors ${
-                    activeForm === 'timeline'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                  }`}
-                >
-                  DO Timeline
-                </button>
-                <button
-                  onClick={() => setActiveForm('calendar')}
-                  className={`px-4 py-2 rounded-md font-medium transition-colors ${
-                    activeForm === 'calendar'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                  }`}
-                >
-                  Dispatch Calendar
-                </button>
-                <button
-                  onClick={() => setActiveForm('emailTester')}
-                  className={`px-4 py-2 rounded-md font-medium transition-colors ${
-                    activeForm === 'emailTester'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                  }`}
-                >
-                  Email Tester
-                </button>
-                <button
-                  onClick={() => setActiveForm('smsTester')}
-                  className={`px-4 py-2 rounded-md font-medium transition-colors ${
-                    activeForm === 'smsTester'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                  }`}
-                >
-                  SMS Tester
-                </button>
-                <button
-                  onClick={() => setActiveForm('reports')}
-                  className={`px-4 py-2 rounded-md font-medium transition-colors ${
-                    activeForm === 'reports'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                  }`}
-                >
-                  Reports Dashboard
-                </button>
-                <button
-                  onClick={() => setActiveForm('auditTrail')}
-                  className={`px-4 py-2 rounded-md font-medium transition-colors ${
-                    activeForm === 'auditTrail'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                  }`}
-                >
-                  Audit Trail Viewer
-                </button>
-                <button
-                  onClick={() => setActiveForm('invoiceAuditTrail')}
-                  className={`px-4 py-2 rounded-md font-medium transition-colors ${
-                    activeForm === 'invoiceAuditTrail'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                  }`}
-                >
-                  Invoice Audit Trail
-                </button>
+              </div>
+
+              {/* Desktop Navigation - Horizontal Scrollable Groups */}
+              <div className="hidden md:block p-4">
+                <div className="relative">
+                  <div className="flex overflow-x-auto space-x-6 pb-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+                    {navigationGroups.map((group) => (
+                      <div key={group.title} className="flex-shrink-0">
+                        <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 px-2">
+                          {group.title}
+                        </h3>
+                        <div className="flex space-x-2">
+                          {group.items.map((item) => (
+                            <button
+                              key={item.key}
+                              onClick={() => setActiveForm(item.key)}
+                              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors whitespace-nowrap flex items-center space-x-2 ${
+                                activeForm === item.key
+                                  ? 'bg-blue-600 text-white shadow-sm'
+                                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-sm'
+                              }`}
+                            >
+                              <span className="text-base">{item.icon}</span>
+                              <span className="hidden lg:inline">{item.label}</span>
+                              <span className="lg:hidden">{item.label.split(' ')[0]}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  {/* Scroll hint */}
+                  <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white via-white to-transparent pointer-events-none opacity-50"></div>
+                </div>
+              </div>
+
+              {/* Mobile Navigation - Collapsible */}
+              <div className={`md:hidden ${isMobileMenuOpen ? 'block' : 'hidden'}`}>
+                <div className="px-4 py-2 space-y-4 max-h-96 overflow-y-auto">
+                  {navigationGroups.map((group) => (
+                    <div key={group.title}>
+                      <h3 className="text-sm font-semibold text-gray-700 mb-2 border-b border-gray-200 pb-1">
+                        {group.title}
+                      </h3>
+                      <div className="space-y-1">
+                        {group.items.map((item) => (
+                          <NavButton
+                            key={item.key}
+                            item={item}
+                            onClick={() => {
+                              setActiveForm(item.key);
+                              setIsMobileMenuOpen(false);
+                            }}
+                            isActive={activeForm === item.key}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </nav>
           </div>

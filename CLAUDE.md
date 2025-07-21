@@ -38,11 +38,9 @@ When working on this application, you MUST use the Playwright MCP tools to test 
 
 #### Required Testing Steps
 ```bash
-# 1. Start the development server first
-npm run dev
-
-# 2. Use Playwright MCP tools to:
-# - Navigate to affected pages/components
+# The development server is already running on port 3000
+# Simply use Playwright MCP tools to:
+# - Navigate to http://localhost:3000 for testing
 # - Take screenshots for visual verification
 # - Test form submissions and user interactions
 # - Verify API responses and error handling
@@ -107,10 +105,8 @@ After successfully testing changes with Playwright MCP:
 
 #### Terminal Workflow for Testing and Committing
 ```bash
-# 1. Start development server in one terminal (keep running)
-npm run dev
-
-# 2. In ANOTHER terminal window, run git commands:
+# Development server is already running on http://localhost:3000
+# Use terminal for git commands and other operations:
 git status
 git diff
 git add .
@@ -158,9 +154,9 @@ EOF
 #### Example Complete Workflow
 ```bash
 # 1. Make code changes
-# 2. Test with Playwright MCP (verify functionality)
+# 2. Test with Playwright MCP (navigate to http://localhost:3000)
 # 3. Check TODO.md and mark task complete if applicable
-# 4. Commit changes in separate terminal:
+# 4. Commit changes:
 
 git status
 git diff
@@ -188,14 +184,14 @@ EOF
 ```
 
 ### Development Server Management
-**CRITICAL**: When testing server functionality:
+**IMPORTANT**: The development server is already running and managed for you:
 
-1. **Terminal 1**: Keep `npm run dev` running continuously
-2. **Terminal 2**: Use for git commands, file operations, and other tasks
-3. **Never stop the dev server** during testing - Playwright MCP needs it running
-4. **Restart server only** if code changes require it (backend modifications)
+1. **Application URL**: Always available at `http://localhost:3000`
+2. **No server management needed**: Server is automatically maintained
+3. **Direct testing access**: Use Playwright MCP to navigate to localhost:3000
+4. **Consistent environment**: Server stays running for reliable testing
 
-This ensures consistent testing environment and prevents connection issues during Playwright testing.
+This ensures a stable testing environment without server management overhead during development.
 
 ### Individual Testing
 ```bash

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { FormError } from './common';
 
 const InvoiceGenerator = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -80,7 +81,7 @@ const InvoiceGenerator = () => {
             className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
           {errors.do2Id && (
-            <p className="mt-1 text-sm text-red-600">{errors.do2Id.message}</p>
+            <FormError error={errors.do2Id} />
           )}
         </div>
 

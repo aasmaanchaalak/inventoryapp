@@ -184,7 +184,7 @@ const TallyPush = () => {
         <ul className="text-sm text-blue-700 space-y-1">
           <li>• Enter a valid DO2 ID (must be executed status)</li>
           <li>• System fetches DO2 data with customer and item details</li>
-          <li>• Calculates GST (18% - 9% CGST + 9% SGST)</li>
+          <li>• Calculates GST (12% - 6% CGST + 6% SGST for steel tubes)</li>
           <li>• Generates Tally-compatible XML and JSON payloads</li>
           <li>• Includes HSN codes, product names, quantities, rates, and taxes</li>
           <li>• Mock push logs the payloads to console for testing</li>

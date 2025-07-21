@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { STEEL_TUBE_TAX_RATE } from '../config/taxRates';
 import { useForm } from 'react-hook-form';
 
 const InvoiceViewer = () => {
@@ -131,7 +132,7 @@ const InvoiceViewer = () => {
     if (!items || items.length === 0) return null;
 
     const subtotal = items.reduce((sum, item) => sum + (item.dispatchedQuantity * item.rate), 0);
-    const gstRate = 18;
+    const gstRate = STEEL_TUBE_TAX_RATE;
     const totalTax = (subtotal * gstRate) / 100;
     const grandTotal = subtotal + totalTax;
 

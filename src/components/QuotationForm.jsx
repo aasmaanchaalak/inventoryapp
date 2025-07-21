@@ -2,6 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import { useApi } from '../hooks/useApi';
+import { STEEL_TUBE_CATEGORIES } from '../config/productCategories';
+import { STEEL_TUBE_TAX_RATE, getTaxRateForProduct, calculateTaxAmount, getAllowedTaxRates } from '../config/taxRates';
+import { FormError } from './common';
 
 // Validation schema
 const schema = yup.object({
@@ -13,7 +17,12 @@ const schema = yup.object({
   deliveryTerms: yup.string().required('Delivery terms are required'),
   items: yup.array().of(
     yup.object({
-      type: yup.string().required('Item type is required'),
+      type: yup.string()
+        .required('Item type is required')
+        .oneOf(
+          STEEL_TUBE_CATEGORIES.map(cat => cat.shortValue),
+          'Please select a valid steel tube type'
+        ),
       size: yup.string().required('Size is required'),
       thickness: yup.number()
         .required('Thickness is required')
@@ -31,14 +40,27 @@ const schema = yup.object({
         .required('Tax percentage is required')
         .min(0, 'Tax percentage cannot be negative')
         .max(100, 'Tax percentage cannot exceed 100%')
+        .oneOf(getAllowedTaxRates(), 'Please use a valid GST rate (0%, 5%, 12%, 18%, or 28%)')
     })
   ).min(1, 'At least one item is required')
 }).required();
 
 const QuotationForm = () => {
   const [leads, setLeads] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+
+  // API hooks for different operations
+  const { 
+    get: fetchLeadsData, 
+    isLoading: isLoadingLeads, 
+    isError: isLeadsError, 
+    error: leadsError 
+  } = useApi();
+  
+  const { 
+    post: createQuotation, 
+    isLoading: isCreatingQuotation
+  } = useApi();
 
   const {
     register,
@@ -50,7 +72,7 @@ const QuotationForm = () => {
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      items: [{ type: '', size: '', thickness: '', quantity: '', rate: '', tax: 18 }]
+      items: [{ type: '', size: '', thickness: '', quantity: '', rate: '', tax: STEEL_TUBE_TAX_RATE }]
     }
   });
 
@@ -66,30 +88,50 @@ const QuotationForm = () => {
   useEffect(() => {
     const fetchLeads = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/leads');
-        if (response.ok) {
-          const data = await response.json();
-          setLeads(data.data || []);
+        const data = await fetchLeadsData('http://localhost:5000/api/leads');
+        if (data.success) {
+          const allLeads = data.data || [];
+          
+          // Deduplicate leads based on name and normalized phone number
+          const uniqueLeads = allLeads.filter((lead, index, self) => {
+            // Normalize phone number by removing all non-digits
+            const normalizePhone = (phone) => phone.replace(/\D/g, '');
+            const currentPhone = normalizePhone(lead.phone);
+            const currentName = lead.name.toLowerCase().trim();
+            
+            // Find the first occurrence of this name+phone combination
+            return index === self.findIndex(l => 
+              l.name.toLowerCase().trim() === currentName && 
+              normalizePhone(l.phone) === currentPhone
+            );
+          });
+          
+          setLeads(uniqueLeads);
         }
       } catch (error) {
-        console.error('Error fetching leads:', error);
+        // Error already handled by useApi hook
+        setLeads([]);
       }
     };
 
     fetchLeads();
-  }, []);
+  }, []); // Remove fetchLeadsData dependency to prevent infinite re-renders
 
   // Calculate totals for each row and overall
   const calculateRowTotal = (item) => {
     const quantity = parseFloat(item.quantity) || 0;
     const rate = parseFloat(item.rate) || 0;
-    const tax = parseFloat(item.tax) || 0;
+    const taxRate = parseFloat(item.tax) || getTaxRateForProduct(item.type);
     
     const subtotal = quantity * rate;
-    const taxAmount = subtotal * (tax / 100);
-    const total = subtotal + taxAmount;
+    const calculation = calculateTaxAmount(subtotal, taxRate, item.type);
     
-    return { subtotal, taxAmount, total };
+    return {
+      subtotal: calculation.subtotal,
+      taxAmount: calculation.taxAmount,
+      total: calculation.total,
+      taxRate: calculation.taxRate
+    };
   };
 
   const calculateOverallTotal = () => {
@@ -104,7 +146,6 @@ const QuotationForm = () => {
   };
 
   const onSubmit = async (data) => {
-    setIsLoading(true);
     try {
       // Calculate totals for each item
       const itemsWithTotals = data.items.map(item => {
@@ -123,27 +164,19 @@ const QuotationForm = () => {
         totalAmount: overallTotals.grandTotal
       };
 
-      const response = await fetch('http://localhost:5000/api/quotations', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(quotationData),
-      });
+      const result = await createQuotation('http://localhost:5000/api/quotations', quotationData);
 
-      const result = await response.json();
-
-      if (response.ok) {
+      if (result.success) {
         alert(result.message || 'Quotation created successfully!');
         reset();
       } else {
-        throw new Error(result.message || 'Failed to create quotation');
+        // Handle API-level errors
+        alert(result.message || 'Failed to create quotation. Please try again.');
       }
     } catch (error) {
-      console.error('Error creating quotation:', error);
-      alert(error.message || 'Failed to create quotation. Please try again.');
-    } finally {
-      setIsLoading(false);
+      // Error already handled by useApi hook with toast notification
+      // Additional user feedback if needed
+      console.error('Quotation creation failed:', error);
     }
   };
 
@@ -169,7 +202,7 @@ const QuotationForm = () => {
       thickness: '',
       quantity: '',
       rate: '',
-      tax: 18
+      tax: STEEL_TUBE_TAX_RATE
     });
   };
 
@@ -192,22 +225,40 @@ const QuotationForm = () => {
             <label htmlFor="leadId" className="block text-sm font-medium text-gray-700 mb-2">
               Select Lead *
             </label>
-            <select
-              id="leadId"
-              {...register('leadId')}
-              className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                errors.leadId ? 'border-red-500' : 'border-gray-300'
-              }`}
-            >
-              <option value="">Select a lead</option>
-              {leads.map((lead) => (
-                <option key={lead._id} value={lead._id}>
-                  {lead.name} - {lead.phone} ({lead.product})
+            {isLeadsError ? (
+              <div className="p-3 bg-red-50 border border-red-200 rounded-md">
+                <p className="text-sm text-red-500 mb-2">
+                  Failed to load leads: {leadsError?.message || 'Unknown error'}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => window.location.reload()}
+                  className="text-sm text-red-700 underline hover:text-red-900"
+                >
+                  Retry
+                </button>
+              </div>
+            ) : (
+              <select
+                id="leadId"
+                {...register('leadId')}
+                disabled={isLoadingLeads}
+                className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                  errors.leadId ? 'border-red-500' : 'border-gray-300'
+                } ${isLoadingLeads ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
+                <option value="">
+                  {isLoadingLeads ? 'Loading leads...' : 'Select a lead'}
                 </option>
-              ))}
-            </select>
+                {leads.map((lead) => (
+                  <option key={lead._id} value={lead._id}>
+                    {lead.name} - {lead.phone} ({lead.product})
+                  </option>
+                ))}
+              </select>
+            )}
             {errors.leadId && (
-              <p className="mt-1 text-sm text-red-600">{errors.leadId.message}</p>
+              <FormError error={errors.leadId} />
             )}
           </div>
 
@@ -227,7 +278,7 @@ const QuotationForm = () => {
               max="365"
             />
             {errors.validity && (
-              <p className="mt-1 text-sm text-red-600">{errors.validity.message}</p>
+              <FormError error={errors.validity} />
             )}
           </div>
         </div>
@@ -296,10 +347,11 @@ const QuotationForm = () => {
                           }`}
                         >
                           <option value="">Select type</option>
-                          <option value="square">Square Tube</option>
-                          <option value="rectangular">Rectangular Tube</option>
-                          <option value="round">Round Tube</option>
-                          <option value="oval">Oval Tube</option>
+                          {STEEL_TUBE_CATEGORIES.map((category) => (
+                            <option key={category.shortValue} value={category.shortValue}>
+                              {category.label}
+                            </option>
+                          ))}
                         </select>
                       </td>
                       <td className="px-3 py-4 whitespace-nowrap">
@@ -353,7 +405,7 @@ const QuotationForm = () => {
                           className={`w-full px-2 py-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
                             errors.items?.[index]?.tax ? 'border-red-500' : 'border-gray-300'
                           }`}
-                          placeholder="18"
+                          placeholder="12"
                         />
                       </td>
                       <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -370,7 +422,7 @@ const QuotationForm = () => {
                           <button
                             type="button"
                             onClick={() => removeProductRow(index)}
-                            className="text-red-600 hover:text-red-800 text-sm font-medium"
+                            className="text-red-500 hover:text-red-700 text-sm font-medium"
                           >
                             Remove
                           </button>
@@ -384,7 +436,7 @@ const QuotationForm = () => {
           </div>
 
           {errors.items && (
-            <p className="text-sm text-red-600">{errors.items.message}</p>
+            <FormError error={errors.items} />
           )}
         </div>
 
@@ -428,7 +480,7 @@ const QuotationForm = () => {
             placeholder="Enter delivery terms and conditions..."
           />
           {errors.deliveryTerms && (
-            <p className="mt-1 text-sm text-red-600">{errors.deliveryTerms.message}</p>
+            <FormError error={errors.deliveryTerms} />
           )}
         </div>
 
@@ -454,10 +506,10 @@ const QuotationForm = () => {
             
             <button
               type="submit"
-              disabled={isLoading || isSubmitting}
+              disabled={isCreatingQuotation || isSubmitting}
               className="px-6 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isLoading ? 'Creating Quotation...' : 'Create Quotation'}
+              {isCreatingQuotation ? 'Creating Quotation...' : 'Create Quotation'}
             </button>
           </div>
         </div>

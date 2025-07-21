@@ -151,8 +151,6 @@ invoiceSchema.set('toJSON', { virtuals: true });
 invoiceSchema.set('toObject', { virtuals: true });
 
 // Create indexes for better performance
-invoiceSchema.index({ do2Id: 1 });
-invoiceSchema.index({ invoiceNumber: 1 });
 invoiceSchema.index({ date: -1 });
 invoiceSchema.index({ pushedToTally: 1 });
 invoiceSchema.index({ status: 1 });
