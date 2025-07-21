@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+// @ts-expect-error TS(7016): Could not find a declaration file for module 'reac... Remove this comment to see the full error message
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
@@ -40,7 +41,7 @@ const DispatchCalendar = () => {
       const data = await response.json();
 
       // Convert DO2s to calendar events
-      const calendarEvents = data.data.do2s.map((do2) => {
+      const calendarEvents = data.data.do2s.map((do2: any) => {
         // Determine target dispatch date (from DO2 or fallback to creation date)
         const dispatchDate = do2.targetDispatchDate || do2.createdAt;
 
@@ -60,6 +61,7 @@ const DispatchCalendar = () => {
 
       setEvents(calendarEvents);
     } catch (error) {
+      // @ts-expect-error TS(2345): Argument of type 'string' is not assignable to par... Remove this comment to see the full error message
       setError('Error fetching dispatch data: ' + error.message);
     } finally {
       setIsLoading(false);
@@ -71,13 +73,14 @@ const DispatchCalendar = () => {
   }, []);
 
   // Handle event click
-  const handleEventClick = (event) => {
+  const handleEventClick = (event: any) => {
     setSelectedEvent(event.resource);
     setShowEventDetails(true);
   };
 
   // Custom event component
-  const EventComponent = ({ event }) => (
+  const EventComponent = ({ event }: any) => (
+    // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <div
       className="p-1 text-xs font-medium rounded"
       style={{
@@ -86,7 +89,11 @@ const DispatchCalendar = () => {
         color: event.textColor,
       }}
     >
+      // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
+      provided... Remove this comment to see the full error message
       <div className="font-semibold">{event.title}</div>
+      // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
+      provided... Remove this comment to see the full error message
       <div className="text-xs opacity-90">
         {event.status === 'approved' ? '✅ Approved' : '⏳ Pending'}
       </div>
@@ -94,7 +101,7 @@ const DispatchCalendar = () => {
   );
 
   // Custom toolbar component
-  const CustomToolbar = (toolbar) => {
+  const CustomToolbar = (toolbar: any) => {
     const goToToday = () => {
       toolbar.onNavigate('TODAY');
     };
@@ -107,25 +114,34 @@ const DispatchCalendar = () => {
       toolbar.onNavigate('NEXT');
     };
 
-    const goToView = (view) => {
+    const goToView = (view: any) => {
       toolbar.onView(view);
     };
 
     return (
+      // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
       <div className="flex items-center justify-between mb-4 p-4 bg-white rounded-lg shadow-sm">
+        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
+        provided... Remove this comment to see the full error message
         <div className="flex items-center space-x-2">
+          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
+          is provided... Remove this comment to see the full error message
           <button
             onClick={goToToday}
             className="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
           >
             Today
           </button>
+          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
+          is provided... Remove this comment to see the full error message
           <button
             onClick={goToPrev}
             className="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
           >
             ←
           </button>
+          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
+          is provided... Remove this comment to see the full error message
           <button
             onClick={goToNext}
             className="px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
@@ -133,12 +149,16 @@ const DispatchCalendar = () => {
             →
           </button>
         </div>
-
+        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
+        provided... Remove this comment to see the full error message
         <div className="text-lg font-semibold text-gray-800">
           {toolbar.label}
         </div>
-
+        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
+        provided... Remove this comment to see the full error message
         <div className="flex items-center space-x-2">
+          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
+          is provided... Remove this comment to see the full error message
           <button
             onClick={() => goToView('month')}
             className={`px-3 py-1 text-sm rounded ${
@@ -149,6 +169,8 @@ const DispatchCalendar = () => {
           >
             Month
           </button>
+          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
+          is provided... Remove this comment to see the full error message
           <button
             onClick={() => goToView('week')}
             className={`px-3 py-1 text-sm rounded ${
@@ -159,6 +181,8 @@ const DispatchCalendar = () => {
           >
             Week
           </button>
+          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
+          is provided... Remove this comment to see the full error message
           <button
             onClick={() => goToView('day')}
             className={`px-3 py-1 text-sm rounded ${
@@ -178,7 +202,7 @@ const DispatchCalendar = () => {
   const EventDetailsModal = () => {
     if (!selectedEvent || !showEventDetails) return null;
 
-    const formatDate = (dateString) => {
+    const formatDate = (dateString: any) => {
       if (!dateString) return 'N/A';
       return new Date(dateString).toLocaleDateString('en-IN', {
         year: 'numeric',
@@ -190,22 +214,39 @@ const DispatchCalendar = () => {
     };
 
     return (
+      // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
+        provided... Remove this comment to see the full error message
         <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 max-h-[80vh] overflow-y-auto">
+          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
+          is provided... Remove this comment to see the full error message
           <div className="flex items-center justify-between mb-4">
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+            flag is provided... Remove this comment to see the full error
+            message
             <h3 className="text-lg font-semibold text-gray-900">
               Dispatch Details
             </h3>
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+            flag is provided... Remove this comment to see the full error
+            message
             <button
               onClick={() => setShowEventDetails(false)}
               className="text-gray-400 hover:text-gray-600"
             >
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+              flag is provided... Remove this comment to see the full error
+              message
               <svg
                 className="w-6 h-6"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
               >
+                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+                flag is provided... Remove this comment to see the full error
+                message
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -215,109 +256,250 @@ const DispatchCalendar = () => {
               </svg>
             </button>
           </div>
-
+          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
+          is provided... Remove this comment to see the full error message
           <div className="space-y-3">
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+            flag is provided... Remove this comment to see the full error
+            message
             <div>
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+              flag is provided... Remove this comment to see the full error
+              message
               <span className="font-medium text-gray-700">DO2 Number:</span>
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+              flag is provided... Remove this comment to see the full error
+              message
               <span className="ml-2 text-gray-900">
+                // @ts-expect-error TS(2339): Property 'do2Number' does not
+                exist on type 'never... Remove this comment to see the full
+                error message
                 {selectedEvent.do2Number}
               </span>
             </div>
-
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+            flag is provided... Remove this comment to see the full error
+            message
             <div>
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+              flag is provided... Remove this comment to see the full error
+              message
               <span className="font-medium text-gray-700">PO Number:</span>
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+              flag is provided... Remove this comment to see the full error
+              message
               <span className="ml-2 text-gray-900">
+                // @ts-expect-error TS(2339): Property 'poNumber' does not exist
+                on type 'never'... Remove this comment to see the full error
+                message
                 {selectedEvent.poNumber}
               </span>
             </div>
-
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+            flag is provided... Remove this comment to see the full error
+            message
             <div>
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+              flag is provided... Remove this comment to see the full error
+              message
               <span className="font-medium text-gray-700">Customer:</span>
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+              flag is provided... Remove this comment to see the full error
+              message
               <span className="ml-2 text-gray-900">
+                // @ts-expect-error TS(2339): Property 'customerName' does not
+                exist on type 'ne... Remove this comment to see the full error
+                message
                 {selectedEvent.customerName}
               </span>
             </div>
-
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+            flag is provided... Remove this comment to see the full error
+            message
             <div>
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+              flag is provided... Remove this comment to see the full error
+              message
               <span className="font-medium text-gray-700">Customer Phone:</span>
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+              flag is provided... Remove this comment to see the full error
+              message
               <span className="ml-2 text-gray-900">
+                // @ts-expect-error TS(2339): Property 'customerPhone' does not
+                exist on type 'n... Remove this comment to see the full error
+                message
                 {selectedEvent.customerPhone}
               </span>
             </div>
-
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+            flag is provided... Remove this comment to see the full error
+            message
             <div>
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+              flag is provided... Remove this comment to see the full error
+              message
               <span className="font-medium text-gray-700">Product:</span>
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+              flag is provided... Remove this comment to see the full error
+              message
               <span className="ml-2 text-gray-900">
+                // @ts-expect-error TS(2339): Property 'productType' does not
+                exist on type 'nev... Remove this comment to see the full error
+                message
                 {selectedEvent.productType}
               </span>
             </div>
-
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+            flag is provided... Remove this comment to see the full error
+            message
             <div>
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+              flag is provided... Remove this comment to see the full error
+              message
               <span className="font-medium text-gray-700">
                 Total Dispatch Quantity:
               </span>
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+              flag is provided... Remove this comment to see the full error
+              message
               <span className="ml-2 text-gray-900">
+                // @ts-expect-error TS(2339): Property 'totalDispatchQuantity'
+                does not exist on... Remove this comment to see the full error
+                message
                 {selectedEvent.totalDispatchQuantity} units
               </span>
             </div>
-
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+            flag is provided... Remove this comment to see the full error
+            message
             <div>
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+              flag is provided... Remove this comment to see the full error
+              message
               <span className="font-medium text-gray-700">Total Amount:</span>
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+              flag is provided... Remove this comment to see the full error
+              message
               <span className="ml-2 text-gray-900">
-                ₹{selectedEvent.totalAmount?.toLocaleString()}
+                // @ts-expect-error TS(2339): Property 'totalAmount' does not
+                exist on type 'nev... Remove this comment to see the full error
+                message ₹{selectedEvent.totalAmount?.toLocaleString()}
               </span>
             </div>
-
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+            flag is provided... Remove this comment to see the full error
+            message
             <div>
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+              flag is provided... Remove this comment to see the full error
+              message
               <span className="font-medium text-gray-700">Status:</span>
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+              flag is provided... Remove this comment to see the full error
+              message
               <span
                 className={`ml-2 px-2 py-1 text-xs font-semibold rounded-full ${
+                  // @ts-expect-error TS(2339): Property 'status' does not exist on type 'never'.
                   selectedEvent.status === 'approved'
                     ? 'bg-green-100 text-green-800'
                     : 'bg-yellow-100 text-yellow-800'
                 }`}
               >
+                // @ts-expect-error TS(2339): Property 'status' does not exist
+                on type 'never'.
                 {selectedEvent.status === 'approved'
                   ? 'Approved'
                   : 'Pending Approval'}
               </span>
             </div>
-
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+            flag is provided... Remove this comment to see the full error
+            message
             <div>
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+              flag is provided... Remove this comment to see the full error
+              message
               <span className="font-medium text-gray-700">
                 Target Dispatch Date:
               </span>
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+              flag is provided... Remove this comment to see the full error
+              message
               <span className="ml-2 text-gray-900">
+                // @ts-expect-error TS(2339): Property 'targetDispatchDate' does
+                not exist on ty... Remove this comment to see the full error
+                message
                 {formatDate(selectedEvent.targetDispatchDate)}
               </span>
             </div>
-
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+            flag is provided... Remove this comment to see the full error
+            message
             <div>
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+              flag is provided... Remove this comment to see the full error
+              message
               <span className="font-medium text-gray-700">Created:</span>
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+              flag is provided... Remove this comment to see the full error
+              message
               <span className="ml-2 text-gray-900">
+                // @ts-expect-error TS(2339): Property 'createdAt' does not
+                exist on type 'never... Remove this comment to see the full
+                error message
                 {formatDate(selectedEvent.createdAt)}
               </span>
             </div>
-
+            // @ts-expect-error TS(2339): Property 'remarks' does not exist on
+            type 'never'.
             {selectedEvent.remarks && (
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <div>
+                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+                flag is provided... Remove this comment to see the full error
+                message
                 <span className="font-medium text-gray-700">Remarks:</span>
+                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+                flag is provided... Remove this comment to see the full error
+                message
                 <span className="ml-2 text-gray-900">
+                  // @ts-expect-error TS(2339): Property 'remarks' does not
+                  exist on type 'never'.
                   {selectedEvent.remarks}
                 </span>
               </div>
             )}
-
+            // @ts-expect-error TS(2339): Property 'items' does not exist on
+            type 'never'.
             {selectedEvent.items && selectedEvent.items.length > 0 && (
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <div>
+                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+                flag is provided... Remove this comment to see the full error
+                message
                 <span className="font-medium text-gray-700">Items:</span>
+                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+                flag is provided... Remove this comment to see the full error
+                message
                 <div className="ml-2 mt-2 space-y-1">
-                  {selectedEvent.items.map((item, index) => (
+                  // @ts-expect-error TS(2339): Property 'items' does not exist
+                  on type 'never'.
+                  {selectedEvent.items.map((item: any, index: any) => (
+                    // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                     <div key={index} className="text-sm bg-gray-50 p-2 rounded">
+                      // @ts-expect-error TS(17004): Cannot use JSX unless the
+                      '--jsx' flag is provided... Remove this comment to see the
+                      full error message
                       <div>
+                        // @ts-expect-error TS(17004): Cannot use JSX unless the
+                        '--jsx' flag is provided... Remove this comment to see
+                        the full error message
                         <strong>{item.type}</strong> - {item.size} x{' '}
                         {item.thickness}mm
                       </div>
+                      // @ts-expect-error TS(17004): Cannot use JSX unless the
+                      '--jsx' flag is provided... Remove this comment to see the
+                      full error message
                       <div>
                         Qty: {item.remainingQuantity} units @ ₹{item.rate}
                       </div>
@@ -327,15 +509,22 @@ const DispatchCalendar = () => {
               </div>
             )}
           </div>
-
+          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
+          is provided... Remove this comment to see the full error message
           <div className="mt-6 flex space-x-3">
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+            flag is provided... Remove this comment to see the full error
+            message
             <button
               onClick={() => setShowEventDetails(false)}
               className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
             >
               Close
             </button>
+            // @ts-expect-error TS(2339): Property 'status' does not exist on
+            type 'never'.
             {selectedEvent.status === 'pending_approval' && (
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <button
                 onClick={() => {
                   // TODO: Implement approval action
@@ -354,16 +543,30 @@ const DispatchCalendar = () => {
 
   if (isLoading) {
     return (
+      // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
       <div className="max-w-7xl mx-auto p-6">
+        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
+        provided... Remove this comment to see the full error message
         <div className="bg-white rounded-lg shadow-md p-6">
+          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
+          is provided... Remove this comment to see the full error message
           <div className="flex items-center justify-center h-64">
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+            flag is provided... Remove this comment to see the full error
+            message
             <div className="flex items-center space-x-2">
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+              flag is provided... Remove this comment to see the full error
+              message
               <svg
                 className="animate-spin h-8 w-8 text-blue-600"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
               >
+                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+                flag is provided... Remove this comment to see the full error
+                message
                 <circle
                   className="opacity-25"
                   cx="12"
@@ -372,12 +575,18 @@ const DispatchCalendar = () => {
                   stroke="currentColor"
                   strokeWidth="4"
                 ></circle>
+                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+                flag is provided... Remove this comment to see the full error
+                message
                 <path
                   className="opacity-75"
                   fill="currentColor"
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                 ></path>
               </svg>
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+              flag is provided... Remove this comment to see the full error
+              message
               <span className="text-lg text-gray-600">
                 Loading dispatch calendar...
               </span>
@@ -390,16 +599,30 @@ const DispatchCalendar = () => {
 
   if (error) {
     return (
+      // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
       <div className="max-w-7xl mx-auto p-6">
+        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
+        provided... Remove this comment to see the full error message
         <div className="bg-white rounded-lg shadow-md p-6">
+          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
+          is provided... Remove this comment to see the full error message
           <div className="text-center">
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+            flag is provided... Remove this comment to see the full error
+            message
             <div className="text-red-600 mb-4">
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+              flag is provided... Remove this comment to see the full error
+              message
               <svg
                 className="w-12 h-12 mx-auto"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
               >
+                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+                flag is provided... Remove this comment to see the full error
+                message
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -408,10 +631,19 @@ const DispatchCalendar = () => {
                 ></path>
               </svg>
             </div>
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+            flag is provided... Remove this comment to see the full error
+            message
             <h3 className="text-lg font-semibold text-gray-900 mb-2">
               Error Loading Calendar
             </h3>
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+            flag is provided... Remove this comment to see the full error
+            message
             <p className="text-gray-600 mb-4">{error}</p>
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+            flag is provided... Remove this comment to see the full error
+            message
             <button
               onClick={fetchPendingDO2s}
               className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
@@ -425,38 +657,72 @@ const DispatchCalendar = () => {
   }
 
   return (
+    // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <div className="max-w-7xl mx-auto p-6">
+      // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
+      provided... Remove this comment to see the full error message
       <div className="bg-white rounded-lg shadow-md p-6">
+        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
+        provided... Remove this comment to see the full error message
         <div className="mb-6">
+          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
+          is provided... Remove this comment to see the full error message
           <h2 className="text-3xl font-bold text-gray-900 mb-2">
             Dispatch Calendar
           </h2>
+          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
+          is provided... Remove this comment to see the full error message
           <p className="text-gray-600">
             View and manage pending dispatch orders (DO2s) on the calendar
           </p>
         </div>
-
         {/* Legend */}
+        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
+        provided... Remove this comment to see the full error message
         <div className="mb-6 flex items-center space-x-6">
+          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
+          is provided... Remove this comment to see the full error message
           <div className="flex items-center space-x-2">
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+            flag is provided... Remove this comment to see the full error
+            message
             <div className="w-4 h-4 bg-yellow-500 rounded"></div>
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+            flag is provided... Remove this comment to see the full error
+            message
             <span className="text-sm text-gray-700">Pending Approval</span>
           </div>
+          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
+          is provided... Remove this comment to see the full error message
           <div className="flex items-center space-x-2">
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+            flag is provided... Remove this comment to see the full error
+            message
             <div className="w-4 h-4 bg-green-500 rounded"></div>
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+            flag is provided... Remove this comment to see the full error
+            message
             <span className="text-sm text-gray-700">
               Approved (Ready to Execute)
             </span>
           </div>
+          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
+          is provided... Remove this comment to see the full error message
           <div className="flex items-center space-x-2">
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+            flag is provided... Remove this comment to see the full error
+            message
             <span className="text-sm text-gray-500">
               Total Events: {events.length}
             </span>
           </div>
         </div>
-
         {/* Calendar */}
+        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
+        provided... Remove this comment to see the full error message
         <div className="h-[600px]">
+          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
+          is provided... Remove this comment to see the full error message
           <Calendar
             localizer={localizer}
             events={events}
@@ -472,7 +738,7 @@ const DispatchCalendar = () => {
             defaultView="month"
             selectable
             popup
-            eventPropGetter={(event) => ({
+            eventPropGetter={(event: any) => ({
               style: {
                 backgroundColor: event.backgroundColor,
                 borderColor: event.borderColor,
@@ -481,8 +747,9 @@ const DispatchCalendar = () => {
             })}
           />
         </div>
-
         {/* Event Details Modal */}
+        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
+        provided... Remove this comment to see the full error message
         <EventDetailsModal />
       </div>
     </div>

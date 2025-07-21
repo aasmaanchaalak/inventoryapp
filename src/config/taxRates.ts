@@ -39,12 +39,14 @@ export const TAX_RATE_CONFIG = {
 };
 
 // Helper functions
-export const getTaxRateForProduct = (productType) => {
+export const getTaxRateForProduct = (productType: any) => {
   // Normalize product type to handle different formats
   const normalizedType = productType?.toLowerCase()?.trim();
 
   // Check specific category rates first
+  // @ts-expect-error TS(7053): Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
   if (TAX_RATES_BY_CATEGORY[normalizedType] !== undefined) {
+    // @ts-expect-error TS(7053): Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     return TAX_RATES_BY_CATEGORY[normalizedType];
   }
 
@@ -58,7 +60,7 @@ export const getTaxRateForProduct = (productType) => {
 };
 
 export const calculateTaxAmount = (
-  subtotal,
+  subtotal: any,
   taxRate = null,
   productType = null
 ) => {
@@ -69,6 +71,7 @@ export const calculateTaxAmount = (
   }
 
   // Calculate tax amount
+  // @ts-expect-error TS(2531): Object is possibly 'null'.
   const taxAmount = (subtotal * rate) / 100;
 
   return {
@@ -79,11 +82,11 @@ export const calculateTaxAmount = (
   };
 };
 
-export const formatTaxRate = (rate) => {
+export const formatTaxRate = (rate: any) => {
   return `${rate}%`;
 };
 
-export const getTaxDescription = (productType) => {
+export const getTaxDescription = (productType: any) => {
   const rate = getTaxRateForProduct(productType);
   if (rate === STEEL_TUBE_TAX_RATE) {
     return `${rate}% GST (Steel Tubes)`;
@@ -92,7 +95,7 @@ export const getTaxDescription = (productType) => {
 };
 
 // Validation helpers
-export const isValidTaxRate = (rate) => {
+export const isValidTaxRate = (rate: any) => {
   return typeof rate === 'number' && rate >= 0 && rate <= 100;
 };
 

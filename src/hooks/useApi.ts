@@ -47,12 +47,12 @@ export const useApi = (config = {}) => {
   /**
    * Sleep function for retry delays
    */
-  const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+  const sleep = (ms: any) => new Promise((resolve) => setTimeout(resolve, ms));
 
   /**
    * Calculate retry delay with exponential backoff
    */
-  const getRetryDelay = (attempt) => {
+  const getRetryDelay = (attempt: any) => {
     return (
       finalConfig.retryDelay *
       Math.pow(finalConfig.retryDelayMultiplier, attempt)
@@ -62,7 +62,7 @@ export const useApi = (config = {}) => {
   /**
    * Check if error should trigger a retry
    */
-  const shouldRetry = (error, response, attempt) => {
+  const shouldRetry = (error: any, response: any, attempt: any) => {
     if (attempt >= finalConfig.retries) return false;
 
     // Check for network errors
@@ -84,7 +84,7 @@ export const useApi = (config = {}) => {
   /**
    * Show user-friendly error notification
    */
-  const showErrorNotification = (error, isTimeout = false) => {
+  const showErrorNotification = (error: any, isTimeout = false) => {
     if (!finalConfig.showToast) return;
 
     let message = 'An unexpected error occurred. Please try again.';
@@ -127,7 +127,8 @@ export const useApi = (config = {}) => {
    * Main API call function with retry logic
    */
   const makeRequest = useCallback(
-    async (url, options = {}, attempt = 0) => {
+    // @ts-expect-error TS(7024): Function implicitly has return type 'any' because ... Remove this comment to see the full error message
+    async (url: any, options = {}, attempt = 0) => {
       const { controller, timeoutId } = createTimeoutController();
 
       try {
@@ -157,6 +158,7 @@ export const useApi = (config = {}) => {
         if (!response.ok) {
           throw new Error(
             data.message || `HTTP error! status: ${response.status}`,
+            // @ts-expect-error TS(2554): Expected 0-1 arguments, but got 2.
             {
               cause: { status: response.status, data },
             }
@@ -168,7 +170,9 @@ export const useApi = (config = {}) => {
         clearTimeout(timeoutId);
 
         // Handle timeout errors
+        // @ts-expect-error TS(2571): Object is of type 'unknown'.
         if (error.name === 'AbortError') {
+          // @ts-expect-error TS(2554): Expected 0-1 arguments, but got 2.
           throw new Error('Request timeout', { cause: { isTimeout: true } });
         }
 
@@ -189,7 +193,7 @@ export const useApi = (config = {}) => {
    * Execute API call with full error handling
    */
   const execute = useCallback(
-    async (url, options = {}) => {
+    async (url: any, options = {}) => {
       setState((prev) => ({
         ...prev,
         status: API_STATES.LOADING,
@@ -211,14 +215,18 @@ export const useApi = (config = {}) => {
 
         return result.data;
       } catch (error) {
+        // @ts-expect-error TS(2571): Object is of type 'unknown'.
         const isTimeout = error.cause?.isTimeout;
         const status = isTimeout ? API_STATES.TIMEOUT : API_STATES.ERROR;
 
         setState({
           status,
           data: null,
+          // @ts-expect-error TS(2322): Type '{ message: any; status: any; isTimeout: any;... Remove this comment to see the full error message
           error: {
+            // @ts-expect-error TS(2571): Object is of type 'unknown'.
             message: error.message,
+            // @ts-expect-error TS(2571): Object is of type 'unknown'.
             status: error.cause?.status,
             isTimeout,
           },
@@ -250,7 +258,7 @@ export const useApi = (config = {}) => {
    * Retry the last failed request
    */
   const retry = useCallback(
-    async (url, options = {}) => {
+    async (url: any, options = {}) => {
       if (
         state.status === API_STATES.ERROR ||
         state.status === API_STATES.TIMEOUT
@@ -263,24 +271,26 @@ export const useApi = (config = {}) => {
 
   // Convenience methods for different HTTP methods
   const get = useCallback(
-    (url, options = {}) => {
+    (url: any, options = {}) => {
       return execute(url, { ...options, method: 'GET' });
     },
     [execute]
   );
 
   const post = useCallback(
-    (url, data = null, options = {}) => {
+    (url: any, data = null, options = {}) => {
       const postOptions = {
         ...options,
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          // @ts-expect-error TS(2339): Property 'headers' does not exist on type '{}'.
           ...options.headers,
         },
       };
 
       if (data) {
+        // @ts-expect-error TS(2339): Property 'body' does not exist on type '{ method: ... Remove this comment to see the full error message
         postOptions.body = JSON.stringify(data);
       }
 
@@ -290,17 +300,19 @@ export const useApi = (config = {}) => {
   );
 
   const put = useCallback(
-    (url, data = null, options = {}) => {
+    (url: any, data = null, options = {}) => {
       const putOptions = {
         ...options,
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
+          // @ts-expect-error TS(2339): Property 'headers' does not exist on type '{}'.
           ...options.headers,
         },
       };
 
       if (data) {
+        // @ts-expect-error TS(2339): Property 'body' does not exist on type '{ method: ... Remove this comment to see the full error message
         putOptions.body = JSON.stringify(data);
       }
 
@@ -310,7 +322,7 @@ export const useApi = (config = {}) => {
   );
 
   const del = useCallback(
-    (url, options = {}) => {
+    (url: any, options = {}) => {
       return execute(url, { ...options, method: 'DELETE' });
     },
     [execute]

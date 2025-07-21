@@ -13,7 +13,7 @@ const SMSTester = () => {
     formState: { errors },
   } = useForm();
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: any) => {
     setIsLoading(true);
     setError(null);
     setResult(null);
@@ -41,6 +41,7 @@ const SMSTester = () => {
         setError(result.message || 'Failed to send SMS');
       }
     } catch (error) {
+      // @ts-expect-error TS(2345): Argument of type 'string' is not assignable to par... Remove this comment to see the full error message
       setError('Network error: ' + error.message);
     } finally {
       setIsLoading(false);
@@ -74,6 +75,7 @@ const SMSTester = () => {
         setError(result.message || 'Failed to send DO2 notification');
       }
     } catch (error) {
+      // @ts-expect-error TS(2345): Argument of type 'string' is not assignable to par... Remove this comment to see the full error message
       setError('Network error: ' + error.message);
     } finally {
       setIsLoading(false);
@@ -81,47 +83,107 @@ const SMSTester = () => {
   };
 
   return (
+    // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <div className="max-w-4xl mx-auto p-6">
+      // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
+      provided... Remove this comment to see the full error message
       <div className="bg-white shadow-md rounded-lg p-6">
+        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
+        provided... Remove this comment to see the full error message
         <h2 className="text-2xl font-bold text-gray-900 mb-6">
           SMS Gateway Tester
         </h2>
-
         {/* Configuration Info */}
+        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
+        provided... Remove this comment to see the full error message
         <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-md">
+          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
+          is provided... Remove this comment to see the full error message
           <h3 className="text-lg font-semibold text-blue-900 mb-2">
             Configuration
           </h3>
+          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
+          is provided... Remove this comment to see the full error message
           <div className="text-sm text-blue-800 space-y-1">
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+            flag is provided... Remove this comment to see the full error
+            message
             <p>
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+              flag is provided... Remove this comment to see the full error
+              message
               <strong>Gateway:</strong> MSG91
             </p>
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+            flag is provided... Remove this comment to see the full error
+            message
             <p>
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+              flag is provided... Remove this comment to see the full error
+              message
               <strong>API URL:</strong> https://api.msg91.com/api/v5/flow/
             </p>
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+            flag is provided... Remove this comment to see the full error
+            message
             <p>
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+              flag is provided... Remove this comment to see the full error
+              message
               <strong>Environment Variables Required:</strong>
             </p>
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+            flag is provided... Remove this comment to see the full error
+            message
             <ul className="ml-4 list-disc">
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+              flag is provided... Remove this comment to see the full error
+              message
               <li>MSG91_API_KEY - Your MSG91 API key</li>
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+              flag is provided... Remove this comment to see the full error
+              message
               <li>MSG91_SENDER_ID - Sender ID (e.g., INVENTORY)</li>
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+              flag is provided... Remove this comment to see the full error
+              message
               <li>MSG91_TEMPLATE_ID - Template ID for dynamic messages</li>
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+              flag is provided... Remove this comment to see the full error
+              message
               <li>COMPANY_NAME - Your company name for notifications</li>
             </ul>
           </div>
         </div>
-
         {/* Test Custom SMS */}
+        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
+        provided... Remove this comment to see the full error message
         <div className="mb-8">
+          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
+          is provided... Remove this comment to see the full error message
           <h3 className="text-lg font-semibold text-gray-900 mb-4">
             Test Custom SMS
           </h3>
+          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
+          is provided... Remove this comment to see the full error message
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+            flag is provided... Remove this comment to see the full error
+            message
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+              flag is provided... Remove this comment to see the full error
+              message
               <div>
+                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+                flag is provided... Remove this comment to see the full error
+                message
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Phone Number
                 </label>
+                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+                flag is provided... Remove this comment to see the full error
+                message
                 <input
                   type="tel"
                   {...register('phone', {
@@ -134,13 +196,24 @@ const SMSTester = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="9876543210 or +919876543210"
                 />
+                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+                flag is provided... Remove this comment to see the full error
+                message
                 {errors.phone && <FormError error={errors.phone} />}
               </div>
-
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+              flag is provided... Remove this comment to see the full error
+              message
               <div>
+                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+                flag is provided... Remove this comment to see the full error
+                message
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Client Name
                 </label>
+                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+                flag is provided... Remove this comment to see the full error
+                message
                 <input
                   type="text"
                   {...register('clientName', {
@@ -149,26 +222,48 @@ const SMSTester = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="John Doe"
                 />
+                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+                flag is provided... Remove this comment to see the full error
+                message
                 {errors.clientName && <FormError error={errors.clientName} />}
               </div>
-
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+              flag is provided... Remove this comment to see the full error
+              message
               <div>
+                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+                flag is provided... Remove this comment to see the full error
+                message
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   DO2 ID
                 </label>
+                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+                flag is provided... Remove this comment to see the full error
+                message
                 <input
                   type="text"
                   {...register('do2Id', { required: 'DO2 ID is required' })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="DO2-2024-001"
                 />
+                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+                flag is provided... Remove this comment to see the full error
+                message
                 {errors.do2Id && <FormError error={errors.do2Id} />}
               </div>
-
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+              flag is provided... Remove this comment to see the full error
+              message
               <div>
+                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+                flag is provided... Remove this comment to see the full error
+                message
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Company Name
                 </label>
+                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+                flag is provided... Remove this comment to see the full error
+                message
                 <input
                   type="text"
                   {...register('companyName', {
@@ -177,23 +272,40 @@ const SMSTester = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Steel Tubes Co."
                 />
+                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+                flag is provided... Remove this comment to see the full error
+                message
                 {errors.companyName && <FormError error={errors.companyName} />}
               </div>
             </div>
-
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+            flag is provided... Remove this comment to see the full error
+            message
             <div>
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+              flag is provided... Remove this comment to see the full error
+              message
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Custom Message (Optional)
               </label>
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+              flag is provided... Remove this comment to see the full error
+              message
               <textarea
                 {...register('message')}
+                // @ts-expect-error TS(2322): Type 'string' is not assignable to type 'number'.
                 rows="3"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Leave empty to use default DO2 notification format"
               />
             </div>
-
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+            flag is provided... Remove this comment to see the full error
+            message
             <div className="flex space-x-4">
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+              flag is provided... Remove this comment to see the full error
+              message
               <button
                 type="submit"
                 disabled={isLoading}
@@ -201,7 +313,9 @@ const SMSTester = () => {
               >
                 {isLoading ? 'Sending...' : 'Send Custom SMS'}
               </button>
-
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+              flag is provided... Remove this comment to see the full error
+              message
               <button
                 type="button"
                 onClick={testDO2Notification}
@@ -213,49 +327,105 @@ const SMSTester = () => {
             </div>
           </form>
         </div>
-
         {/* Results */}
         {result && (
+          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-md">
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+            flag is provided... Remove this comment to see the full error
+            message
             <h3 className="text-lg font-semibold text-green-900 mb-2">
               SMS Sent Successfully
             </h3>
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+            flag is provided... Remove this comment to see the full error
+            message
             <div className="text-sm text-green-800 space-y-1">
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+              flag is provided... Remove this comment to see the full error
+              message
               <p>
+                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+                flag is provided... Remove this comment to see the full error
+                message
                 <strong>Message ID:</strong> {result.messageId}
               </p>
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+              flag is provided... Remove this comment to see the full error
+              message
               <p>
+                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+                flag is provided... Remove this comment to see the full error
+                message
                 <strong>Status:</strong> {result.success ? 'Success' : 'Failed'}
               </p>
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+              flag is provided... Remove this comment to see the full error
+              message
               <p>
+                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+                flag is provided... Remove this comment to see the full error
+                message
                 <strong>Response:</strong>
               </p>
+              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+              flag is provided... Remove this comment to see the full error
+              message
               <pre className="bg-white p-2 rounded text-xs overflow-auto">
+                // @ts-expect-error TS(2339): Property 'response' does not exist
+                on type 'never'... Remove this comment to see the full error
+                message
                 {JSON.stringify(result.response, null, 2)}
               </pre>
             </div>
           </div>
         )}
-
         {error && (
+          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-md">
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+            flag is provided... Remove this comment to see the full error
+            message
             <h3 className="text-lg font-semibold text-red-900 mb-2">
               SMS Failed
             </h3>
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+            flag is provided... Remove this comment to see the full error
+            message
             <p className="text-red-800">{error}</p>
           </div>
         )}
-
         {/* Instructions */}
+        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
+        provided... Remove this comment to see the full error message
         <div className="mt-8 p-4 bg-gray-50 border border-gray-200 rounded-md">
+          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
+          is provided... Remove this comment to see the full error message
           <h3 className="text-sm font-medium text-gray-800 mb-2">How to use</h3>
+          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
+          is provided... Remove this comment to see the full error message
           <ul className="text-sm text-gray-700 space-y-1">
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+            flag is provided... Remove this comment to see the full error
+            message
             <li>• Configure MSG91 API credentials in environment variables</li>
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+            flag is provided... Remove this comment to see the full error
+            message
             <li>
               • Use "Test DO2 Notification" for standard dispatch notification
             </li>
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+            flag is provided... Remove this comment to see the full error
+            message
             <li>• Use "Send Custom SMS" for custom messages</li>
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+            flag is provided... Remove this comment to see the full error
+            message
             <li>• Phone numbers should include country code (+91 for India)</li>
+            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
+            flag is provided... Remove this comment to see the full error
+            message
             <li>• SMS will be sent automatically when DO2 is executed</li>
           </ul>
         </div>

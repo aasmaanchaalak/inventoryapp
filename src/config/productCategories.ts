@@ -54,23 +54,24 @@ export const CATEGORY_MAPPING = {
 };
 
 // Helper functions
-export const getProductCategoryLabel = (value) => {
+export const getProductCategoryLabel = (value: any) => {
   const category = STEEL_TUBE_CATEGORIES.find(
     (cat) => cat.value === value || cat.shortValue === value
   );
   return category ? category.label : value;
 };
 
-export const getProductCategoryValue = (label) => {
+export const getProductCategoryValue = (label: any) => {
   const category = STEEL_TUBE_CATEGORIES.find((cat) => cat.label === label);
   return category ? category.value : label;
 };
 
-export const isLegacyCategory = (value) => {
+export const isLegacyCategory = (value: any) => {
   return LEGACY_CATEGORIES.includes(value);
 };
 
-export const getMigratedCategory = (legacyValue) => {
+export const getMigratedCategory = (legacyValue: any) => {
+  // @ts-expect-error TS(7053): Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
   return CATEGORY_MAPPING[legacyValue] || 'custom-steel-products';
 };
 
