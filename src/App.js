@@ -17,6 +17,7 @@ import SMSTester from './components/SMSTester';
 import ReportsDashboard from './components/ReportsDashboard';
 import AuditTrailViewer from './components/AuditTrailViewer';
 import InvoiceAuditTrail from './components/InvoiceAuditTrail';
+import InventoryAddForm from './components/InventoryAddForm';
 
 // Main Dashboard Component
 function Dashboard() {
@@ -38,6 +39,7 @@ function Dashboard() {
       title: "Inventory & Reports",
       items: [
         { key: 'inventory', label: 'Inventory Dashboard', icon: '📊' },
+        { key: 'inventoryAdd', label: 'Add Inventory', icon: '➕' },
         { key: 'reports', label: 'Reports Dashboard', icon: '📈' }
       ]
     },
@@ -181,6 +183,7 @@ function Dashboard() {
           {activeForm === 'pos' && <POGenerator />}
           {activeForm === 'do1' && <DO1Generator />}
           {activeForm === 'inventory' && <InventoryDashboard />}
+          {activeForm === 'inventoryAdd' && <InventoryAddForm />}
           {activeForm === 'tally' && <TallyPush />}
           {activeForm === 'invoice' && <InvoiceGenerator />}
           {activeForm === 'invoiceViewer' && <InvoiceViewer />}
