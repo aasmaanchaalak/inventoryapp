@@ -20,7 +20,7 @@ const schema = yup.object({
       type: yup.string()
         .required('Item type is required')
         .oneOf(
-          STEEL_TUBE_CATEGORIES.map(cat => cat.shortValue),
+          STEEL_TUBE_CATEGORIES.map(cat => cat.value),
           'Please select a valid steel tube type'
         ),
       size: yup.string().required('Size is required'),
@@ -348,7 +348,7 @@ const QuotationForm = () => {
                         >
                           <option value="">Select type</option>
                           {STEEL_TUBE_CATEGORIES.map((category) => (
-                            <option key={category.shortValue} value={category.shortValue}>
+                            <option key={category.value} value={category.value}>
                               {category.label}
                             </option>
                           ))}
