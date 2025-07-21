@@ -9,29 +9,26 @@ const InventoryDashboard = () => {
   const [stockByType, setStockByType] = useState([]);
 
   // Use the new API hook for comprehensive error handling
-  const { 
-    get: fetchInventoryData, 
+  const {
+    get: fetchInventoryData,
     status,
-    isLoading, 
-    isError, 
+    isLoading,
+    isError,
     isTimeout,
-    error
+    error,
   } = useApi({
     timeout: 10000,
     retries: 3,
-    showToast: true
+    showToast: true,
   });
 
-  const {
-    register,
-    watch
-  } = useForm({
+  const { register, watch } = useForm({
     defaultValues: {
       productType: '',
       size: '',
       thickness: '',
-      stockStatus: ''
-    }
+      stockStatus: '',
+    },
   });
 
   const watchedFilters = watch();
@@ -40,8 +37,10 @@ const InventoryDashboard = () => {
   const fetchInventory = useCallback(async (filterParams = {}) => {
     try {
       const queryParams = new URLSearchParams(filterParams).toString();
-      const data = await fetchInventoryData(`http://localhost:5000/api/inventory/summary?${queryParams}`);
-      
+      const data = await fetchInventoryData(
+        `http://localhost:5000/api/inventory/summary?${queryParams}`
+      );
+
       if (data && data.success) {
         setInventory(data.data.inventory || []);
         setSummary(data.data.summary || {});
@@ -86,7 +85,7 @@ const InventoryDashboard = () => {
           filterParams[key] = value;
         }
       });
-      
+
       // Only fetch if there are actual filter values
       const hasActualFilters = Object.keys(filterParams).length > 0;
       if (hasActualFilters) {
@@ -103,11 +102,13 @@ const InventoryDashboard = () => {
     const statusColors = {
       low: 'bg-red-100 text-red-800',
       normal: 'bg-yellow-100 text-yellow-800',
-      high: 'bg-green-100 text-green-800'
+      high: 'bg-green-100 text-green-800',
     };
-    
+
     return (
-      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${statusColors[item.stockStatus]}`}>
+      <span
+        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${statusColors[item.stockStatus]}`}
+      >
         {item.stockStatus.toUpperCase()}
       </span>
     );
@@ -117,7 +118,7 @@ const InventoryDashboard = () => {
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
-      currency: 'INR'
+      currency: 'INR',
     }).format(amount);
   };
 
@@ -179,8 +180,10 @@ const InventoryDashboard = () => {
 
   return (
     <div className="max-w-7xl mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-3xl font-bold text-gray-900 mb-6">Inventory Dashboard</h2>
-      
+      <h2 className="text-3xl font-bold text-gray-900 mb-6">
+        Inventory Dashboard
+      </h2>
+
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {isLoading ? (
@@ -196,13 +199,27 @@ const InventoryDashboard = () => {
             <div className="bg-blue-50 p-6 rounded-lg">
               <div className="flex items-center">
                 <div className="p-3 bg-blue-100 rounded-full">
-                  <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                  <svg
+                    className="w-6 h-6 text-blue-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                    ></path>
                   </svg>
                 </div>
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-blue-600">Total Items</p>
-                  <p className="text-2xl font-bold text-blue-900">{summary.totalItems || 0}</p>
+                  <p className="text-sm font-medium text-blue-600">
+                    Total Items
+                  </p>
+                  <p className="text-2xl font-bold text-blue-900">
+                    {summary.totalItems || 0}
+                  </p>
                 </div>
               </div>
             </div>
@@ -210,13 +227,27 @@ const InventoryDashboard = () => {
             <div className="bg-green-50 p-6 rounded-lg">
               <div className="flex items-center">
                 <div className="p-3 bg-green-100 rounded-full">
-                  <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  <svg
+                    className="w-6 h-6 text-green-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                    ></path>
                   </svg>
                 </div>
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-green-600">Total Stock</p>
-                  <p className="text-2xl font-bold text-green-900">{(summary.totalStock || 0).toFixed(1)} tons</p>
+                  <p className="text-sm font-medium text-green-600">
+                    Total Stock
+                  </p>
+                  <p className="text-2xl font-bold text-green-900">
+                    {(summary.totalStock || 0).toFixed(1)} tons
+                  </p>
                 </div>
               </div>
             </div>
@@ -224,13 +255,27 @@ const InventoryDashboard = () => {
             <div className="bg-yellow-50 p-6 rounded-lg">
               <div className="flex items-center">
                 <div className="p-3 bg-yellow-100 rounded-full">
-                  <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  <svg
+                    className="w-6 h-6 text-yellow-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    ></path>
                   </svg>
                 </div>
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-yellow-600">Total Value</p>
-                  <p className="text-2xl font-bold text-yellow-900">{formatCurrency(summary.totalValue || 0)}</p>
+                  <p className="text-sm font-medium text-yellow-600">
+                    Total Value
+                  </p>
+                  <p className="text-2xl font-bold text-yellow-900">
+                    {formatCurrency(summary.totalValue || 0)}
+                  </p>
                 </div>
               </div>
             </div>
@@ -238,13 +283,27 @@ const InventoryDashboard = () => {
             <div className="bg-red-50 p-6 rounded-lg">
               <div className="flex items-center">
                 <div className="p-3 bg-red-100 rounded-full">
-                  <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                  <svg
+                    className="w-6 h-6 text-red-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
+                    ></path>
                   </svg>
                 </div>
                 <div className="ml-4">
-                  <p className="text-sm font-medium text-red-600">Low Stock Items</p>
-                  <p className="text-2xl font-bold text-red-900">{summary.lowStockItems || 0}</p>
+                  <p className="text-sm font-medium text-red-600">
+                    Low Stock Items
+                  </p>
+                  <p className="text-2xl font-bold text-red-900">
+                    {summary.lowStockItems || 0}
+                  </p>
                 </div>
               </div>
             </div>
@@ -254,7 +313,9 @@ const InventoryDashboard = () => {
 
       {/* Stock by Type Chart */}
       <div className="mb-8">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Stock by Product Type</h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          Stock by Product Type
+        </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {isLoading ? (
             // Skeleton loading for stock by type
@@ -280,11 +341,19 @@ const InventoryDashboard = () => {
             stockByType.map((type) => (
               <div key={type._id} className="bg-gray-50 p-4 rounded-lg">
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm font-medium text-gray-600 capitalize">{type._id}</span>
-                  <span className="text-xs text-gray-500">{type.count} items</span>
+                  <span className="text-sm font-medium text-gray-600 capitalize">
+                    {type._id}
+                  </span>
+                  <span className="text-xs text-gray-500">
+                    {type.count} items
+                  </span>
                 </div>
-                <div className="text-lg font-bold text-gray-900">{type.totalStock.toFixed(1)} tons</div>
-                <div className="text-sm text-gray-600">{formatCurrency(type.totalValue)}</div>
+                <div className="text-lg font-bold text-gray-900">
+                  {type.totalStock.toFixed(1)} tons
+                </div>
+                <div className="text-sm text-gray-600">
+                  {formatCurrency(type.totalValue)}
+                </div>
               </div>
             ))
           )}
@@ -296,7 +365,10 @@ const InventoryDashboard = () => {
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Filters</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div>
-            <label htmlFor="productType" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="productType"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Product Type
             </label>
             <select
@@ -314,7 +386,10 @@ const InventoryDashboard = () => {
           </div>
 
           <div>
-            <label htmlFor="size" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="size"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Size
             </label>
             <input
@@ -327,7 +402,10 @@ const InventoryDashboard = () => {
           </div>
 
           <div>
-            <label htmlFor="thickness" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="thickness"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Thickness (mm)
             </label>
             <input
@@ -343,7 +421,10 @@ const InventoryDashboard = () => {
           </div>
 
           <div>
-            <label htmlFor="stockStatus" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="stockStatus"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Stock Level
             </label>
             <select
@@ -363,9 +444,11 @@ const InventoryDashboard = () => {
       {/* Inventory Table */}
       <div className="bg-white rounded-lg shadow overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900">Inventory Items</h3>
+          <h3 className="text-lg font-semibold text-gray-900">
+            Inventory Items
+          </h3>
         </div>
-        
+
         {isLoading ? (
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
@@ -403,21 +486,32 @@ const InventoryDashboard = () => {
               </tbody>
             </table>
           </div>
-        ) : (isError || isTimeout) ? (
+        ) : isError || isTimeout ? (
           <div className="p-6 text-center">
             <div className="max-w-md mx-auto">
               <div className="flex items-center justify-center h-12 w-12 mx-auto mb-4 rounded-full bg-red-100">
-                <svg className="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                <svg
+                  className="h-6 w-6 text-red-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
+                  ></path>
                 </svg>
               </div>
               <h3 className="text-lg font-medium text-gray-900 mb-2">
                 {isTimeout ? 'Request Timed Out' : 'Failed to Load Inventory'}
               </h3>
               <p className="text-sm text-gray-600 mb-4">
-                {isTimeout 
-                  ? 'The request took too long to complete. Please check your connection and try again.' 
-                  : error?.message || 'Unable to load inventory data. Please try again.'}
+                {isTimeout
+                  ? 'The request took too long to complete. Please check your connection and try again.'
+                  : error?.message ||
+                    'Unable to load inventory data. Please try again.'}
               </p>
               <div className="flex flex-col sm:flex-row gap-2 justify-center">
                 <button
@@ -525,7 +619,8 @@ const InventoryDashboard = () => {
                       </div>
                       {item.lastTransaction && (
                         <div className="text-xs text-gray-500">
-                          Last: {item.lastTransaction.type} {item.lastTransaction.quantity} tons
+                          Last: {item.lastTransaction.type}{' '}
+                          {item.lastTransaction.quantity} tons
                         </div>
                       )}
                     </td>
@@ -553,17 +648,31 @@ const InventoryDashboard = () => {
 
       {/* Dispatch Summary */}
       <div className="mt-8 bg-gray-50 p-6 rounded-lg">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Dispatch Activity</h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          Recent Dispatch Activity
+        </h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-white p-4 rounded-lg">
             <div className="flex items-center">
               <div className="p-2 bg-blue-100 rounded-full">
-                <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                <svg
+                  className="w-4 h-4 text-blue-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  ></path>
                 </svg>
               </div>
               <div className="ml-3">
-                <p className="text-sm font-medium text-gray-600">Today's Dispatches</p>
+                <p className="text-sm font-medium text-gray-600">
+                  Today's Dispatches
+                </p>
                 <p className="text-lg font-bold text-gray-900">0 items</p>
               </div>
             </div>
@@ -572,12 +681,24 @@ const InventoryDashboard = () => {
           <div className="bg-white p-4 rounded-lg">
             <div className="flex items-center">
               <div className="p-2 bg-green-100 rounded-full">
-                <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                <svg
+                  className="w-4 h-4 text-green-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  ></path>
                 </svg>
               </div>
               <div className="ml-3">
-                <p className="text-sm font-medium text-gray-600">Total Dispatched</p>
+                <p className="text-sm font-medium text-gray-600">
+                  Total Dispatched
+                </p>
                 <p className="text-lg font-bold text-gray-900">0 tons</p>
               </div>
             </div>
@@ -586,12 +707,24 @@ const InventoryDashboard = () => {
           <div className="bg-white p-4 rounded-lg">
             <div className="flex items-center">
               <div className="p-2 bg-yellow-100 rounded-full">
-                <svg className="w-4 h-4 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                <svg
+                  className="w-4 h-4 text-yellow-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  ></path>
                 </svg>
               </div>
               <div className="ml-3">
-                <p className="text-sm font-medium text-gray-600">Pending DO2s</p>
+                <p className="text-sm font-medium text-gray-600">
+                  Pending DO2s
+                </p>
                 <p className="text-lg font-bold text-gray-900">0 orders</p>
               </div>
             </div>
@@ -602,4 +735,4 @@ const InventoryDashboard = () => {
   );
 };
 
-export default InventoryDashboard; 
+export default InventoryDashboard;

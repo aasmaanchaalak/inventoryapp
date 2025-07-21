@@ -13,12 +13,12 @@ router.get('/summary', async (req, res) => {
       page = 1,
       limit = 20,
       sortBy = 'lastUpdated',
-      sortOrder = 'desc'
+      sortOrder = 'desc',
     } = req.query;
 
     // Build filter object
     const filter = { isActive: true };
-    
+
     if (productType) filter.productType = productType;
     if (size) filter.size = { $regex: size, $options: 'i' };
     if (thickness) filter.thickness = thickness;
@@ -26,7 +26,9 @@ router.get('/summary', async (req, res) => {
       if (stockStatus === 'low') {
         filter.$expr = { $lte: ['$availableQty', '$minStockLevel'] };
       } else if (stockStatus === 'high') {
-        filter.$expr = { $gte: ['$availableQty', { $multiply: ['$maxStockLevel', 0.8] }] };
+        filter.$expr = {
+          $gte: ['$availableQty', { $multiply: ['$maxStockLevel', 0.8] }],
+        };
       }
     }
 
@@ -57,24 +59,25 @@ router.get('/summary', async (req, res) => {
           totalValue: { $sum: { $multiply: ['$availableQty', '$rate'] } },
           lowStockItems: {
             $sum: {
-              $cond: [
-                { $lte: ['$availableQty', '$minStockLevel'] },
-                1,
-                0
-              ]
-            }
+              $cond: [{ $lte: ['$availableQty', '$minStockLevel'] }, 1, 0],
+            },
           },
           highStockItems: {
             $sum: {
               $cond: [
-                { $gte: ['$availableQty', { $multiply: ['$maxStockLevel', 0.8] }] },
+                {
+                  $gte: [
+                    '$availableQty',
+                    { $multiply: ['$maxStockLevel', 0.8] },
+                  ],
+                },
                 1,
-                0
-              ]
-            }
-          }
-        }
-      }
+                0,
+              ],
+            },
+          },
+        },
+      },
     ]);
 
     // Get stock by product type
@@ -85,10 +88,10 @@ router.get('/summary', async (req, res) => {
           _id: '$productType',
           count: { $sum: 1 },
           totalStock: { $sum: '$availableQty' },
-          totalValue: { $sum: { $multiply: ['$availableQty', '$rate'] } }
-        }
+          totalValue: { $sum: { $multiply: ['$availableQty', '$rate'] } },
+        },
       },
-      { $sort: { totalStock: -1 } }
+      { $sort: { totalStock: -1 } },
     ]);
 
     res.json({
@@ -100,24 +103,23 @@ router.get('/summary', async (req, res) => {
           totalStock: 0,
           totalValue: 0,
           lowStockItems: 0,
-          highStockItems: 0
+          highStockItems: 0,
         },
         stockByType,
         pagination: {
           page: parseInt(page),
           limit: parseInt(limit),
           total,
-          pages: Math.ceil(total / parseInt(limit))
-        }
-      }
+          pages: Math.ceil(total / parseInt(limit)),
+        },
+      },
     });
-
   } catch (error) {
     console.error('Error fetching inventory summary:', error);
     res.status(500).json({
       success: false,
       message: 'Internal server error',
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -130,29 +132,28 @@ router.get('/:id', async (req, res) => {
     if (!inventory) {
       return res.status(404).json({
         success: false,
-        message: 'Inventory item not found'
+        message: 'Inventory item not found',
       });
     }
 
     res.json({
       success: true,
-      data: inventory
+      data: inventory,
     });
-
   } catch (error) {
     console.error('Error fetching inventory item:', error);
-    
+
     if (error.name === 'CastError') {
       return res.status(400).json({
         success: false,
-        message: 'Invalid inventory ID'
+        message: 'Invalid inventory ID',
       });
     }
 
     res.status(500).json({
       success: false,
       message: 'Internal server error',
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -170,23 +171,28 @@ router.post('/', async (req, res) => {
       minStockLevel,
       maxStockLevel,
       location,
-      supplier
+      supplier,
     } = req.body;
 
     // Validate required fields
     if (!productType || !size || !thickness || availableQty === undefined) {
       return res.status(400).json({
         success: false,
-        message: 'Missing required fields: productType, size, thickness, availableQty'
+        message:
+          'Missing required fields: productType, size, thickness, availableQty',
       });
     }
 
     // Check if inventory item already exists
-    const existingItem = await Inventory.findOne({ productType, size, thickness });
+    const existingItem = await Inventory.findOne({
+      productType,
+      size,
+      thickness,
+    });
     if (existingItem) {
       return res.status(400).json({
         success: false,
-        message: 'Inventory item already exists for this product specification'
+        message: 'Inventory item already exists for this product specification',
       });
     }
 
@@ -202,12 +208,12 @@ router.post('/', async (req, res) => {
       maxStockLevel: maxStockLevel || 10000,
       location: location || {
         warehouse: 'Main Warehouse',
-        section: 'Steel Tubes'
+        section: 'Steel Tubes',
       },
       supplier: supplier || {
         name: 'Steel Tube Industries Ltd.',
-        contact: '+91-9876543210'
-      }
+        contact: '+91-9876543210',
+      },
     });
 
     await inventory.save();
@@ -215,25 +221,24 @@ router.post('/', async (req, res) => {
     res.status(201).json({
       success: true,
       message: 'Inventory item created successfully',
-      data: inventory
+      data: inventory,
     });
-
   } catch (error) {
     console.error('Error creating inventory item:', error);
-    
+
     if (error.name === 'ValidationError') {
-      const errors = Object.values(error.errors).map(err => err.message);
+      const errors = Object.values(error.errors).map((err) => err.message);
       return res.status(400).json({
         success: false,
         message: 'Validation error',
-        errors
+        errors,
       });
     }
 
     res.status(500).json({
       success: false,
       message: 'Internal server error',
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -248,14 +253,14 @@ router.put('/:id', async (req, res) => {
       maxStockLevel,
       location,
       supplier,
-      isActive
+      isActive,
     } = req.body;
 
     const inventory = await Inventory.findById(req.params.id);
     if (!inventory) {
       return res.status(404).json({
         success: false,
-        message: 'Inventory item not found'
+        message: 'Inventory item not found',
       });
     }
 
@@ -273,32 +278,31 @@ router.put('/:id', async (req, res) => {
     res.json({
       success: true,
       message: 'Inventory item updated successfully',
-      data: inventory
+      data: inventory,
     });
-
   } catch (error) {
     console.error('Error updating inventory item:', error);
-    
+
     if (error.name === 'ValidationError') {
-      const errors = Object.values(error.errors).map(err => err.message);
+      const errors = Object.values(error.errors).map((err) => err.message);
       return res.status(400).json({
         success: false,
         message: 'Validation error',
-        errors
+        errors,
       });
     }
 
     if (error.name === 'CastError') {
       return res.status(400).json({
         success: false,
-        message: 'Invalid inventory ID'
+        message: 'Invalid inventory ID',
       });
     }
 
     res.status(500).json({
       success: false,
       message: 'Internal server error',
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -311,7 +315,7 @@ router.put('/:id/stock', async (req, res) => {
     if (!quantity || !transactionType) {
       return res.status(400).json({
         success: false,
-        message: 'Missing required fields: quantity, transactionType'
+        message: 'Missing required fields: quantity, transactionType',
       });
     }
 
@@ -319,36 +323,40 @@ router.put('/:id/stock', async (req, res) => {
     if (!inventory) {
       return res.status(404).json({
         success: false,
-        message: 'Inventory item not found'
+        message: 'Inventory item not found',
       });
     }
 
     // Update stock using the instance method
-    const result = await inventory.updateStock(quantity, transactionType, reference, remarks);
+    const result = await inventory.updateStock(
+      quantity,
+      transactionType,
+      reference,
+      remarks
+    );
 
     res.json({
       success: true,
       message: 'Stock updated successfully',
       data: {
         inventory,
-        transaction: result
-      }
+        transaction: result,
+      },
     });
-
   } catch (error) {
     console.error('Error updating stock:', error);
-    
+
     if (error.name === 'CastError') {
       return res.status(400).json({
         success: false,
-        message: 'Invalid inventory ID'
+        message: 'Invalid inventory ID',
       });
     }
 
     res.status(500).json({
       success: false,
       message: error.message || 'Internal server error',
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -360,7 +368,7 @@ router.delete('/:id', async (req, res) => {
     if (!inventory) {
       return res.status(404).json({
         success: false,
-        message: 'Inventory item not found'
+        message: 'Inventory item not found',
       });
     }
 
@@ -375,26 +383,25 @@ router.delete('/:id', async (req, res) => {
         _id: inventory._id,
         productType: inventory.productType,
         size: inventory.size,
-        thickness: inventory.thickness
-      }
+        thickness: inventory.thickness,
+      },
     });
-
   } catch (error) {
     console.error('Error deleting inventory item:', error);
-    
+
     if (error.name === 'CastError') {
       return res.status(400).json({
         success: false,
-        message: 'Invalid inventory ID'
+        message: 'Invalid inventory ID',
       });
     }
 
     res.status(500).json({
       success: false,
       message: 'Internal server error',
-      error: error.message
+      error: error.message,
     });
   }
 });
 
-module.exports = router; 
+module.exports = router;

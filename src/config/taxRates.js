@@ -12,11 +12,11 @@ export const TAX_RATES_BY_CATEGORY = {
   'oval-tubes': 12,
   'custom-steel-products': 12,
   // Legacy category support
-  'square': 12,
-  'rectangular': 12,
-  'round': 12,
-  'oval': 12,
-  'custom': 12
+  square: 12,
+  rectangular: 12,
+  round: 12,
+  oval: 12,
+  custom: 12,
 };
 
 // Default tax rate for any undefined categories
@@ -28,50 +28,54 @@ export const TAX_RATE_CONFIG = {
     rate: 12,
     description: 'GST for steel tubes and related products',
     hsn: ['7306', '7307', '7308'], // HSN codes for steel tubes
-    applicableFrom: '2017-07-01' // GST implementation date
+    applicableFrom: '2017-07-01', // GST implementation date
   },
   general: {
     rate: 18,
     description: 'Standard GST rate for general goods',
     hsn: ['*'],
-    applicableFrom: '2017-07-01'
-  }
+    applicableFrom: '2017-07-01',
+  },
 };
 
 // Helper functions
 export const getTaxRateForProduct = (productType) => {
   // Normalize product type to handle different formats
   const normalizedType = productType?.toLowerCase()?.trim();
-  
+
   // Check specific category rates first
   if (TAX_RATES_BY_CATEGORY[normalizedType] !== undefined) {
     return TAX_RATES_BY_CATEGORY[normalizedType];
   }
-  
+
   // Check if it's a steel tube related product
   if (normalizedType?.includes('tube') || normalizedType?.includes('steel')) {
     return STEEL_TUBE_TAX_RATE;
   }
-  
+
   // Return default rate
   return DEFAULT_TAX_RATE;
 };
 
-export const calculateTaxAmount = (subtotal, taxRate = null, productType = null) => {
+export const calculateTaxAmount = (
+  subtotal,
+  taxRate = null,
+  productType = null
+) => {
   // Determine tax rate
   let rate = taxRate;
   if (rate === null || rate === undefined) {
     rate = productType ? getTaxRateForProduct(productType) : DEFAULT_TAX_RATE;
   }
-  
+
   // Calculate tax amount
   const taxAmount = (subtotal * rate) / 100;
-  
+
   return {
     subtotal,
     taxRate: rate,
     taxAmount,
-    total: subtotal + taxAmount
+    total: subtotal + taxAmount,
   };
 };
 
@@ -107,5 +111,5 @@ export default {
   formatTaxRate,
   getTaxDescription,
   isValidTaxRate,
-  getAllowedTaxRates
+  getAllowedTaxRates,
 };

@@ -5,28 +5,28 @@ export const STEEL_TUBE_CATEGORIES = [
   {
     value: 'square-tubes',
     label: 'Square Tubes',
-    shortValue: 'square'  // For backward compatibility with existing data
+    shortValue: 'square', // For backward compatibility with existing data
   },
   {
     value: 'rectangular-tubes',
     label: 'Rectangular Tubes',
-    shortValue: 'rectangular'
+    shortValue: 'rectangular',
   },
   {
     value: 'round-tubes',
     label: 'Round Tubes',
-    shortValue: 'round'
+    shortValue: 'round',
   },
   {
     value: 'oval-tubes',
     label: 'Oval Tubes',
-    shortValue: 'oval'
+    shortValue: 'oval',
   },
   {
     value: 'custom-steel-products',
     label: 'Custom Steel Products',
-    shortValue: 'custom'
-  }
+    shortValue: 'custom',
+  },
 ];
 
 // Legacy categories that need to be migrated
@@ -38,31 +38,31 @@ export const LEGACY_CATEGORIES = [
   'books',
   'automotive',
   'health-beauty',
-  'toys-games'
+  'toys-games',
 ];
 
 // Category mapping for data migration
 export const CATEGORY_MAPPING = {
-  'electronics': 'custom-steel-products',
-  'clothing': 'custom-steel-products',
+  electronics: 'custom-steel-products',
+  clothing: 'custom-steel-products',
   'home-garden': 'custom-steel-products',
-  'sports': 'custom-steel-products',
-  'books': 'custom-steel-products',
-  'automotive': 'custom-steel-products',
+  sports: 'custom-steel-products',
+  books: 'custom-steel-products',
+  automotive: 'custom-steel-products',
   'health-beauty': 'custom-steel-products',
-  'toys-games': 'custom-steel-products'
+  'toys-games': 'custom-steel-products',
 };
 
 // Helper functions
 export const getProductCategoryLabel = (value) => {
-  const category = STEEL_TUBE_CATEGORIES.find(cat => 
-    cat.value === value || cat.shortValue === value
+  const category = STEEL_TUBE_CATEGORIES.find(
+    (cat) => cat.value === value || cat.shortValue === value
   );
   return category ? category.label : value;
 };
 
 export const getProductCategoryValue = (label) => {
-  const category = STEEL_TUBE_CATEGORIES.find(cat => cat.label === label);
+  const category = STEEL_TUBE_CATEGORIES.find((cat) => cat.label === label);
   return category ? category.value : label;
 };
 

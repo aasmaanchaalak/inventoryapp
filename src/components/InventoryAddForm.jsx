@@ -7,53 +7,62 @@ import { STEEL_TUBE_CATEGORIES } from '../config/productCategories';
 import { FormError } from './common';
 
 // Validation schema
-const schema = yup.object({
-  productType: yup.string()
-    .required('Product type is required')
-    .oneOf(
-      STEEL_TUBE_CATEGORIES.map(cat => cat.value),
-      'Please select a valid product type'
-    ),
-  size: yup.string()
-    .required('Size is required')
-    .max(50, 'Size cannot be more than 50 characters'),
-  thickness: yup.number()
-    .typeError('Thickness is required')
-    .required('Thickness is required')
-    .min(0.1, 'Thickness must be at least 0.1mm')
-    .max(50, 'Thickness cannot exceed 50mm'),
-  availableQty: yup.number()
-    .typeError('Available quantity is required')
-    .required('Available quantity is required')
-    .min(0.1, 'Quantity must be at least 0.1 tons')
-    .max(10000, 'Quantity cannot exceed 10,000 tons'),
-  rate: yup.number()
-    .typeError('Rate must be a valid number')
-    .min(1, 'Rate must be at least ₹1')
-    .max(1000000, 'Rate cannot exceed ₹10,00,000'),
-  hsnCode: yup.string()
-    .max(8, 'HSN code cannot be more than 8 characters'),
-  minStockLevel: yup.number()
-    .typeError('Minimum stock level must be a valid number')
-    .min(0, 'Minimum stock level cannot be negative'),
-  maxStockLevel: yup.number()
-    .typeError('Maximum stock level must be a valid number')
-    .min(0, 'Maximum stock level cannot be negative'),
-  warehouseName: yup.string()
-    .max(100, 'Warehouse name cannot be more than 100 characters'),
-  warehouseSection: yup.string()
-    .max(100, 'Warehouse section cannot be more than 100 characters'),
-  supplierName: yup.string()
-    .max(100, 'Supplier name cannot be more than 100 characters'),
-  supplierContact: yup.string()
-    .max(20, 'Supplier contact cannot be more than 20 characters')
-}).required();
+const schema = yup
+  .object({
+    productType: yup
+      .string()
+      .required('Product type is required')
+      .oneOf(
+        STEEL_TUBE_CATEGORIES.map((cat) => cat.value),
+        'Please select a valid product type'
+      ),
+    size: yup
+      .string()
+      .required('Size is required')
+      .max(50, 'Size cannot be more than 50 characters'),
+    thickness: yup
+      .number()
+      .typeError('Thickness is required')
+      .required('Thickness is required')
+      .min(0.1, 'Thickness must be at least 0.1mm')
+      .max(50, 'Thickness cannot exceed 50mm'),
+    availableQty: yup
+      .number()
+      .typeError('Available quantity is required')
+      .required('Available quantity is required')
+      .min(0.1, 'Quantity must be at least 0.1 tons')
+      .max(10000, 'Quantity cannot exceed 10,000 tons'),
+    rate: yup
+      .number()
+      .typeError('Rate must be a valid number')
+      .min(1, 'Rate must be at least ₹1')
+      .max(1000000, 'Rate cannot exceed ₹10,00,000'),
+    hsnCode: yup.string().max(8, 'HSN code cannot be more than 8 characters'),
+    minStockLevel: yup
+      .number()
+      .typeError('Minimum stock level must be a valid number')
+      .min(0, 'Minimum stock level cannot be negative'),
+    maxStockLevel: yup
+      .number()
+      .typeError('Maximum stock level must be a valid number')
+      .min(0, 'Maximum stock level cannot be negative'),
+    warehouseName: yup
+      .string()
+      .max(100, 'Warehouse name cannot be more than 100 characters'),
+    warehouseSection: yup
+      .string()
+      .max(100, 'Warehouse section cannot be more than 100 characters'),
+    supplierName: yup
+      .string()
+      .max(100, 'Supplier name cannot be more than 100 characters'),
+    supplierContact: yup
+      .string()
+      .max(20, 'Supplier contact cannot be more than 20 characters'),
+  })
+  .required();
 
 const InventoryAddForm = () => {
-  const { 
-    post: createInventoryItem, 
-    isLoading: isCreating
-  } = useApi();
+  const { post: createInventoryItem, isLoading: isCreating } = useApi();
 
   const {
     register,
@@ -70,8 +79,8 @@ const InventoryAddForm = () => {
       warehouseName: 'Main Warehouse',
       warehouseSection: 'Steel Tubes',
       supplierName: 'Steel Tube Industries Ltd.',
-      supplierContact: '+91-9876543210'
-    }
+      supplierContact: '+91-9876543210',
+    },
   });
 
   const onSubmit = async (data) => {
@@ -88,21 +97,26 @@ const InventoryAddForm = () => {
         maxStockLevel: data.maxStockLevel || 10000,
         location: {
           warehouse: data.warehouseName || 'Main Warehouse',
-          section: data.warehouseSection || 'Steel Tubes'
+          section: data.warehouseSection || 'Steel Tubes',
         },
         supplier: {
           name: data.supplierName || 'Steel Tube Industries Ltd.',
-          contact: data.supplierContact || '+91-9876543210'
-        }
+          contact: data.supplierContact || '+91-9876543210',
+        },
       };
 
-      const result = await createInventoryItem('http://localhost:5000/api/inventory', inventoryData);
+      const result = await createInventoryItem(
+        'http://localhost:5000/api/inventory',
+        inventoryData
+      );
 
       if (result.success) {
         alert(result.message || 'Inventory item created successfully!');
         reset();
       } else {
-        alert(result.message || 'Failed to create inventory item. Please try again.');
+        alert(
+          result.message || 'Failed to create inventory item. Please try again.'
+        );
       }
     } catch (error) {
       console.error('Inventory creation failed:', error);
@@ -111,13 +125,18 @@ const InventoryAddForm = () => {
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">Add New Inventory Item</h2>
-      
+      <h2 className="text-2xl font-bold text-gray-900 mb-6">
+        Add New Inventory Item
+      </h2>
+
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Product Type */}
           <div>
-            <label htmlFor="productType" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="productType"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Product Type *
             </label>
             <select
@@ -139,7 +158,10 @@ const InventoryAddForm = () => {
 
           {/* Size */}
           <div>
-            <label htmlFor="size" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="size"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Size *
             </label>
             <input
@@ -156,7 +178,10 @@ const InventoryAddForm = () => {
 
           {/* Thickness */}
           <div>
-            <label htmlFor="thickness" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="thickness"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Thickness (mm) *
             </label>
             <input
@@ -174,7 +199,10 @@ const InventoryAddForm = () => {
 
           {/* Available Quantity */}
           <div>
-            <label htmlFor="availableQty" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="availableQty"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Available Quantity (tons) *
             </label>
             <input
@@ -192,7 +220,10 @@ const InventoryAddForm = () => {
 
           {/* Rate */}
           <div>
-            <label htmlFor="rate" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="rate"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Rate (₹ per ton)
             </label>
             <input
@@ -209,7 +240,10 @@ const InventoryAddForm = () => {
 
           {/* HSN Code */}
           <div>
-            <label htmlFor="hsnCode" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="hsnCode"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               HSN Code
             </label>
             <input
@@ -226,7 +260,10 @@ const InventoryAddForm = () => {
 
           {/* Min Stock Level */}
           <div>
-            <label htmlFor="minStockLevel" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="minStockLevel"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Minimum Stock Level (tons)
             </label>
             <input
@@ -244,7 +281,10 @@ const InventoryAddForm = () => {
 
           {/* Max Stock Level */}
           <div>
-            <label htmlFor="maxStockLevel" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="maxStockLevel"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Maximum Stock Level (tons)
             </label>
             <input
@@ -263,11 +303,16 @@ const InventoryAddForm = () => {
 
         {/* Location Section */}
         <div className="border-t pt-6">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Location Information</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-4">
+            Location Information
+          </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Warehouse Name */}
             <div>
-              <label htmlFor="warehouseName" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="warehouseName"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Warehouse Name
               </label>
               <input
@@ -279,12 +324,17 @@ const InventoryAddForm = () => {
                 }`}
                 placeholder="Main Warehouse"
               />
-              {errors.warehouseName && <FormError error={errors.warehouseName} />}
+              {errors.warehouseName && (
+                <FormError error={errors.warehouseName} />
+              )}
             </div>
 
             {/* Warehouse Section */}
             <div>
-              <label htmlFor="warehouseSection" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="warehouseSection"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Warehouse Section
               </label>
               <input
@@ -296,18 +346,25 @@ const InventoryAddForm = () => {
                 }`}
                 placeholder="Steel Tubes"
               />
-              {errors.warehouseSection && <FormError error={errors.warehouseSection} />}
+              {errors.warehouseSection && (
+                <FormError error={errors.warehouseSection} />
+              )}
             </div>
           </div>
         </div>
 
         {/* Supplier Section */}
         <div className="border-t pt-6">
-          <h3 className="text-lg font-medium text-gray-900 mb-4">Supplier Information</h3>
+          <h3 className="text-lg font-medium text-gray-900 mb-4">
+            Supplier Information
+          </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Supplier Name */}
             <div>
-              <label htmlFor="supplierName" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="supplierName"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Supplier Name
               </label>
               <input
@@ -324,7 +381,10 @@ const InventoryAddForm = () => {
 
             {/* Supplier Contact */}
             <div>
-              <label htmlFor="supplierContact" className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="supplierContact"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Supplier Contact
               </label>
               <input
@@ -336,7 +396,9 @@ const InventoryAddForm = () => {
                 }`}
                 placeholder="+91-9876543210"
               />
-              {errors.supplierContact && <FormError error={errors.supplierContact} />}
+              {errors.supplierContact && (
+                <FormError error={errors.supplierContact} />
+              )}
             </div>
           </div>
         </div>

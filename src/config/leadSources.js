@@ -7,5 +7,5 @@ export const LEAD_SOURCES = [
   { value: 'email-campaign', label: 'Email Campaign' },
   { value: 'trade-show', label: 'Trade Show' },
   { value: 'advertising', label: 'Advertising' },
-  { value: 'other', label: 'Other' }
+  { value: 'other', label: 'Other' },
 ];

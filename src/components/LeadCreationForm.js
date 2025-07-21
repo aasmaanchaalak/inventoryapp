@@ -8,45 +8,47 @@ import { LEAD_SOURCES } from '../config/leadSources';
 import { FormError } from './common';
 
 // Validation schema
-const schema = yup.object({
-  customerName: yup.string()
-    .required('Customer name is required')
-    .max(100, 'Customer name cannot be more than 100 characters'),
-  phone: yup.string()
-    .required('Phone number is required')
-    .max(20, 'Phone number cannot be more than 20 characters')
-    .matches(/^[\+]?[1-9][\d]{0,15}$/, 'Please enter a valid phone number'),
-  email: yup.string()
-    .email('Please enter a valid email address')
-    .max(100, 'Email cannot be more than 100 characters'),
-  address: yup.string()
-    .max(500, 'Address cannot be more than 500 characters'),
-  gstin: yup.string()
-    .max(15, 'GSTIN cannot be more than 15 characters'),
-  pan: yup.string()
-    .max(10, 'PAN cannot be more than 10 characters'),
-  productInterest: yup.string()
-    .required('Please select a product interest')
-    .oneOf(
-      STEEL_TUBE_CATEGORIES.map(cat => cat.value),
-      'Please select a valid steel tube product category'
-    ),
-  leadSource: yup.string()
-    .required('Please select a lead source')
-    .oneOf(
-      LEAD_SOURCES.map(source => source.value),
-      'Please select a valid lead source'
-    ),
-  notes: yup.string()
-    .max(1000, 'Notes cannot be more than 1000 characters'),
-}).required();
+const schema = yup
+  .object({
+    customerName: yup
+      .string()
+      .required('Customer name is required')
+      .max(100, 'Customer name cannot be more than 100 characters'),
+    phone: yup
+      .string()
+      .required('Phone number is required')
+      .max(20, 'Phone number cannot be more than 20 characters')
+      .matches(/^[\+]?[1-9][\d]{0,15}$/, 'Please enter a valid phone number'),
+    email: yup
+      .string()
+      .email('Please enter a valid email address')
+      .max(100, 'Email cannot be more than 100 characters'),
+    address: yup
+      .string()
+      .max(500, 'Address cannot be more than 500 characters'),
+    gstin: yup.string().max(15, 'GSTIN cannot be more than 15 characters'),
+    pan: yup.string().max(10, 'PAN cannot be more than 10 characters'),
+    productInterest: yup
+      .string()
+      .required('Please select a product interest')
+      .oneOf(
+        STEEL_TUBE_CATEGORIES.map((cat) => cat.value),
+        'Please select a valid steel tube product category'
+      ),
+    leadSource: yup
+      .string()
+      .required('Please select a lead source')
+      .oneOf(
+        LEAD_SOURCES.map((source) => source.value),
+        'Please select a valid lead source'
+      ),
+    notes: yup.string().max(1000, 'Notes cannot be more than 1000 characters'),
+  })
+  .required();
 
 const LeadCreationForm = () => {
   // API hook for creating leads
-  const { 
-    post: createLead, 
-    isLoading: isCreatingLead
-  } = useApi();
+  const { post: createLead, isLoading: isCreatingLead } = useApi();
 
   const {
     register,
@@ -78,11 +80,14 @@ const LeadCreationForm = () => {
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
       <h2 className="text-2xl font-bold text-gray-900 mb-6">Create New Lead</h2>
-      
+
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* Customer Name */}
         <div>
-          <label htmlFor="customerName" className="block text-sm font-medium text-gray-700 mb-2">
+          <label
+            htmlFor="customerName"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
             Customer Name *
           </label>
           <input
@@ -94,14 +99,15 @@ const LeadCreationForm = () => {
             }`}
             placeholder="Enter customer name"
           />
-          {errors.customerName && (
-            <FormError error={errors.customerName} />
-          )}
+          {errors.customerName && <FormError error={errors.customerName} />}
         </div>
 
         {/* Phone Number */}
         <div>
-          <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
+          <label
+            htmlFor="phone"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
             Phone Number *
           </label>
           <input
@@ -113,14 +119,15 @@ const LeadCreationForm = () => {
             }`}
             placeholder="Enter phone number"
           />
-          {errors.phone && (
-            <FormError error={errors.phone} />
-          )}
+          {errors.phone && <FormError error={errors.phone} />}
         </div>
 
         {/* Email */}
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+          <label
+            htmlFor="email"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
             Email
           </label>
           <input
@@ -132,14 +139,15 @@ const LeadCreationForm = () => {
             }`}
             placeholder="Enter email address"
           />
-          {errors.email && (
-            <FormError error={errors.email} />
-          )}
+          {errors.email && <FormError error={errors.email} />}
         </div>
 
         {/* Address */}
         <div>
-          <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-2">
+          <label
+            htmlFor="address"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
             Address
           </label>
           <textarea
@@ -151,15 +159,16 @@ const LeadCreationForm = () => {
             }`}
             placeholder="Enter address"
           />
-          {errors.address && (
-            <FormError error={errors.address} />
-          )}
+          {errors.address && <FormError error={errors.address} />}
         </div>
 
         {/* GSTIN and PAN in same row */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <label htmlFor="gstin" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="gstin"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               GSTIN
             </label>
             <input
@@ -171,13 +180,14 @@ const LeadCreationForm = () => {
               }`}
               placeholder="Enter GSTIN"
             />
-            {errors.gstin && (
-              <FormError error={errors.gstin} />
-            )}
+            {errors.gstin && <FormError error={errors.gstin} />}
           </div>
 
           <div>
-            <label htmlFor="pan" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="pan"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               PAN
             </label>
             <input
@@ -189,15 +199,16 @@ const LeadCreationForm = () => {
               }`}
               placeholder="Enter PAN"
             />
-            {errors.pan && (
-              <FormError error={errors.pan} />
-            )}
+            {errors.pan && <FormError error={errors.pan} />}
           </div>
         </div>
 
         {/* Product Interest */}
         <div>
-          <label htmlFor="productInterest" className="block text-sm font-medium text-gray-700 mb-2">
+          <label
+            htmlFor="productInterest"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
             Product Interest *
           </label>
           <select
@@ -221,7 +232,10 @@ const LeadCreationForm = () => {
 
         {/* Lead Source */}
         <div>
-          <label htmlFor="leadSource" className="block text-sm font-medium text-gray-700 mb-2">
+          <label
+            htmlFor="leadSource"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
             Lead Source *
           </label>
           <select
@@ -238,14 +252,15 @@ const LeadCreationForm = () => {
               </option>
             ))}
           </select>
-          {errors.leadSource && (
-            <FormError error={errors.leadSource} />
-          )}
+          {errors.leadSource && <FormError error={errors.leadSource} />}
         </div>
 
         {/* Notes */}
         <div>
-          <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-2">
+          <label
+            htmlFor="notes"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
             Notes
           </label>
           <textarea
@@ -279,4 +294,4 @@ const LeadCreationForm = () => {
   );
 };
 
-export default LeadCreationForm; 
+export default LeadCreationForm;

@@ -12,7 +12,7 @@ const AuditTrailViewer = () => {
     register,
     handleSubmit,
     formState: { errors },
-    reset
+    reset,
   } = useForm();
 
   const fetchAuditTrail = async (id) => {
@@ -43,13 +43,16 @@ const AuditTrailViewer = () => {
     if (!auditTrail) return;
 
     try {
-      const response = await fetch(`/api/invoices/${auditTrail.invoiceId}/audit-entry`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(entryData),
-      });
+      const response = await fetch(
+        `/api/invoices/${auditTrail.invoiceId}/audit-entry`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(entryData),
+        }
+      );
 
       const result = await response.json();
 
@@ -76,7 +79,7 @@ const AuditTrailViewer = () => {
       tally_push_failed: 'bg-red-100 text-red-800',
       viewed: 'bg-gray-100 text-gray-800',
       modified: 'bg-yellow-100 text-yellow-800',
-      deleted: 'bg-red-100 text-red-800'
+      deleted: 'bg-red-100 text-red-800',
     };
     return colors[event] || 'bg-gray-100 text-gray-800';
   };
@@ -88,7 +91,7 @@ const AuditTrailViewer = () => {
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
-      second: '2-digit'
+      second: '2-digit',
     });
   };
 
@@ -97,8 +100,12 @@ const AuditTrailViewer = () => {
       <div className="bg-white shadow-md rounded-lg">
         {/* Header */}
         <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-2xl font-bold text-gray-900">Invoice Audit Trail Viewer</h2>
-          <p className="text-gray-600 mt-1">View and manage audit trails for invoices</p>
+          <h2 className="text-2xl font-bold text-gray-900">
+            Invoice Audit Trail Viewer
+          </h2>
+          <p className="text-gray-600 mt-1">
+            View and manage audit trails for invoices
+          </p>
         </div>
 
         {/* Search Form */}
@@ -110,12 +117,16 @@ const AuditTrailViewer = () => {
               </label>
               <input
                 type="text"
-                {...register('invoiceId', { required: 'Invoice ID is required' })}
+                {...register('invoiceId', {
+                  required: 'Invoice ID is required',
+                })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Enter Invoice ID"
               />
               {errors.invoiceId && (
-                <p className="text-red-600 text-sm mt-1">{errors.invoiceId.message}</p>
+                <p className="text-red-600 text-sm mt-1">
+                  {errors.invoiceId.message}
+                </p>
               )}
             </div>
             <div className="flex items-end">
@@ -135,8 +146,16 @@ const AuditTrailViewer = () => {
           <div className="px-6 py-4 bg-red-50 border border-red-200 rounded-md mx-6 mt-4">
             <div className="flex">
               <div className="flex-shrink-0">
-                <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                <svg
+                  className="h-5 w-5 text-red-400"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                    clipRule="evenodd"
+                  />
                 </svg>
               </div>
               <div className="ml-3">
@@ -152,38 +171,59 @@ const AuditTrailViewer = () => {
           <div className="p-6">
             {/* Invoice Info */}
             <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Invoice Information</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                Invoice Information
+              </h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                 <div>
-                  <span className="font-medium">Invoice Number:</span> {auditTrail.invoiceNumber}
+                  <span className="font-medium">Invoice Number:</span>{' '}
+                  {auditTrail.invoiceNumber}
                 </div>
                 <div>
-                  <span className="font-medium">DO2 ID:</span> {auditTrail.do2Id}
+                  <span className="font-medium">DO2 ID:</span>{' '}
+                  {auditTrail.do2Id}
                 </div>
                 <div>
-                  <span className="font-medium">Total Events:</span> {auditTrail.totalEvents}
+                  <span className="font-medium">Total Events:</span>{' '}
+                  {auditTrail.totalEvents}
                 </div>
               </div>
             </div>
 
             {/* Audit Summary */}
             <div className="mb-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Audit Summary</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Audit Summary
+              </h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {Object.entries(auditTrail.auditSummary).map(([event, summary]) => (
-                  <div key={event} className="bg-white border border-gray-200 rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getEventColor(event)}`}>
-                        {event.replace(/_/g, ' ').toUpperCase()}
-                      </span>
-                      <span className="text-sm font-medium text-gray-900">{summary.count}</span>
+                {Object.entries(auditTrail.auditSummary).map(
+                  ([event, summary]) => (
+                    <div
+                      key={event}
+                      className="bg-white border border-gray-200 rounded-lg p-4"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span
+                          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getEventColor(event)}`}
+                        >
+                          {event.replace(/_/g, ' ').toUpperCase()}
+                        </span>
+                        <span className="text-sm font-medium text-gray-900">
+                          {summary.count}
+                        </span>
+                      </div>
+                      <div className="text-xs text-gray-600">
+                        <p>
+                          Last:{' '}
+                          {summary.lastOccurrence
+                            ? formatTimestamp(summary.lastOccurrence)
+                            : 'Never'}
+                        </p>
+                        <p>By: {summary.performedBy.join(', ')}</p>
+                      </div>
                     </div>
-                    <div className="text-xs text-gray-600">
-                      <p>Last: {summary.lastOccurrence ? formatTimestamp(summary.lastOccurrence) : 'Never'}</p>
-                      <p>By: {summary.performedBy.join(', ')}</p>
-                    </div>
-                  </div>
-                ))}
+                  )
+                )}
               </div>
             </div>
 
@@ -200,15 +240,22 @@ const AuditTrailViewer = () => {
             {/* Add Entry Form */}
             {showAddEntry && (
               <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-                <h4 className="text-md font-semibold text-gray-900 mb-4">Add Audit Entry</h4>
-                <form onSubmit={handleSubmit(addAuditEntry)} className="space-y-4">
+                <h4 className="text-md font-semibold text-gray-900 mb-4">
+                  Add Audit Entry
+                </h4>
+                <form
+                  onSubmit={handleSubmit(addAuditEntry)}
+                  className="space-y-4"
+                >
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Event Type
                       </label>
                       <select
-                        {...register('event', { required: 'Event is required' })}
+                        {...register('event', {
+                          required: 'Event is required',
+                        })}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                       >
                         <option value="">Select Event</option>
@@ -217,8 +264,12 @@ const AuditTrailViewer = () => {
                         <option value="emailed">Emailed</option>
                         <option value="modified">Modified</option>
                         <option value="tally_push">Tally Push</option>
-                        <option value="tally_push_success">Tally Push Success</option>
-                        <option value="tally_push_failed">Tally Push Failed</option>
+                        <option value="tally_push_success">
+                          Tally Push Success
+                        </option>
+                        <option value="tally_push_failed">
+                          Tally Push Failed
+                        </option>
                       </select>
                     </div>
                     <div>
@@ -265,14 +316,21 @@ const AuditTrailViewer = () => {
 
             {/* Audit Trail List */}
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Audit Trail Events</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                Audit Trail Events
+              </h3>
               <div className="space-y-4">
                 {auditTrail.auditTrail.map((entry, index) => (
-                  <div key={index} className="bg-white border border-gray-200 rounded-lg p-4">
+                  <div
+                    key={index}
+                    className="bg-white border border-gray-200 rounded-lg p-4"
+                  >
                     <div className="flex items-start justify-between">
                       <div className="flex-1">
                         <div className="flex items-center space-x-3 mb-2">
-                          <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getEventColor(entry.event)}`}>
+                          <span
+                            className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getEventColor(entry.event)}`}
+                          >
                             {entry.event.replace(/_/g, ' ').toUpperCase()}
                           </span>
                           <span className="text-sm text-gray-600">
@@ -283,18 +341,23 @@ const AuditTrailViewer = () => {
                           </span>
                         </div>
                         {entry.notes && (
-                          <p className="text-sm text-gray-700 mb-2">{entry.notes}</p>
+                          <p className="text-sm text-gray-700 mb-2">
+                            {entry.notes}
+                          </p>
                         )}
-                        {entry.metadata && Object.keys(entry.metadata).length > 0 && (
-                          <div className="text-xs text-gray-600">
-                            <details>
-                              <summary className="cursor-pointer font-medium">Metadata</summary>
-                              <pre className="mt-2 bg-gray-100 p-2 rounded text-xs overflow-auto">
-                                {JSON.stringify(entry.metadata, null, 2)}
-                              </pre>
-                            </details>
-                          </div>
-                        )}
+                        {entry.metadata &&
+                          Object.keys(entry.metadata).length > 0 && (
+                            <div className="text-xs text-gray-600">
+                              <details>
+                                <summary className="cursor-pointer font-medium">
+                                  Metadata
+                                </summary>
+                                <pre className="mt-2 bg-gray-100 p-2 rounded text-xs overflow-auto">
+                                  {JSON.stringify(entry.metadata, null, 2)}
+                                </pre>
+                              </details>
+                            </div>
+                          )}
                       </div>
                     </div>
                   </div>
@@ -308,4 +371,4 @@ const AuditTrailViewer = () => {
   );
 };
 
-export default AuditTrailViewer; 
+export default AuditTrailViewer;

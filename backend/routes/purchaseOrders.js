@@ -16,7 +16,7 @@ router.post('/', async (req, res) => {
     if (!quotationId || !leadId) {
       return res.status(400).json({
         success: false,
-        message: 'Missing required fields: quotationId and leadId'
+        message: 'Missing required fields: quotationId and leadId',
       });
     }
 
@@ -25,7 +25,7 @@ router.post('/', async (req, res) => {
     if (!lead) {
       return res.status(404).json({
         success: false,
-        message: 'Lead not found'
+        message: 'Lead not found',
       });
     }
 
@@ -34,12 +34,12 @@ router.post('/', async (req, res) => {
     if (!quotation) {
       return res.status(404).json({
         success: false,
-        message: 'Quotation not found'
+        message: 'Quotation not found',
       });
     }
 
     // Copy product details from quotation
-    const items = quotation.items.map(item => ({
+    const items = quotation.items.map((item) => ({
       type: item.type,
       size: item.size,
       thickness: item.thickness,
@@ -49,7 +49,7 @@ router.post('/', async (req, res) => {
       hsnCode: item.hsnCode || '7306',
       subtotal: item.subtotal,
       taxAmount: item.taxAmount,
-      total: item.total
+      total: item.total,
     }));
 
     // Create the purchase order with copied data
@@ -61,7 +61,7 @@ router.post('/', async (req, res) => {
       items: items,
       totalAmount: quotation.totalAmount,
       quotationNumber: quotation.quotationNumber,
-      approvalStatus: 'pending'
+      approvalStatus: 'pending',
     });
 
     await purchaseOrder.save();
@@ -74,33 +74,32 @@ router.post('/', async (req, res) => {
         poNumber: purchaseOrder.poNumber,
         leadId: purchaseOrder.leadId,
         quotationId: purchaseOrder.quotationId,
-        approvalStatus: purchaseOrder.approvalStatus
-      }
+        approvalStatus: purchaseOrder.approvalStatus,
+      },
     });
-
   } catch (error) {
     console.error('Error creating Purchase Order:', error);
-    
+
     if (error.name === 'ValidationError') {
-      const errors = Object.values(error.errors).map(err => err.message);
+      const errors = Object.values(error.errors).map((err) => err.message);
       return res.status(400).json({
         success: false,
         message: 'Validation error',
-        errors
+        errors,
       });
     }
 
     if (error.code === 11000) {
       return res.status(400).json({
         success: false,
-        message: 'Purchase Order with this number already exists'
+        message: 'Purchase Order with this number already exists',
       });
     }
 
     res.status(500).json({
       success: false,
       message: 'Internal server error',
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -117,16 +116,16 @@ router.get('/', async (req, res) => {
       page = 1,
       limit = 10,
       sortBy = 'createdAt',
-      sortOrder = 'desc'
+      sortOrder = 'desc',
     } = req.query;
 
     // Build filter object
     const filter = {};
-    
+
     if (leadId) filter.leadId = leadId;
     if (quotationId) filter.quotationId = quotationId;
     if (status) filter.status = status;
-    
+
     if (startDate || endDate) {
       filter.poDate = {};
       if (startDate) filter.poDate.$gte = new Date(startDate);
@@ -158,16 +157,15 @@ router.get('/', async (req, res) => {
         page: parseInt(page),
         limit: parseInt(limit),
         total,
-        pages: Math.ceil(total / parseInt(limit))
-      }
+        pages: Math.ceil(total / parseInt(limit)),
+      },
     });
-
   } catch (error) {
     console.error('Error fetching Purchase Orders:', error);
     res.status(500).json({
       success: false,
       message: 'Internal server error',
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -177,34 +175,36 @@ router.get('/:id', async (req, res) => {
   try {
     const purchaseOrder = await PurchaseOrder.findById(req.params.id)
       .populate('leadId', 'name phone product source notes')
-      .populate('quotationId', 'quotationNumber totalAmount validity deliveryTerms');
+      .populate(
+        'quotationId',
+        'quotationNumber totalAmount validity deliveryTerms'
+      );
 
     if (!purchaseOrder) {
       return res.status(404).json({
         success: false,
-        message: 'Purchase Order not found'
+        message: 'Purchase Order not found',
       });
     }
 
     res.json({
       success: true,
-      data: purchaseOrder
+      data: purchaseOrder,
     });
-
   } catch (error) {
     console.error('Error fetching Purchase Order:', error);
-    
+
     if (error.name === 'CastError') {
       return res.status(400).json({
         success: false,
-        message: 'Invalid Purchase Order ID'
+        message: 'Invalid Purchase Order ID',
       });
     }
 
     res.status(500).json({
       success: false,
       message: 'Internal server error',
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -214,12 +214,15 @@ router.get('/:id/details', async (req, res) => {
   try {
     const purchaseOrder = await PurchaseOrder.findById(req.params.id)
       .populate('leadId', 'name phone product source notes')
-      .populate('quotationId', 'quotationNumber totalAmount validity deliveryTerms validityDate');
+      .populate(
+        'quotationId',
+        'quotationNumber totalAmount validity deliveryTerms validityDate'
+      );
 
     if (!purchaseOrder) {
       return res.status(404).json({
         success: false,
-        message: 'Purchase Order not found'
+        message: 'Purchase Order not found',
       });
     }
 
@@ -231,27 +234,27 @@ router.get('/:id/details', async (req, res) => {
       remarks: purchaseOrder.remarks,
       totalAmount: purchaseOrder.totalAmount,
       quotationNumber: purchaseOrder.quotationNumber,
-      
+
       // Lead details
       customer: {
         name: purchaseOrder.leadId.name,
         phone: purchaseOrder.leadId.phone,
         product: purchaseOrder.leadId.product,
         source: purchaseOrder.leadId.source,
-        notes: purchaseOrder.leadId.notes
+        notes: purchaseOrder.leadId.notes,
       },
-      
+
       // Quotation details
       quotation: {
         number: purchaseOrder.quotationId.quotationNumber,
         totalAmount: purchaseOrder.quotationId.totalAmount,
         validity: purchaseOrder.quotationId.validity,
         deliveryTerms: purchaseOrder.quotationId.deliveryTerms,
-        validityDate: purchaseOrder.quotationId.validityDate
+        validityDate: purchaseOrder.quotationId.validityDate,
       },
-      
+
       // Items for DO1
-      items: purchaseOrder.items.map(item => ({
+      items: purchaseOrder.items.map((item) => ({
         type: item.type,
         size: item.size,
         thickness: item.thickness,
@@ -261,37 +264,36 @@ router.get('/:id/details', async (req, res) => {
         hsnCode: item.hsnCode,
         subtotal: item.subtotal,
         taxAmount: item.taxAmount,
-        total: item.total
+        total: item.total,
       })),
-      
+
       // Company info
       company: purchaseOrder.companyInfo,
-      
+
       // Timestamps
       createdAt: purchaseOrder.createdAt,
-      updatedAt: purchaseOrder.updatedAt
+      updatedAt: purchaseOrder.updatedAt,
     };
 
     res.json({
       success: true,
       message: 'PO details retrieved for DO1 generation',
-      data: do1Data
+      data: do1Data,
     });
-
   } catch (error) {
     console.error('Error fetching PO details for DO1:', error);
-    
+
     if (error.name === 'CastError') {
       return res.status(400).json({
         success: false,
-        message: 'Invalid Purchase Order ID'
+        message: 'Invalid Purchase Order ID',
       });
     }
 
     res.status(500).json({
       success: false,
       message: 'Internal server error',
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -299,80 +301,75 @@ router.get('/:id/details', async (req, res) => {
 // PUT /api/pos/:id - Update a Purchase Order
 router.put('/:id', async (req, res) => {
   try {
-    const {
-      poDate,
-      remarks,
-      status,
-      items,
-      totalAmount
-    } = req.body;
+    const { poDate, remarks, status, items, totalAmount } = req.body;
 
     const updateData = {};
-    
+
     if (poDate) updateData.poDate = new Date(poDate);
     if (remarks !== undefined) updateData.remarks = remarks;
     if (status) updateData.status = status;
     if (items) {
       // Recalculate totals for updated items
-      const processedItems = items.map(item => {
+      const processedItems = items.map((item) => {
         const subtotal = item.quantity * item.rate;
         const taxAmount = (subtotal * item.tax) / 100;
         const total = subtotal + taxAmount;
-        
+
         return {
           ...item,
           subtotal: Math.round(subtotal * 100) / 100,
           taxAmount: Math.round(taxAmount * 100) / 100,
-          total: Math.round(total * 100) / 100
+          total: Math.round(total * 100) / 100,
         };
       });
       updateData.items = processedItems;
     }
-    if (totalAmount) updateData.totalAmount = Math.round(totalAmount * 100) / 100;
+    if (totalAmount)
+      updateData.totalAmount = Math.round(totalAmount * 100) / 100;
 
     const purchaseOrder = await PurchaseOrder.findByIdAndUpdate(
       req.params.id,
       updateData,
       { new: true, runValidators: true }
-    ).populate('leadId', 'name phone product')
-     .populate('quotationId', 'quotationNumber totalAmount');
+    )
+      .populate('leadId', 'name phone product')
+      .populate('quotationId', 'quotationNumber totalAmount');
 
     if (!purchaseOrder) {
       return res.status(404).json({
         success: false,
-        message: 'Purchase Order not found'
+        message: 'Purchase Order not found',
       });
     }
 
     res.json({
       success: true,
       message: 'Purchase Order updated successfully',
-      data: purchaseOrder
+      data: purchaseOrder,
     });
-
   } catch (error) {
     console.error('Error updating Purchase Order:', error);
-    
+
     if (error.name === 'ValidationError') {
-      const errors = Object.values(error.errors).map(err => err.message);
+      const errors = Object.values(error.errors).map((err) => err.message);
       return res.status(400).json({
         success: false,
         message: 'Validation error',
-        errors
+        errors,
       });
     }
 
     if (error.name === 'CastError') {
       return res.status(400).json({
         success: false,
-        message: 'Invalid Purchase Order ID'
+        message: 'Invalid Purchase Order ID',
       });
     }
 
     res.status(500).json({
       success: false,
       message: 'Internal server error',
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -385,7 +382,7 @@ router.delete('/:id', async (req, res) => {
     if (!purchaseOrder) {
       return res.status(404).json({
         success: false,
-        message: 'Purchase Order not found'
+        message: 'Purchase Order not found',
       });
     }
 
@@ -394,24 +391,23 @@ router.delete('/:id', async (req, res) => {
       message: 'Purchase Order deleted successfully',
       data: {
         poNumber: purchaseOrder.poNumber,
-        _id: purchaseOrder._id
-      }
+        _id: purchaseOrder._id,
+      },
     });
-
   } catch (error) {
     console.error('Error deleting Purchase Order:', error);
-    
+
     if (error.name === 'CastError') {
       return res.status(400).json({
         success: false,
-        message: 'Invalid Purchase Order ID'
+        message: 'Invalid Purchase Order ID',
       });
     }
 
     res.status(500).json({
       success: false,
       message: 'Internal server error',
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -425,7 +421,7 @@ router.get('/timeline/:poId', async (req, res) => {
     if (!poId || !/^[0-9a-fA-F]{24}$/.test(poId)) {
       return res.status(400).json({
         success: false,
-        message: 'Invalid PO ID format'
+        message: 'Invalid PO ID format',
       });
     }
 
@@ -436,7 +432,7 @@ router.get('/timeline/:poId', async (req, res) => {
       po: null,
       do1: null,
       do2: null,
-      invoice: null
+      invoice: null,
     };
 
     // Step 1: Get PO
@@ -444,7 +440,7 @@ router.get('/timeline/:poId', async (req, res) => {
     if (!po) {
       return res.status(404).json({
         success: false,
-        message: 'Purchase Order not found'
+        message: 'Purchase Order not found',
       });
     }
     timeline.po = {
@@ -453,7 +449,7 @@ router.get('/timeline/:poId', async (req, res) => {
       leadId: po.leadId,
       quotationId: po.quotationId,
       createdAt: po.createdAt,
-      status: po.status || 'pending'
+      status: po.status || 'pending',
     };
 
     // Step 2: Get Lead
@@ -466,7 +462,7 @@ router.get('/timeline/:poId', async (req, res) => {
         product: lead.product,
         source: lead.source,
         createdAt: lead.createdAt,
-        status: 'active'
+        status: 'active',
       };
     }
 
@@ -478,7 +474,7 @@ router.get('/timeline/:poId', async (req, res) => {
         quotationNumber: quotation.quotationNumber,
         leadId: quotation.leadId,
         createdAt: quotation.createdAt,
-        status: 'issued'
+        status: 'issued',
       };
     }
 
@@ -491,13 +487,15 @@ router.get('/timeline/:poId', async (req, res) => {
         poId: do1.poId,
         leadId: do1.leadId,
         createdAt: do1.createdAt,
-        status: do1.status
+        status: do1.status,
       };
     }
 
     // Step 5: Get DO2
     if (timeline.do1) {
-      const do2 = await DO2.findOne({ do1Id: timeline.do1.id }).sort({ createdAt: -1 });
+      const do2 = await DO2.findOne({ do1Id: timeline.do1.id }).sort({
+        createdAt: -1,
+      });
       if (do2) {
         timeline.do2 = {
           id: do2._id,
@@ -506,14 +504,16 @@ router.get('/timeline/:poId', async (req, res) => {
           poId: do2.poId,
           leadId: do2.leadId,
           createdAt: do2.createdAt,
-          status: do2.status
+          status: do2.status,
         };
       }
     }
 
     // Step 6: Get Invoice
     if (timeline.do2) {
-      const invoice = await Invoice.findOne({ do2Id: timeline.do2.id }).sort({ createdAt: -1 });
+      const invoice = await Invoice.findOne({ do2Id: timeline.do2.id }).sort({
+        createdAt: -1,
+      });
       if (invoice) {
         timeline.invoice = {
           id: invoice._id,
@@ -522,14 +522,16 @@ router.get('/timeline/:poId', async (req, res) => {
           createdAt: invoice.createdAt,
           generatedAt: invoice.generatedAt,
           pushedToTally: invoice.pushedToTally,
-          status: invoice.pushedToTally ? 'pushed' : 'pending'
+          status: invoice.pushedToTally ? 'pushed' : 'pending',
         };
       }
     }
 
     // Calculate overall progress
     const steps = ['lead', 'quotation', 'po', 'do1', 'do2', 'invoice'];
-    const completedSteps = steps.filter(step => timeline[step] !== null).length;
+    const completedSteps = steps.filter(
+      (step) => timeline[step] !== null
+    ).length;
     const progress = Math.round((completedSteps / steps.length) * 100);
 
     res.json({
@@ -541,25 +543,28 @@ router.get('/timeline/:poId', async (req, res) => {
         progress: {
           completed: completedSteps,
           total: steps.length,
-          percentage: progress
+          percentage: progress,
         },
         summary: {
           poNumber: timeline.po.poNumber,
           customerName: timeline.lead?.customerName || 'N/A',
           product: timeline.lead?.product || 'N/A',
           poCreated: timeline.po.createdAt,
-          lastActivity: timeline.invoice?.createdAt || timeline.do2?.createdAt || timeline.do1?.createdAt || timeline.po.createdAt
-        }
-      }
+          lastActivity:
+            timeline.invoice?.createdAt ||
+            timeline.do2?.createdAt ||
+            timeline.do1?.createdAt ||
+            timeline.po.createdAt,
+        },
+      },
     });
-
   } catch (error) {
     console.error('Error fetching timeline:', error);
     res.status(500).json({
       success: false,
-      message: 'Error fetching timeline data'
+      message: 'Error fetching timeline data',
     });
   }
 });
 
-module.exports = router; 
+module.exports = router;

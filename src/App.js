@@ -1,5 +1,10 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, useParams } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useParams,
+} from 'react-router-dom';
 import './App.css';
 import LeadCreationForm from './components/LeadCreationForm';
 import QuotationForm from './components/QuotationForm';
@@ -27,49 +32,48 @@ function Dashboard() {
   // Navigation items organized by category
   const navigationGroups = [
     {
-      title: "Core Workflow",
+      title: 'Core Workflow',
       items: [
         { key: 'leads', label: 'Lead Creation', icon: '👥' },
         { key: 'quotations', label: 'Quotation Form', icon: '📋' },
         { key: 'pos', label: 'PO Generator', icon: '📄' },
-        { key: 'do1', label: 'DO1 Generator', icon: '📦' }
-      ]
+        { key: 'do1', label: 'DO1 Generator', icon: '📦' },
+      ],
     },
     {
-      title: "Inventory & Reports",
+      title: 'Inventory & Reports',
       items: [
         { key: 'inventory', label: 'Inventory Dashboard', icon: '📊' },
         { key: 'inventoryAdd', label: 'Add Inventory', icon: '➕' },
-        { key: 'reports', label: 'Reports Dashboard', icon: '📈' }
-      ]
+        { key: 'reports', label: 'Reports Dashboard', icon: '📈' },
+      ],
     },
     {
-      title: "Invoicing",
+      title: 'Invoicing',
       items: [
         { key: 'invoice', label: 'Invoice Generator', icon: '🧾' },
         { key: 'invoiceViewer', label: 'Invoice Viewer', icon: '👁️' },
-        { key: 'invoiceDashboard', label: 'Invoice Dashboard', icon: '📋' }
-      ]
+        { key: 'invoiceDashboard', label: 'Invoice Dashboard', icon: '📋' },
+      ],
     },
     {
-      title: "Tracking & Audit",
+      title: 'Tracking & Audit',
       items: [
         { key: 'timeline', label: 'DO Timeline', icon: '📅' },
         { key: 'calendar', label: 'Dispatch Calendar', icon: '🗓️' },
         { key: 'auditTrail', label: 'Audit Trail Viewer', icon: '🔍' },
-        { key: 'invoiceAuditTrail', label: 'Invoice Audit Trail', icon: '📝' }
-      ]
+        { key: 'invoiceAuditTrail', label: 'Invoice Audit Trail', icon: '📝' },
+      ],
     },
     {
-      title: "Integration & Testing",
+      title: 'Integration & Testing',
       items: [
         { key: 'tally', label: 'Tally Integration', icon: '🔗' },
         { key: 'emailTester', label: 'Email Tester', icon: '📧' },
-        { key: 'smsTester', label: 'SMS Tester', icon: '💬' }
-      ]
-    }
+        { key: 'smsTester', label: 'SMS Tester', icon: '💬' },
+      ],
+    },
   ];
-
 
   const NavButton = ({ item, onClick, isActive }) => (
     <button
@@ -95,9 +99,14 @@ function Dashboard() {
               {/* Mobile Header */}
               <div className="md:hidden flex items-center justify-between p-4 border-b">
                 <div>
-                  <h1 className="text-lg font-bold text-gray-900">Steel Tube ERP</h1>
+                  <h1 className="text-lg font-bold text-gray-900">
+                    Steel Tube ERP
+                  </h1>
                   <p className="text-sm text-gray-600">
-                    {navigationGroups.flatMap(g => g.items).find(item => item.key === activeForm)?.label || 'Dashboard'}
+                    {navigationGroups
+                      .flatMap((g) => g.items)
+                      .find((item) => item.key === activeForm)?.label ||
+                      'Dashboard'}
                   </p>
                 </div>
                 <button
@@ -105,11 +114,26 @@ function Dashboard() {
                   className="p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
                   aria-label="Toggle navigation menu"
                 >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
                     {isMobileMenuOpen ? (
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
                     ) : (
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 6h16M4 12h16M4 18h16"
+                      />
                     )}
                   </svg>
                 </button>
@@ -136,8 +160,12 @@ function Dashboard() {
                               }`}
                             >
                               <span className="text-base">{item.icon}</span>
-                              <span className="hidden lg:inline">{item.label}</span>
-                              <span className="lg:hidden">{item.label.split(' ')[0]}</span>
+                              <span className="hidden lg:inline">
+                                {item.label}
+                              </span>
+                              <span className="lg:hidden">
+                                {item.label.split(' ')[0]}
+                              </span>
                             </button>
                           ))}
                         </div>
@@ -150,7 +178,9 @@ function Dashboard() {
               </div>
 
               {/* Mobile Navigation - Collapsible */}
-              <div className={`md:hidden ${isMobileMenuOpen ? 'block' : 'hidden'}`}>
+              <div
+                className={`md:hidden ${isMobileMenuOpen ? 'block' : 'hidden'}`}
+              >
                 <div className="px-4 py-2 space-y-4 max-h-96 overflow-y-auto">
                   {navigationGroups.map((group) => (
                     <div key={group.title}>
@@ -208,11 +238,15 @@ function LeadDetailPage() {
     <div className="min-h-screen bg-gray-100 py-8">
       <div className="container mx-auto">
         <div className="bg-white shadow-md rounded-lg p-6">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Lead Details</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+            Lead Details
+          </h1>
           <p className="text-gray-600">Lead ID: {id}</p>
-          <p className="text-gray-600 mt-2">This page would show detailed lead information.</p>
-          <button 
-            onClick={() => window.history.back()} 
+          <p className="text-gray-600 mt-2">
+            This page would show detailed lead information.
+          </p>
+          <button
+            onClick={() => window.history.back()}
             className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
           >
             ← Back to Dashboard
@@ -229,11 +263,15 @@ function QuotationDetailPage() {
     <div className="min-h-screen bg-gray-100 py-8">
       <div className="container mx-auto">
         <div className="bg-white shadow-md rounded-lg p-6">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Quotation Details</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+            Quotation Details
+          </h1>
           <p className="text-gray-600">Quotation ID: {id}</p>
-          <p className="text-gray-600 mt-2">This page would show detailed quotation information.</p>
-          <button 
-            onClick={() => window.history.back()} 
+          <p className="text-gray-600 mt-2">
+            This page would show detailed quotation information.
+          </p>
+          <button
+            onClick={() => window.history.back()}
             className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
           >
             ← Back to Dashboard
@@ -250,11 +288,15 @@ function PODetailPage() {
     <div className="min-h-screen bg-gray-100 py-8">
       <div className="container mx-auto">
         <div className="bg-white shadow-md rounded-lg p-6">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Purchase Order Details</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+            Purchase Order Details
+          </h1>
           <p className="text-gray-600">PO ID: {id}</p>
-          <p className="text-gray-600 mt-2">This page would show detailed PO information.</p>
-          <button 
-            onClick={() => window.history.back()} 
+          <p className="text-gray-600 mt-2">
+            This page would show detailed PO information.
+          </p>
+          <button
+            onClick={() => window.history.back()}
             className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
           >
             ← Back to Dashboard
@@ -273,9 +315,11 @@ function DO1DetailPage() {
         <div className="bg-white shadow-md rounded-lg p-6">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">DO1 Details</h1>
           <p className="text-gray-600">DO1 ID: {id}</p>
-          <p className="text-gray-600 mt-2">This page would show detailed DO1 information.</p>
-          <button 
-            onClick={() => window.history.back()} 
+          <p className="text-gray-600 mt-2">
+            This page would show detailed DO1 information.
+          </p>
+          <button
+            onClick={() => window.history.back()}
             className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
           >
             ← Back to Dashboard
@@ -292,11 +336,15 @@ function InvoiceDetailPage() {
     <div className="min-h-screen bg-gray-100 py-8">
       <div className="container mx-auto">
         <div className="bg-white shadow-md rounded-lg p-6">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Invoice Details</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">
+            Invoice Details
+          </h1>
           <p className="text-gray-600">DO2 ID: {do2Id}</p>
-          <p className="text-gray-600 mt-2">This page would show detailed invoice information.</p>
-          <button 
-            onClick={() => window.history.back()} 
+          <p className="text-gray-600 mt-2">
+            This page would show detailed invoice information.
+          </p>
+          <button
+            onClick={() => window.history.back()}
             className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
           >
             ← Back to Dashboard

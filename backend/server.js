@@ -12,16 +12,18 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // MongoDB Connection
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/inventoryapp';
+const MONGODB_URI =
+  process.env.MONGODB_URI || 'mongodb://localhost:27017/inventoryapp';
 
-mongoose.connect(MONGODB_URI)
-.then(() => {
-  console.log('✅ Connected to MongoDB successfully');
-})
-.catch((error) => {
-  console.error('❌ MongoDB connection error:', error);
-  process.exit(1);
-});
+mongoose
+  .connect(MONGODB_URI)
+  .then(() => {
+    console.log('✅ Connected to MongoDB successfully');
+  })
+  .catch((error) => {
+    console.error('❌ MongoDB connection error:', error);
+    process.exit(1);
+  });
 
 // Routes
 const leadsRoutes = require('./routes/leads');
@@ -54,7 +56,8 @@ app.get('/api/health', (req, res) => {
     success: true,
     message: 'Server is running',
     timestamp: new Date().toISOString(),
-    database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected'
+    database:
+      mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
   });
 });
 
@@ -76,8 +79,8 @@ app.get('/', (req, res) => {
       invoice: '/api/invoice',
       invoices: '/api/invoices',
       sms: '/api/sms',
-      reports: '/api/reports'
-    }
+      reports: '/api/reports',
+    },
   });
 });
 
@@ -86,7 +89,7 @@ app.use((err, req, res, next) => {
   console.error('Unhandled error:', err);
   res.status(500).json({
     success: false,
-    message: 'Internal server error'
+    message: 'Internal server error',
   });
 });
 
@@ -94,7 +97,7 @@ app.use((err, req, res, next) => {
 app.use('*', (req, res) => {
   res.status(404).json({
     success: false,
-    message: 'Endpoint not found'
+    message: 'Endpoint not found',
   });
 });
 
@@ -138,4 +141,4 @@ process.on('SIGINT', async () => {
     console.error('Error closing MongoDB connection:', error);
     process.exit(1);
   }
-}); 
+});
