@@ -44,14 +44,11 @@ const leadSchema = new mongoose.Schema({
     required: [true, 'Product interest is required'],
     enum: {
       values: [
-        'electronics',
-        'clothing',
-        'home-garden',
-        'sports',
-        'books',
-        'automotive',
-        'health-beauty',
-        'toys-games'
+        'square-tubes',
+        'rectangular-tubes',
+        'round-tubes',
+        'oval-tubes',
+        'custom-steel-products'
       ],
       message: 'Please select a valid product category'
     }

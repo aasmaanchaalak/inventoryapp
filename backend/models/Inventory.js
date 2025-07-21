@@ -4,7 +4,7 @@ const inventorySchema = new mongoose.Schema({
   productType: {
     type: String,
     required: [true, 'Product type is required'],
-    enum: ['square', 'rectangular', 'round', 'oval'],
+    enum: ['square-tubes', 'rectangular-tubes', 'round-tubes', 'oval-tubes', 'custom-steel-products'],
     trim: true
   },
   size: {

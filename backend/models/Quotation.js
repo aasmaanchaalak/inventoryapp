@@ -5,7 +5,7 @@ const itemSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Item type is required'],
     enum: {
-      values: ['square', 'rectangular', 'round', 'oval'],
+      values: ['square-tubes', 'rectangular-tubes', 'round-tubes', 'oval-tubes', 'custom-steel-products'],
       message: 'Please select a valid item type'
     }
   },
@@ -175,7 +175,6 @@ quotationSchema.set('toObject', { virtuals: true });
 
 // Create indexes for better performance
 quotationSchema.index({ leadId: 1, createdAt: -1 });
-quotationSchema.index({ quotationNumber: 1 });
 quotationSchema.index({ status: 1 });
 quotationSchema.index({ validUntil: 1 });
 

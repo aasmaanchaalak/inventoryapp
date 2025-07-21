@@ -8,7 +8,7 @@ const do2ItemSchema = new mongoose.Schema({
   type: {
     type: String,
     required: true,
-    enum: ['square', 'rectangular', 'round', 'oval']
+    enum: ['square-tubes', 'rectangular-tubes', 'round-tubes', 'oval-tubes', 'custom-steel-products']
   },
   size: {
     type: String,
@@ -209,7 +209,6 @@ do2Schema.set('toObject', { virtuals: true });
 // Create indexes for better performance
 do2Schema.index({ poId: 1, createdAt: -1 });
 do2Schema.index({ do1Id: 1 });
-do2Schema.index({ do2Number: 1 });
 do2Schema.index({ status: 1 });
 do2Schema.index({ 'approvalStatus.isApproved': 1 });
 

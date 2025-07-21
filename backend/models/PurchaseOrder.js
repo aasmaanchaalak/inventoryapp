@@ -4,7 +4,7 @@ const poItemSchema = new mongoose.Schema({
   type: {
     type: String,
     required: true,
-    enum: ['square', 'rectangular', 'round', 'oval']
+    enum: ['square-tubes', 'rectangular-tubes', 'round-tubes', 'oval-tubes', 'custom-steel-products']
   },
   size: {
     type: String,
@@ -173,7 +173,6 @@ purchaseOrderSchema.set('toObject', { virtuals: true });
 // Create indexes for better performance
 purchaseOrderSchema.index({ leadId: 1, createdAt: -1 });
 purchaseOrderSchema.index({ quotationId: 1 });
-purchaseOrderSchema.index({ poNumber: 1 });
 purchaseOrderSchema.index({ status: 1 });
 purchaseOrderSchema.index({ poDate: -1 });
 
