@@ -118,11 +118,40 @@ router.post('/', async (req, res) => {
       throw saveError;
     }
 
+    // Deduct inventory for dispatched quantities in DO1
+    const inventoryUpdates = [];
+    try {
+      for (const item of items) {
+        if (item.dispatchedQuantity > 0) {
+          const inventoryUpdate = await updateInventoryForDO1(item, do1.doNumber);
+          inventoryUpdates.push(inventoryUpdate);
+        }
+      }
+      console.log(`Successfully updated inventory for ${inventoryUpdates.length} items in DO1: ${do1.doNumber}`);
+    } catch (inventoryError) {
+      console.error(`Critical error updating inventory for DO1 ${do1.doNumber}:`, inventoryError);
+      
+      // Rollback: Delete the created DO1 if inventory update fails
+      try {
+        await DO1.findByIdAndDelete(do1._id);
+        console.log(`Rolled back DO1 ${do1.doNumber} due to inventory update failure`);
+      } catch (rollbackError) {
+        console.error('Failed to rollback DO1:', rollbackError);
+      }
+      
+      return res.status(500).json({
+        success: false,
+        message: `Failed to update inventory for DO1: ${inventoryError.message}`,
+        error: inventoryError.message,
+      });
+    }
+
     // Populate PO details for response
     await do1.populate('poId', 'poNumber leadId totalAmount');
 
     // Auto-generate DO2 for remaining quantities
     let do2Data = null;
+    console.log(`DO1 ${do1.doNumber} saved successfully. Now generating DO2 for remaining quantities...`);
     try {
       const DO2 = require('../models/DO2');
 
@@ -168,6 +197,7 @@ router.post('/', async (req, res) => {
         });
 
         await do2.save();
+        console.log(`✅ DO2 ${do2.do2Number} created successfully for remaining quantities`);
 
         do2Data = {
           do2Number: do2.do2Number,
@@ -175,15 +205,17 @@ router.post('/', async (req, res) => {
           totalItems: do2.items.length,
           totalRemainingQuantity: do2.totalRemainingQuantity,
         };
+      } else {
+        console.log('No remaining quantities found. DO2 not needed.');
       }
     } catch (do2Error) {
-      console.error('Error auto-generating DO2:', do2Error);
-      // Don't fail the DO1 creation if DO2 generation fails
+      console.error('❌ Error auto-generating DO2:', do2Error);
+      // Don't fail the DO1 creation if DO2 generation fails - but this might prevent inventory deduction completion
     }
 
     res.status(201).json({
       success: true,
-      message: 'DO1 created successfully',
+      message: 'DO1 created successfully and inventory updated',
       data: {
         _id: do1._id,
         doNumber: do1.doNumber,
@@ -192,6 +224,7 @@ router.post('/', async (req, res) => {
         totalItems: do1.items.length,
         grandTotal: do1.totals.grandTotal,
         remainingQuantities: remainingQuantities,
+        inventoryUpdates: inventoryUpdates,
         do2Generated: do2Data ? true : false,
         do2: do2Data,
       },
@@ -512,5 +545,54 @@ router.delete('/:id', async (req, res) => {
     });
   }
 });
+
+// Function to update inventory for DO1 dispatched quantities
+const updateInventoryForDO1 = async (item, doNumber) => {
+  try {
+    const Inventory = require('../models/Inventory');
+
+    console.log(`DO1 Inventory Update - Processing: ${item.type} ${item.size} ${item.thickness}mm, Dispatching: ${item.dispatchedQuantity} tons`);
+
+    // Find or create inventory item
+    const inventory = await Inventory.findOrCreate({
+      productType: item.type,
+      size: item.size,
+      thickness: item.thickness,
+      rate: item.rate,
+      hsnCode: item.hsnCode || '7306',
+    });
+
+    console.log(`Found inventory: ${inventory.productType} ${inventory.size} - Current stock: ${inventory.availableQty} tons`);
+
+    // Check if sufficient stock is available
+    if (inventory.availableQty < item.dispatchedQuantity) {
+      throw new Error(`Insufficient stock for ${item.type} ${item.size}. Available: ${inventory.availableQty} tons, Required: ${item.dispatchedQuantity} tons`);
+    }
+
+    // Update stock (reduce by dispatched quantity)
+    const result = await inventory.updateStock(
+      item.dispatchedQuantity,
+      'out',
+      `DO1-${doNumber}`,
+      `DO1 dispatch - ${item.dispatchedQuantity} tons of ${item.type} ${item.size}`
+    );
+
+    console.log(`✅ Inventory updated for DO1: ${item.type} ${item.size} - Stock reduced from ${result.oldQuantity} to ${result.newQuantity} tons`);
+
+    return {
+      itemId: inventory._id,
+      type: item.type,
+      size: item.size,
+      thickness: item.thickness,
+      dispatchedQuantity: item.dispatchedQuantity,
+      oldStockLevel: result.oldQuantity,
+      newStockLevel: result.newQuantity,
+      updatedAt: new Date(),
+    };
+  } catch (error) {
+    console.error(`❌ Error in updateInventoryForDO1 for ${item.type} ${item.size}:`, error.message);
+    throw new Error(`Failed to update inventory for ${item.type} ${item.size}: ${error.message}`);
+  }
+};
 
 module.exports = router;

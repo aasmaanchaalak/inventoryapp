@@ -185,6 +185,8 @@ inventorySchema.statics.findOrCreate = async function (productData) {
       availableQty: 0,
       rate: productData.rate || 45000,
     });
+    await inventory.save(); // Save the new inventory item
+    console.log(`Created new inventory item: ${productType} ${size} ${thickness}mm`);
   }
 
   return inventory;

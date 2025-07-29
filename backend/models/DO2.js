@@ -71,7 +71,7 @@ const do2Schema = new mongoose.Schema(
     do2Number: {
       type: String,
       unique: true,
-      required: true,
+      required: false,
     },
     status: {
       type: String,
@@ -193,12 +193,14 @@ const do2Schema = new mongoose.Schema(
   }
 );
 
-// Generate DO2 number before saving
-do2Schema.pre('save', async function (next) {
-  if (this.isNew) {
+// Generate DO2 number before validation (this runs before validation)
+do2Schema.pre('validate', async function (next) {
+  console.log('DO2 Pre-validate hook running, isNew:', this.isNew, 'current do2Number:', this.do2Number);
+  if (this.isNew && !this.do2Number) {
     const count = await this.constructor.countDocuments();
     const year = new Date().getFullYear();
     this.do2Number = `DO2-${year}-${String(count + 1).padStart(4, '0')}`;
+    console.log('Generated do2Number:', this.do2Number);
   }
   next();
 });
