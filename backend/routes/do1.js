@@ -6,7 +6,7 @@ const PurchaseOrder = require('../models/PurchaseOrder');
 // POST /api/do1 - Create a new DO1
 router.post('/', async (req, res) => {
   try {
-    const { poId, items } = req.body;
+    const { poId, doNumber, dispatchDate, remarks, items } = req.body;
 
     // Validate required fields
     if (!poId || !items) {
@@ -36,7 +36,7 @@ router.post('/', async (req, res) => {
     // Validate dispatched quantities against stock
     const remainingQuantities = [];
     for (const item of items) {
-      const availableStock = getAvailableStock(item); // Mock function - replace with actual stock API
+      const availableStock = await getAvailableStock(item);
 
       if (item.dispatchedQuantity > availableStock) {
         return res.status(400).json({
@@ -60,13 +60,28 @@ router.post('/', async (req, res) => {
     }
 
     // Create the DO1 with status 'executed'
+    console.log('Creating DO1 with data:', { poId, dispatchDate, remarks, itemsCount: items.length });
     const do1 = new DO1({
       poId,
-      dispatchDate: new Date(),
+      // Remove doNumber - let the pre-save hook generate it
+      dispatchDate: dispatchDate ? new Date(dispatchDate) : new Date(),
+      remarks,
       status: 'executed',
-      items: items.map((item) => ({
-        ...item,
-        total: Math.round(item.dispatchedQuantity * item.rate * 100) / 100,
+      items: await Promise.all(items.map(async (item) => {
+        // Get the actual available stock for validation
+        const actualStock = await getAvailableStock(item);
+        return {
+          itemId: item.itemId,
+          type: item.type,
+          size: item.size,
+          thickness: item.thickness,
+          availableStock: actualStock,
+          dispatchedQuantity: item.dispatchedQuantity,
+          rate: item.rate,
+          total: Math.round(item.dispatchedQuantity * item.rate * 100) / 100,
+          hsnCode: item.hsnCode || '7306',
+          originalQuantity: item.originalQuantity || item.dispatchedQuantity,
+        };
       })),
       totals: {
         subtotal:
@@ -93,7 +108,15 @@ router.post('/', async (req, res) => {
       },
     });
 
-    await do1.save();
+    console.log('About to save DO1, doNumber before save:', do1.doNumber);
+    try {
+      await do1.save();
+      console.log('DO1 saved successfully, final doNumber:', do1.doNumber);
+    } catch (saveError) {
+      console.error('Error saving DO1:', saveError);
+      console.error('DO1 data at time of error:', JSON.stringify(do1.toObject(), null, 2));
+      throw saveError;
+    }
 
     // Populate PO details for response
     await do1.populate('poId', 'poNumber leadId totalAmount');
@@ -178,9 +201,10 @@ router.post('/', async (req, res) => {
 
     if (error.name === 'ValidationError') {
       const errors = Object.values(error.errors).map((err) => err.message);
+      console.error('Validation errors:', errors);
       return res.status(400).json({
         success: false,
-        message: 'Validation error',
+        message: `Validation error: ${errors.join(', ')}`,
         errors,
       });
     }
@@ -200,15 +224,30 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Mock function to get available stock - replace with actual API call
-const getAvailableStock = (item) => {
-  // This should call your stock management API
-  // For now, returning a random value between 0 and original quantity
-  const baseStock = item.originalQuantity * 0.8; // 80% of original quantity as available
-  return (
-    Math.round((baseStock + Math.random() * item.originalQuantity * 0.4) * 10) /
-    10
-  );
+// Function to get available stock from inventory API
+const getAvailableStock = async (item) => {
+  try {
+    const Inventory = require('../models/Inventory');
+    
+    // Find the inventory item that matches the DO1 item specifications
+    const inventoryItem = await Inventory.findOne({
+      productType: item.type,
+      size: item.size,
+      thickness: item.thickness,
+      isActive: true
+    });
+
+    if (inventoryItem) {
+      return inventoryItem.availableQty;
+    }
+    
+    // If no exact match found, return 0 to prevent dispatch
+    return 0;
+  } catch (error) {
+    console.error('Error fetching inventory stock:', error);
+    // Return 0 if there's an error - no fallback to mock data
+    return 0;
+  }
 };
 
 // GET /api/do1 - Get all DO1s with optional filters

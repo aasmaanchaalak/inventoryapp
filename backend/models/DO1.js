@@ -30,19 +30,13 @@ const do1ItemSchema = new mongoose.Schema({
   },
   availableStock: {
     type: Number,
-    required: true,
+    required: false,
     min: [0, 'Available stock cannot be negative'],
   },
   dispatchedQuantity: {
     type: Number,
     required: true,
     min: [0.1, 'Dispatched quantity must be at least 0.1 tons'],
-    validate: {
-      validator: function (value) {
-        return value <= this.availableStock;
-      },
-      message: 'Dispatched quantity cannot exceed available stock',
-    },
   },
   rate: {
     type: Number,
@@ -62,21 +56,21 @@ const do1ItemSchema = new mongoose.Schema({
   },
   originalQuantity: {
     type: Number,
-    required: true,
+    required: false,
   },
 });
 
 const do1Schema = new mongoose.Schema(
   {
+    doNumber: {
+      type: String,
+      unique: true,
+      required: false,
+    },
     poId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'PurchaseOrder',
       required: [true, 'PO reference is required'],
-    },
-    doNumber: {
-      type: String,
-      unique: true,
-      required: true,
     },
     dispatchDate: {
       type: Date,
@@ -162,15 +156,18 @@ const do1Schema = new mongoose.Schema(
   }
 );
 
-// Generate DO number before saving
-do1Schema.pre('save', async function (next) {
-  if (this.isNew) {
+// Generate DO number before validation (this runs before validation)
+do1Schema.pre('validate', async function (next) {
+  console.log('Pre-validate hook running, isNew:', this.isNew, 'current doNumber:', this.doNumber);
+  if (this.isNew && !this.doNumber) {
     const count = await this.constructor.countDocuments();
     const year = new Date().getFullYear();
     this.doNumber = `DO-${year}-${String(count + 1).padStart(4, '0')}`;
+    console.log('Generated doNumber:', this.doNumber);
   }
   next();
 });
+
 
 // Virtual for formatted dispatch date
 do1Schema.virtual('formattedDispatchDate').get(function () {
