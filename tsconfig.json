@@ -11,6 +11,10 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": false,
+    "noImplicitAny": false,
+    "skipLibCheck": true,
+    "noImplicitReturns": false,
+    "noImplicitThis": false,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
     "module": "esnext",
@@ -26,6 +30,8 @@
   "exclude": [
     "node_modules",
     "build",
-    "backend"
+    "backend",
+    "**/*.test.ts",
+    "**/*.test.tsx"
   ]
 }

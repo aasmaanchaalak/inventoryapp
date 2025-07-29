@@ -44,9 +44,7 @@ export const getTaxRateForProduct = (productType: any) => {
   const normalizedType = productType?.toLowerCase()?.trim();
 
   // Check specific category rates first
-  // @ts-expect-error TS(7053): Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
   if (TAX_RATES_BY_CATEGORY[normalizedType] !== undefined) {
-    // @ts-expect-error TS(7053): Element implicitly has an 'any' type because expre... Remove this comment to see the full error message
     return TAX_RATES_BY_CATEGORY[normalizedType];
   }
 
@@ -71,7 +69,6 @@ export const calculateTaxAmount = (
   }
 
   // Calculate tax amount
-  // @ts-expect-error TS(2531): Object is possibly 'null'.
   const taxAmount = (subtotal * rate) / 100;
 
   return {

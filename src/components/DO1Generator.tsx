@@ -72,8 +72,7 @@ const DO1Generator = () => {
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      // @ts-expect-error TS(2322): Type 'string' is not assignable to type 'Date'.
-      dispatchDate: new Date().toISOString().split('T')[0],
+      dispatchDate: new Date().toISOString().split('T')[0] as any,
       items: [],
     },
   });
@@ -122,7 +121,6 @@ const DO1Generator = () => {
           setSelectedPO(data.data);
 
           // Auto-fill items with available stock
-          // @ts-expect-error TS(7006): Parameter 'item' implicitly has an 'any' type.
           const itemsWithStock = data.data.items.map((item, index) => ({
             itemId: item._id || `item-${index}`,
             type: item.type,
@@ -199,7 +197,6 @@ const DO1Generator = () => {
       const subtotal = item.dispatchedQuantity * item.rate;
       const calculation = calculateTaxAmount(
         subtotal,
-        // @ts-expect-error TS(2345): Argument of type '12' is not assignable to paramet... Remove this comment to see the full error message
         STEEL_TUBE_TAX_RATE,
         item.type
       );
@@ -259,7 +256,6 @@ const DO1Generator = () => {
       }
     } catch (error) {
       console.error('Error creating DO1:', error);
-      // @ts-expect-error TS(2571): Object is of type 'unknown'.
       alert(error.message || 'Failed to create DO1. Please try again.');
     } finally {
       setIsSubmitting(false);
@@ -281,21 +277,16 @@ const DO1Generator = () => {
   const overallTotals = calculateTotals();
 
   return (
-    // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <div className="max-w-6xl mx-auto p-6 bg-white rounded-lg shadow-md">
-      // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
       provided... Remove this comment to see the full error message
       <h2 className="text-3xl font-bold text-gray-900 mb-6">
         Generate DO1 (Dispatch Order)
       </h2>
-      // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
       provided... Remove this comment to see the full error message
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* PO Selection */}
-        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
         provided... Remove this comment to see the full error message
         <div>
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <label
             htmlFor="poId"
@@ -303,7 +294,6 @@ const DO1Generator = () => {
           >
             Select Purchase Order *
           </label>
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <select
             id="poId"
@@ -312,14 +302,11 @@ const DO1Generator = () => {
               errors.poId ? 'border-red-500' : 'border-gray-300'
             }`}
           >
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <option value="">Select a pending PO</option>
             {pendingPOs.map((po) => (
-              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <option key={po._id} value={po._id}>
-                // @ts-expect-error TS(2339): Property 'poNumber' does not exist
                 on type 'never'... Remove this comment to see the full error
                 message
                 {po.poNumber} - {po.leadId?.name || 'Unknown Customer'}( //
@@ -330,18 +317,14 @@ const DO1Generator = () => {
               </option>
             ))}
           </select>
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           {errors.poId && <FormError error={errors.poId} />}
         </div>
         {/* DO Details */}
-        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
         provided... Remove this comment to see the full error message
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <div>
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <label
@@ -350,7 +333,6 @@ const DO1Generator = () => {
             >
               DO Number *
             </label>
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <input
@@ -362,15 +344,12 @@ const DO1Generator = () => {
               }`}
               placeholder="DO-2024-001"
             />
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             {errors.doNumber && <FormError error={errors.doNumber} />}
           </div>
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <div>
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <label
@@ -379,7 +358,6 @@ const DO1Generator = () => {
             >
               Dispatch Date *
             </label>
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <input
@@ -390,15 +368,12 @@ const DO1Generator = () => {
                 errors.dispatchDate ? 'border-red-500' : 'border-gray-300'
               }`}
             />
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             {errors.dispatchDate && <FormError error={errors.dispatchDate} />}
           </div>
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <div>
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <label
@@ -407,7 +382,6 @@ const DO1Generator = () => {
             >
               Remarks
             </label>
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <input
@@ -421,71 +395,55 @@ const DO1Generator = () => {
         </div>
         {/* Selected PO Summary */}
         {selectedPO && (
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <div className="bg-gray-50 p-4 rounded-lg">
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <h3 className="text-lg font-semibold text-gray-900 mb-3">
               PO Summary
             </h3>
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
               flag is provided... Remove this comment to see the full error
               message
               <div>
-                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
                 flag is provided... Remove this comment to see the full error
                 message
                 <p className="text-sm text-gray-600">PO Number</p>
-                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
                 flag is provided... Remove this comment to see the full error
                 message
                 <p className="font-medium">{selectedPO.poNumber}</p>
               </div>
-              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
               flag is provided... Remove this comment to see the full error
               message
               <div>
-                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
                 flag is provided... Remove this comment to see the full error
                 message
                 <p className="text-sm text-gray-600">Customer</p>
-                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
                 flag is provided... Remove this comment to see the full error
                 message
                 <p className="font-medium">{selectedPO.customer?.name}</p>
               </div>
-              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
               flag is provided... Remove this comment to see the full error
               message
               <div>
-                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
                 flag is provided... Remove this comment to see the full error
                 message
                 <p className="text-sm text-gray-600">Total Amount</p>
-                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
                 flag is provided... Remove this comment to see the full error
                 message
                 <p className="font-medium text-green-600">
-                  // @ts-expect-error TS(2339): Property 'totalAmount' does not
                   exist on type 'nev... Remove this comment to see the full
                   error message
                   {formatCurrency(selectedPO.totalAmount)}
                 </p>
               </div>
-              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
               flag is provided... Remove this comment to see the full error
               message
               <div>
-                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
                 flag is provided... Remove this comment to see the full error
                 message
                 <p className="text-sm text-gray-600">Quotation</p>
-                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
                 flag is provided... Remove this comment to see the full error
                 message
                 <p className="font-medium">{selectedPO.quotationNumber}</p>
@@ -495,67 +453,54 @@ const DO1Generator = () => {
         )}
         {/* Items Table */}
         {fields.length > 0 && (
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
           <div className="space-y-4">
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <h3 className="text-lg font-semibold text-gray-900">
               Dispatch Items
             </h3>
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <div className="overflow-x-auto">
-              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
               flag is provided... Remove this comment to see the full error
               message
               <table className="min-w-full divide-y divide-gray-200">
-                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
                 flag is provided... Remove this comment to see the full error
                 message
                 <thead className="bg-gray-100">
-                  // @ts-expect-error TS(17004): Cannot use JSX unless the
                   '--jsx' flag is provided... Remove this comment to see the
                   full error message
                   <tr>
-                    // @ts-expect-error TS(17004): Cannot use JSX unless the
                     '--jsx' flag is provided... Remove this comment to see the
                     full error message
                     <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
                       Type
                     </th>
-                    // @ts-expect-error TS(17004): Cannot use JSX unless the
                     '--jsx' flag is provided... Remove this comment to see the
                     full error message
                     <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
                       Size
                     </th>
-                    // @ts-expect-error TS(17004): Cannot use JSX unless the
                     '--jsx' flag is provided... Remove this comment to see the
                     full error message
                     <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
                       Thickness
                     </th>
-                    // @ts-expect-error TS(17004): Cannot use JSX unless the
                     '--jsx' flag is provided... Remove this comment to see the
                     full error message
                     <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
                       Available Stock
                     </th>
-                    // @ts-expect-error TS(17004): Cannot use JSX unless the
                     '--jsx' flag is provided... Remove this comment to see the
                     full error message
                     <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
                       Dispatch Qty
                     </th>
-                    // @ts-expect-error TS(17004): Cannot use JSX unless the
                     '--jsx' flag is provided... Remove this comment to see the
                     full error message
                     <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
                       Rate
                     </th>
-                    // @ts-expect-error TS(17004): Cannot use JSX unless the
                     '--jsx' flag is provided... Remove this comment to see the
                     full error message
                     <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
@@ -563,36 +508,29 @@ const DO1Generator = () => {
                     </th>
                   </tr>
                 </thead>
-                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
                 flag is provided... Remove this comment to see the full error
                 message
                 <tbody className="bg-white divide-y divide-gray-200">
                   {fields.map((item, index) => (
-                    // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                     <tr key={index} className="hover:bg-gray-50">
-                      // @ts-expect-error TS(17004): Cannot use JSX unless the
                       '--jsx' flag is provided... Remove this comment to see the
                       full error message
                       <td className="px-3 py-2 text-sm text-gray-900">
                         {item.type}
                       </td>
-                      // @ts-expect-error TS(17004): Cannot use JSX unless the
                       '--jsx' flag is provided... Remove this comment to see the
                       full error message
                       <td className="px-3 py-2 text-sm text-gray-900">
                         {item.size}
                       </td>
-                      // @ts-expect-error TS(17004): Cannot use JSX unless the
                       '--jsx' flag is provided... Remove this comment to see the
                       full error message
                       <td className="px-3 py-2 text-sm text-gray-900">
                         {item.thickness}mm
                       </td>
-                      // @ts-expect-error TS(17004): Cannot use JSX unless the
                       '--jsx' flag is provided... Remove this comment to see the
                       full error message
                       <td className="px-3 py-2 text-sm text-gray-900">
-                        // @ts-expect-error TS(17004): Cannot use JSX unless the
                         '--jsx' flag is provided... Remove this comment to see
                         the full error message
                         <span
@@ -605,11 +543,9 @@ const DO1Generator = () => {
                           {item.availableStock} tons
                         </span>
                       </td>
-                      // @ts-expect-error TS(17004): Cannot use JSX unless the
                       '--jsx' flag is provided... Remove this comment to see the
                       full error message
                       <td className="px-3 py-2 text-sm text-gray-900">
-                        // @ts-expect-error TS(17004): Cannot use JSX unless the
                         '--jsx' flag is provided... Remove this comment to see
                         the full error message
                         <input
@@ -629,21 +565,17 @@ const DO1Generator = () => {
                           disabled={item.availableStock <= 0}
                         />
                         {errors.items?.[index]?.dispatchedQuantity && (
-                          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                           <p className="text-xs text-red-500 mt-1">
-                            // @ts-expect-error TS(2532): Object is possibly
                             'undefined'.
                             {errors.items[index].dispatchedQuantity.message}
                           </p>
                         )}
                       </td>
-                      // @ts-expect-error TS(17004): Cannot use JSX unless the
                       '--jsx' flag is provided... Remove this comment to see the
                       full error message
                       <td className="px-3 py-2 text-sm text-gray-900">
                         {formatCurrency(item.rate)}
                       </td>
-                      // @ts-expect-error TS(17004): Cannot use JSX unless the
                       '--jsx' flag is provided... Remove this comment to see the
                       full error message
                       <td className="px-3 py-2 text-sm font-medium text-gray-900">
@@ -655,55 +587,44 @@ const DO1Generator = () => {
               </table>
             </div>
             {/* Totals */}
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <div className="bg-gray-50 p-4 rounded-lg">
-              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
               flag is provided... Remove this comment to see the full error
               message
               <div className="flex justify-end space-x-8">
-                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
                 flag is provided... Remove this comment to see the full error
                 message
                 <div>
-                  // @ts-expect-error TS(17004): Cannot use JSX unless the
                   '--jsx' flag is provided... Remove this comment to see the
                   full error message
                   <p className="text-sm text-gray-600">Subtotal</p>
-                  // @ts-expect-error TS(17004): Cannot use JSX unless the
                   '--jsx' flag is provided... Remove this comment to see the
                   full error message
                   <p className="text-lg font-semibold">
                     {formatCurrency(overallTotals.subtotal)}
                   </p>
                 </div>
-                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
                 flag is provided... Remove this comment to see the full error
                 message
                 <div>
-                  // @ts-expect-error TS(17004): Cannot use JSX unless the
                   '--jsx' flag is provided... Remove this comment to see the
                   full error message
                   <p className="text-sm text-gray-600">
                     Tax ({STEEL_TUBE_TAX_RATE}%)
                   </p>
-                  // @ts-expect-error TS(17004): Cannot use JSX unless the
                   '--jsx' flag is provided... Remove this comment to see the
                   full error message
                   <p className="text-lg font-semibold">
                     {formatCurrency(overallTotals.totalTax)}
                   </p>
                 </div>
-                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
                 flag is provided... Remove this comment to see the full error
                 message
                 <div>
-                  // @ts-expect-error TS(17004): Cannot use JSX unless the
                   '--jsx' flag is provided... Remove this comment to see the
                   full error message
                   <p className="text-sm text-gray-600">Grand Total</p>
-                  // @ts-expect-error TS(17004): Cannot use JSX unless the
                   '--jsx' flag is provided... Remove this comment to see the
                   full error message
                   <p className="text-xl font-bold text-green-600">
@@ -715,10 +636,8 @@ const DO1Generator = () => {
           </div>
         )}
         {/* Submit Button */}
-        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
         provided... Remove this comment to see the full error message
         <div className="flex justify-end space-x-4">
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <button
             type="button"
@@ -727,7 +646,6 @@ const DO1Generator = () => {
           >
             Reset Form
           </button>
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <button
             type="submit"
@@ -740,20 +658,15 @@ const DO1Generator = () => {
       </form>
       {/* Confirmation Modal */}
       {showConfirmation && doNumber && (
-        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <div className="mt-3 text-center">
-              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
               flag is provided... Remove this comment to see the full error
               message
               <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
-                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
                 flag is provided... Remove this comment to see the full error
                 message
                 <svg
@@ -762,7 +675,6 @@ const DO1Generator = () => {
                   stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
-                  // @ts-expect-error TS(17004): Cannot use JSX unless the
                   '--jsx' flag is provided... Remove this comment to see the
                   full error message
                   <path
@@ -773,29 +685,24 @@ const DO1Generator = () => {
                   ></path>
                 </svg>
               </div>
-              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
               flag is provided... Remove this comment to see the full error
               message
               <h3 className="text-lg font-medium text-gray-900 mt-4">
                 DO1 Generated Successfully!
               </h3>
-              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
               flag is provided... Remove this comment to see the full error
               message
               <div className="mt-4">
-                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
                 flag is provided... Remove this comment to see the full error
                 message
                 <p className="text-sm text-gray-600 mb-2">
                   Your DO1 number is:
                 </p>
-                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
                 flag is provided... Remove this comment to see the full error
                 message
                 <p className="text-xl font-bold text-green-600 mb-4">
                   {doNumber}
                 </p>
-                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
                 flag is provided... Remove this comment to see the full error
                 message
                 <p className="text-sm text-gray-600">
@@ -803,11 +710,9 @@ const DO1Generator = () => {
                   allocated for dispatch.
                 </p>
               </div>
-              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
               flag is provided... Remove this comment to see the full error
               message
               <div className="mt-6">
-                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
                 flag is provided... Remove this comment to see the full error
                 message
                 <button

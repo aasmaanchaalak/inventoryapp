@@ -127,7 +127,6 @@ export const useApi = (config = {}) => {
    * Main API call function with retry logic
    */
   const makeRequest = useCallback(
-    // @ts-expect-error TS(7024): Function implicitly has return type 'any' because ... Remove this comment to see the full error message
     async (url: any, options = {}, attempt = 0) => {
       const { controller, timeoutId } = createTimeoutController();
 
@@ -158,7 +157,6 @@ export const useApi = (config = {}) => {
         if (!response.ok) {
           throw new Error(
             data.message || `HTTP error! status: ${response.status}`,
-            // @ts-expect-error TS(2554): Expected 0-1 arguments, but got 2.
             {
               cause: { status: response.status, data },
             }
@@ -170,9 +168,7 @@ export const useApi = (config = {}) => {
         clearTimeout(timeoutId);
 
         // Handle timeout errors
-        // @ts-expect-error TS(2571): Object is of type 'unknown'.
         if (error.name === 'AbortError') {
-          // @ts-expect-error TS(2554): Expected 0-1 arguments, but got 2.
           throw new Error('Request timeout', { cause: { isTimeout: true } });
         }
 
@@ -215,18 +211,14 @@ export const useApi = (config = {}) => {
 
         return result.data;
       } catch (error) {
-        // @ts-expect-error TS(2571): Object is of type 'unknown'.
         const isTimeout = error.cause?.isTimeout;
         const status = isTimeout ? API_STATES.TIMEOUT : API_STATES.ERROR;
 
         setState({
           status,
           data: null,
-          // @ts-expect-error TS(2322): Type '{ message: any; status: any; isTimeout: any;... Remove this comment to see the full error message
           error: {
-            // @ts-expect-error TS(2571): Object is of type 'unknown'.
             message: error.message,
-            // @ts-expect-error TS(2571): Object is of type 'unknown'.
             status: error.cause?.status,
             isTimeout,
           },
@@ -284,13 +276,11 @@ export const useApi = (config = {}) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          // @ts-expect-error TS(2339): Property 'headers' does not exist on type '{}'.
           ...options.headers,
         },
       };
 
       if (data) {
-        // @ts-expect-error TS(2339): Property 'body' does not exist on type '{ method: ... Remove this comment to see the full error message
         postOptions.body = JSON.stringify(data);
       }
 
@@ -306,13 +296,11 @@ export const useApi = (config = {}) => {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          // @ts-expect-error TS(2339): Property 'headers' does not exist on type '{}'.
           ...options.headers,
         },
       };
 
       if (data) {
-        // @ts-expect-error TS(2339): Property 'body' does not exist on type '{ method: ... Remove this comment to see the full error message
         putOptions.body = JSON.stringify(data);
       }
 

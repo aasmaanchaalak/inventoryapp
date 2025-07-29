@@ -49,7 +49,6 @@ const DOTimeline = () => {
         setTimelineData(null);
       }
     } catch (error) {
-      // @ts-expect-error TS(2345): Argument of type 'string' is not assignable to par... Remove this comment to see the full error message
       setError('Network error: ' + error.message);
       setTimelineData(null);
     } finally {
@@ -70,9 +69,7 @@ const DOTimeline = () => {
   const getStatusIcon = (data: any, isCompleted: any) => {
     if (!data) {
       return (
-        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
         <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <span className="text-gray-400 text-sm">?</span>
         </div>
@@ -81,16 +78,13 @@ const DOTimeline = () => {
 
     if (isCompleted) {
       return (
-        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
         <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <svg
             className="w-5 h-5 text-green-600"
             fill="currentColor"
             viewBox="0 0 20 20"
           >
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <path
@@ -104,9 +98,7 @@ const DOTimeline = () => {
     }
 
     return (
-      // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
       <div className="w-8 h-8 rounded-full bg-yellow-100 flex items-center justify-center">
-        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
         provided... Remove this comment to see the full error message
         <svg
           className="w-5 h-5 text-yellow-600 animate-spin"
@@ -114,7 +106,6 @@ const DOTimeline = () => {
           stroke="currentColor"
           viewBox="0 0 24 24"
         >
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <path
             strokeLinecap="round"
@@ -171,36 +162,27 @@ const DOTimeline = () => {
   };
 
   return (
-    // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <div className="max-w-6xl mx-auto p-6 bg-white rounded-lg shadow-md">
-      // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
       provided... Remove this comment to see the full error message
       <h2 className="text-3xl font-bold text-gray-900 mb-6">DO Timeline</h2>
-      // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
       provided... Remove this comment to see the full error message
       <div className="mb-8">
-        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
         provided... Remove this comment to see the full error message
         <h3 className="text-lg font-semibold text-gray-900 mb-4">
           Track Process Journey
         </h3>
-        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
         provided... Remove this comment to see the full error message
         <p className="text-gray-600 mb-4">
           Enter a Lead ID or PO ID to view the complete timeline from lead
           creation to invoice generation.
         </p>
       </div>
-      // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
       provided... Remove this comment to see the full error message
       <form onSubmit={handleSubmit(onSubmit)} className="mb-8">
-        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
         provided... Remove this comment to see the full error message
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <div>
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <label
@@ -209,7 +191,6 @@ const DOTimeline = () => {
             >
               Lead ID
             </label>
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <input
@@ -225,16 +206,13 @@ const DOTimeline = () => {
               className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
             {errors.leadId && (
-              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <p className="mt-1 text-sm text-red-600">
                 {errors.leadId.message}
               </p>
             )}
           </div>
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <div>
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <label
@@ -243,7 +221,6 @@ const DOTimeline = () => {
             >
               PO ID
             </label>
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <input
@@ -259,12 +236,10 @@ const DOTimeline = () => {
               className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
             {errors.poId && (
-              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <p className="mt-1 text-sm text-red-600">{errors.poId.message}</p>
             )}
           </div>
         </div>
-        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
         provided... Remove this comment to see the full error message
         <button
           type="submit"
@@ -272,9 +247,7 @@ const DOTimeline = () => {
           className="mt-4 w-full bg-blue-600 text-white py-3 px-6 rounded-md font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isLoading ? (
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
             <div className="flex items-center justify-center">
-              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
               flag is provided... Remove this comment to see the full error
               message
               <svg
@@ -283,7 +256,6 @@ const DOTimeline = () => {
                 fill="none"
                 viewBox="0 0 24 24"
               >
-                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
                 flag is provided... Remove this comment to see the full error
                 message
                 <circle
@@ -294,7 +266,6 @@ const DOTimeline = () => {
                   stroke="currentColor"
                   strokeWidth="4"
                 ></circle>
-                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
                 flag is provided... Remove this comment to see the full error
                 message
                 <path
@@ -311,16 +282,12 @@ const DOTimeline = () => {
         </button>
       </form>
       {error && (
-        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
         <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-md">
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <div className="flex">
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <div className="flex-shrink-0">
-              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
               flag is provided... Remove this comment to see the full error
               message
               <svg
@@ -328,7 +295,6 @@ const DOTimeline = () => {
                 viewBox="0 0 20 20"
                 fill="currentColor"
               >
-                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
                 flag is provided... Remove this comment to see the full error
                 message
                 <path
@@ -338,15 +304,12 @@ const DOTimeline = () => {
                 />
               </svg>
             </div>
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <div className="ml-3">
-              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
               flag is provided... Remove this comment to see the full error
               message
               <h3 className="text-sm font-medium text-red-800">Error</h3>
-              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
               flag is provided... Remove this comment to see the full error
               message
               <div className="mt-2 text-sm text-red-700">{error}</div>
@@ -355,74 +318,56 @@ const DOTimeline = () => {
         </div>
       )}
       {timelineData && (
-        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
         <div className="mt-8">
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <h3 className="text-xl font-semibold text-gray-900 mb-6">
             Process Timeline
           </h3>
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <div className="relative">
             {/* Timeline Line */}
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gray-200"></div>
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <div className="space-y-8">
               {/* Step 1: Lead Created */}
-              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
               flag is provided... Remove this comment to see the full error
               message
               <div className="relative flex items-start">
-                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
                 flag is provided... Remove this comment to see the full error
                 message
                 <div className="absolute left-0 top-0">
-                  // @ts-expect-error TS(2339): Property 'lead' does not exist
                   on type 'never'.
                   {getStatusIcon(timelineData.lead, true)}
                 </div>
-                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
                 flag is provided... Remove this comment to see the full error
                 message
                 <div className="ml-12 flex-1">
-                  // @ts-expect-error TS(17004): Cannot use JSX unless the
                   '--jsx' flag is provided... Remove this comment to see the
                   full error message
                   <div
-                    // @ts-expect-error TS(2339): Property 'lead' does not exist on type 'never'.
                     className={`bg-blue-50 p-6 rounded-lg border border-blue-200 ${timelineData.lead?._id ? 'cursor-pointer hover:bg-blue-100 transition-colors' : ''}`}
                     onClick={() =>
-                      // @ts-expect-error TS(2339): Property 'lead' does not exist on type 'never'.
                       timelineData.lead?._id &&
-                      // @ts-expect-error TS(2339): Property 'lead' does not exist on type 'never'.
                       navigateToLead(timelineData.lead._id)
                     }
                   >
-                    // @ts-expect-error TS(17004): Cannot use JSX unless the
                     '--jsx' flag is provided... Remove this comment to see the
                     full error message
                     <div className="flex items-center justify-between mb-2">
-                      // @ts-expect-error TS(17004): Cannot use JSX unless the
                       '--jsx' flag is provided... Remove this comment to see the
                       full error message
                       <h4 className="text-lg font-semibold text-blue-900 flex items-center">
-                        Lead Created // @ts-expect-error TS(2339): Property
                         'lead' does not exist on type 'never'.
                         {timelineData.lead?._id && (
-                          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                           <svg
                             className="ml-2 w-4 h-4 text-blue-600"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
                           >
-                            // @ts-expect-error TS(17004): Cannot use JSX unless
                             the '--jsx' flag is provided... Remove this comment
                             to see the full error message
                             <path
@@ -434,71 +379,54 @@ const DOTimeline = () => {
                           </svg>
                         )}
                       </h4>
-                      // @ts-expect-error TS(17004): Cannot use JSX unless the
                       '--jsx' flag is provided... Remove this comment to see the
                       full error message
                       <span className="text-sm text-blue-600 font-medium">
                         Step 1
                       </span>
                     </div>
-                    // @ts-expect-error TS(17004): Cannot use JSX unless the
                     '--jsx' flag is provided... Remove this comment to see the
                     full error message
                     <div className="space-y-2 text-sm text-blue-800">
-                      // @ts-expect-error TS(17004): Cannot use JSX unless the
                       '--jsx' flag is provided... Remove this comment to see the
                       full error message
                       <p>
-                        // @ts-expect-error TS(17004): Cannot use JSX unless the
                         '--jsx' flag is provided... Remove this comment to see
                         the full error message
-                        <strong>Customer:</strong> // @ts-expect-error TS(2339):
                         Property 'lead' does not exist on type 'never'.
                         {timelineData.lead?.customerName || 'N/A'}
                       </p>
-                      // @ts-expect-error TS(17004): Cannot use JSX unless the
                       '--jsx' flag is provided... Remove this comment to see the
                       full error message
                       <p>
-                        // @ts-expect-error TS(17004): Cannot use JSX unless the
                         '--jsx' flag is provided... Remove this comment to see
                         the full error message
-                        <strong>Lead ID:</strong> // @ts-expect-error TS(2339):
                         Property 'lead' does not exist on type 'never'.
                         {timelineData.lead?._id || 'N/A'}
                       </p>
-                      // @ts-expect-error TS(17004): Cannot use JSX unless the
                       '--jsx' flag is provided... Remove this comment to see the
                       full error message
                       <p>
-                        // @ts-expect-error TS(17004): Cannot use JSX unless the
                         '--jsx' flag is provided... Remove this comment to see
                         the full error message
-                        <strong>Created:</strong> // @ts-expect-error TS(2339):
                         Property 'lead' does not exist on type 'never'.
                         {formatDate(timelineData.lead?.createdAt)}
                       </p>
-                      // @ts-expect-error TS(17004): Cannot use JSX unless the
                       '--jsx' flag is provided... Remove this comment to see the
                       full error message
                       <p>
-                        // @ts-expect-error TS(17004): Cannot use JSX unless the
                         '--jsx' flag is provided... Remove this comment to see
                         the full error message
                         <strong>Status:</strong>
-                        // @ts-expect-error TS(17004): Cannot use JSX unless the
                         '--jsx' flag is provided... Remove this comment to see
                         the full error message
                         <span className="ml-1 inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                          // @ts-expect-error TS(2339): Property 'lead' does not
                           exist on type 'never'.
                           {timelineData.lead ? 'ACTIVE' : 'NOT FOUND'}
                         </span>
                       </p>
-                      // @ts-expect-error TS(2339): Property 'lead' does not
                       exist on type 'never'.
                       {timelineData.lead?._id && (
-                        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                         <p className="text-xs text-blue-600 mt-2">
                           Click to view lead details →
                         </p>
@@ -508,61 +436,46 @@ const DOTimeline = () => {
                 </div>
               </div>
               {/* Step 2: Quotation Issued */}
-              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
               flag is provided... Remove this comment to see the full error
               message
               <div className="relative flex items-start">
-                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
                 flag is provided... Remove this comment to see the full error
                 message
                 <div className="absolute left-0 top-0">
                   {getStatusIcon(
-                    // @ts-expect-error TS(2339): Property 'quotation' does not exist on type 'never... Remove this comment to see the full error message
                     timelineData.quotation,
-                    // @ts-expect-error TS(2339): Property 'quotation' does not exist on type 'never... Remove this comment to see the full error message
                     !!timelineData.quotation
                   )}
                 </div>
-                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
                 flag is provided... Remove this comment to see the full error
                 message
                 <div className="ml-12 flex-1">
-                  // @ts-expect-error TS(17004): Cannot use JSX unless the
                   '--jsx' flag is provided... Remove this comment to see the
                   full error message
                   <div
-                    // @ts-expect-error TS(2339): Property 'quotation' does not exist on type 'never... Remove this comment to see the full error message
                     className={`p-6 rounded-lg border ${timelineData.quotation ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'} ${timelineData.quotation?._id ? 'cursor-pointer hover:bg-green-100 transition-colors' : ''}`}
                     onClick={() =>
-                      // @ts-expect-error TS(2339): Property 'quotation' does not exist on type 'never... Remove this comment to see the full error message
                       timelineData.quotation?._id &&
-                      // @ts-expect-error TS(2339): Property 'quotation' does not exist on type 'never... Remove this comment to see the full error message
                       navigateToQuotation(timelineData.quotation._id)
                     }
                   >
-                    // @ts-expect-error TS(17004): Cannot use JSX unless the
                     '--jsx' flag is provided... Remove this comment to see the
                     full error message
                     <div className="flex items-center justify-between mb-2">
-                      // @ts-expect-error TS(17004): Cannot use JSX unless the
                       '--jsx' flag is provided... Remove this comment to see the
                       full error message
                       <h4
-                        // @ts-expect-error TS(2339): Property 'quotation' does not exist on type 'never... Remove this comment to see the full error message
                         className={`text-lg font-semibold ${timelineData.quotation ? 'text-green-900' : 'text-gray-700'} flex items-center`}
                       >
-                        Quotation Issued // @ts-expect-error TS(2339): Property
                         'quotation' does not exist on type 'never... Remove this
                         comment to see the full error message
                         {timelineData.quotation?._id && (
-                          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                           <svg
                             className="ml-2 w-4 h-4 text-green-600"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
                           >
-                            // @ts-expect-error TS(17004): Cannot use JSX unless
                             the '--jsx' flag is provided... Remove this comment
                             to see the full error message
                             <path
@@ -574,91 +487,71 @@ const DOTimeline = () => {
                           </svg>
                         )}
                       </h4>
-                      // @ts-expect-error TS(17004): Cannot use JSX unless the
                       '--jsx' flag is provided... Remove this comment to see the
                       full error message
                       <span
-                        // @ts-expect-error TS(2339): Property 'quotation' does not exist on type 'never... Remove this comment to see the full error message
                         className={`text-sm font-medium ${timelineData.quotation ? 'text-green-600' : 'text-gray-500'}`}
                       >
                         Step 2
                       </span>
                     </div>
-                    // @ts-expect-error TS(17004): Cannot use JSX unless the
                     '--jsx' flag is provided... Remove this comment to see the
                     full error message
                     <div
-                      // @ts-expect-error TS(2339): Property 'quotation' does not exist on type 'never... Remove this comment to see the full error message
                       className={`space-y-2 text-sm ${timelineData.quotation ? 'text-green-800' : 'text-gray-600'}`}
                     >
-                      // @ts-expect-error TS(17004): Cannot use JSX unless the
                       '--jsx' flag is provided... Remove this comment to see the
                       full error message
                       <p>
-                        // @ts-expect-error TS(17004): Cannot use JSX unless the
                         '--jsx' flag is provided... Remove this comment to see
                         the full error message
-                        <strong>Quotation ID:</strong> // @ts-expect-error
                         TS(2339): Property 'quotation' does not exist on type
                         'never... Remove this comment to see the full error
                         message
                         {timelineData.quotation?._id || 'N/A'}
                       </p>
-                      // @ts-expect-error TS(17004): Cannot use JSX unless the
                       '--jsx' flag is provided... Remove this comment to see the
                       full error message
                       <p>
-                        // @ts-expect-error TS(17004): Cannot use JSX unless the
                         '--jsx' flag is provided... Remove this comment to see
                         the full error message
-                        <strong>Quotation Number:</strong> // @ts-expect-error
                         TS(2339): Property 'quotation' does not exist on type
                         'never... Remove this comment to see the full error
                         message
                         {timelineData.quotation?.quotationNumber || 'N/A'}
                       </p>
-                      // @ts-expect-error TS(17004): Cannot use JSX unless the
                       '--jsx' flag is provided... Remove this comment to see the
                       full error message
                       <p>
-                        // @ts-expect-error TS(17004): Cannot use JSX unless the
                         '--jsx' flag is provided... Remove this comment to see
                         the full error message
-                        <strong>Issued:</strong> // @ts-expect-error TS(2339):
                         Property 'quotation' does not exist on type 'never...
                         Remove this comment to see the full error message
                         {formatDate(timelineData.quotation?.createdAt)}
                       </p>
-                      // @ts-expect-error TS(17004): Cannot use JSX unless the
                       '--jsx' flag is provided... Remove this comment to see the
                       full error message
                       <p>
-                        // @ts-expect-error TS(17004): Cannot use JSX unless the
                         '--jsx' flag is provided... Remove this comment to see
                         the full error message
                         <strong>Status:</strong>
-                        // @ts-expect-error TS(17004): Cannot use JSX unless the
                         '--jsx' flag is provided... Remove this comment to see
                         the full error message
                         <span
                           className={`ml-1 inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                            // @ts-expect-error TS(2339): Property 'quotation' does not exist on type 'never... Remove this comment to see the full error message
                             timelineData.quotation
                               ? 'bg-green-100 text-green-800'
                               : 'bg-gray-100 text-gray-600'
                           }`}
                         >
-                          // @ts-expect-error TS(2339): Property 'quotation'
                           does not exist on type 'never... Remove this comment
                           to see the full error message
                           {timelineData.quotation ? 'ISSUED' : 'NOT FOUND'}
                         </span>
                       </p>
-                      // @ts-expect-error TS(2339): Property 'quotation' does
                       not exist on type 'never... Remove this comment to see the
                       full error message
                       {timelineData.quotation?._id && (
-                        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                         <p className="text-xs text-green-600 mt-2">
                           Click to view quotation details →
                         </p>
@@ -668,55 +561,42 @@ const DOTimeline = () => {
                 </div>
               </div>
               {/* Step 3: PO Generated */}
-              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
               flag is provided... Remove this comment to see the full error
               message
               <div className="relative flex items-start">
-                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
                 flag is provided... Remove this comment to see the full error
                 message
                 <div className="absolute left-0 top-0">
-                  // @ts-expect-error TS(2339): Property 'po' does not exist on
                   type 'never'.
                   {getStatusIcon(timelineData.po, !!timelineData.po)}
                 </div>
-                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
                 flag is provided... Remove this comment to see the full error
                 message
                 <div className="ml-12 flex-1">
-                  // @ts-expect-error TS(17004): Cannot use JSX unless the
                   '--jsx' flag is provided... Remove this comment to see the
                   full error message
                   <div
-                    // @ts-expect-error TS(2339): Property 'po' does not exist on type 'never'.
                     className={`p-6 rounded-lg border ${timelineData.po ? 'bg-purple-50 border-purple-200' : 'bg-gray-50 border-gray-200'} ${timelineData.po?._id ? 'cursor-pointer hover:bg-purple-100 transition-colors' : ''}`}
                     onClick={() =>
-                      // @ts-expect-error TS(2339): Property 'po' does not exist on type 'never'.
                       timelineData.po?._id && navigateToPO(timelineData.po._id)
                     }
                   >
-                    // @ts-expect-error TS(17004): Cannot use JSX unless the
                     '--jsx' flag is provided... Remove this comment to see the
                     full error message
                     <div className="flex items-center justify-between mb-2">
-                      // @ts-expect-error TS(17004): Cannot use JSX unless the
                       '--jsx' flag is provided... Remove this comment to see the
                       full error message
                       <h4
-                        // @ts-expect-error TS(2339): Property 'po' does not exist on type 'never'.
                         className={`text-lg font-semibold ${timelineData.po ? 'text-purple-900' : 'text-gray-700'} flex items-center`}
                       >
-                        PO Generated // @ts-expect-error TS(2339): Property 'po'
                         does not exist on type 'never'.
                         {timelineData.po?._id && (
-                          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                           <svg
                             className="ml-2 w-4 h-4 text-purple-600"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
                           >
-                            // @ts-expect-error TS(17004): Cannot use JSX unless
                             the '--jsx' flag is provided... Remove this comment
                             to see the full error message
                             <path
@@ -728,85 +608,65 @@ const DOTimeline = () => {
                           </svg>
                         )}
                       </h4>
-                      // @ts-expect-error TS(17004): Cannot use JSX unless the
                       '--jsx' flag is provided... Remove this comment to see the
                       full error message
                       <span
-                        // @ts-expect-error TS(2339): Property 'po' does not exist on type 'never'.
                         className={`text-sm font-medium ${timelineData.po ? 'text-purple-600' : 'text-gray-500'}`}
                       >
                         Step 3
                       </span>
                     </div>
-                    // @ts-expect-error TS(17004): Cannot use JSX unless the
                     '--jsx' flag is provided... Remove this comment to see the
                     full error message
                     <div
-                      // @ts-expect-error TS(2339): Property 'po' does not exist on type 'never'.
                       className={`space-y-2 text-sm ${timelineData.po ? 'text-purple-800' : 'text-gray-600'}`}
                     >
-                      // @ts-expect-error TS(17004): Cannot use JSX unless the
                       '--jsx' flag is provided... Remove this comment to see the
                       full error message
                       <p>
-                        // @ts-expect-error TS(17004): Cannot use JSX unless the
                         '--jsx' flag is provided... Remove this comment to see
                         the full error message
                         <strong>PO ID:</strong> {timelineData.po?._id || 'N/A'}
                       </p>
-                      // @ts-expect-error TS(17004): Cannot use JSX unless the
                       '--jsx' flag is provided... Remove this comment to see the
                       full error message
                       <p>
-                        // @ts-expect-error TS(17004): Cannot use JSX unless the
                         '--jsx' flag is provided... Remove this comment to see
                         the full error message
-                        <strong>PO Number:</strong> // @ts-expect-error
                         TS(2339): Property 'po' does not exist on type 'never'.
                         {timelineData.po?.poNumber || 'N/A'}
                       </p>
-                      // @ts-expect-error TS(17004): Cannot use JSX unless the
                       '--jsx' flag is provided... Remove this comment to see the
                       full error message
                       <p>
-                        // @ts-expect-error TS(17004): Cannot use JSX unless the
                         '--jsx' flag is provided... Remove this comment to see
                         the full error message
-                        <strong>Generated:</strong> // @ts-expect-error
                         TS(2339): Property 'po' does not exist on type 'never'.
                         {formatDate(timelineData.po?.createdAt)}
                       </p>
-                      // @ts-expect-error TS(17004): Cannot use JSX unless the
                       '--jsx' flag is provided... Remove this comment to see the
                       full error message
                       <p>
-                        // @ts-expect-error TS(17004): Cannot use JSX unless the
                         '--jsx' flag is provided... Remove this comment to see
                         the full error message
                         <strong>Status:</strong>
-                        // @ts-expect-error TS(17004): Cannot use JSX unless the
                         '--jsx' flag is provided... Remove this comment to see
                         the full error message
                         <span
                           className={`ml-1 inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                            // @ts-expect-error TS(2339): Property 'po' does not exist on type 'never'.
                             timelineData.po
                               ? 'bg-purple-100 text-purple-800'
                               : 'bg-gray-100 text-gray-600'
                           }`}
                         >
-                          // @ts-expect-error TS(2339): Property 'po' does not
                           exist on type 'never'.
                           {timelineData.po
-                            ? // @ts-expect-error TS(2339): Property 'po' does not exist on type 'never'.
                               timelineData.po.status.toUpperCase()
                             : 'NOT FOUND'}
                         </span>
                       </p>
-                      // @ts-expect-error TS(2339): Property 'po' does not exist
                       on type 'never'.
                       {timelineData.po?._id && (
-                        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                         <p className="text-xs text-purple-600 mt-2">
                           Click to view PO details →
                         </p>
@@ -816,57 +676,43 @@ const DOTimeline = () => {
                 </div>
               </div>
               {/* Step 4: DO1 Executed */}
-              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
               flag is provided... Remove this comment to see the full error
               message
               <div className="relative flex items-start">
-                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
                 flag is provided... Remove this comment to see the full error
                 message
                 <div className="absolute left-0 top-0">
-                  // @ts-expect-error TS(2339): Property 'do1' does not exist on
                   type 'never'.
                   {getStatusIcon(timelineData.do1, !!timelineData.do1)}
                 </div>
-                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
                 flag is provided... Remove this comment to see the full error
                 message
                 <div className="ml-12 flex-1">
-                  // @ts-expect-error TS(17004): Cannot use JSX unless the
                   '--jsx' flag is provided... Remove this comment to see the
                   full error message
                   <div
-                    // @ts-expect-error TS(2339): Property 'do1' does not exist on type 'never'.
                     className={`p-6 rounded-lg border ${timelineData.do1 ? 'bg-orange-50 border-orange-200' : 'bg-gray-50 border-gray-200'} ${timelineData.do1?._id ? 'cursor-pointer hover:bg-orange-100 transition-colors' : ''}`}
                     onClick={() =>
-                      // @ts-expect-error TS(2339): Property 'do1' does not exist on type 'never'.
                       timelineData.do1?._id &&
-                      // @ts-expect-error TS(2339): Property 'do1' does not exist on type 'never'.
                       navigateToDO1(timelineData.do1._id)
                     }
                   >
-                    // @ts-expect-error TS(17004): Cannot use JSX unless the
                     '--jsx' flag is provided... Remove this comment to see the
                     full error message
                     <div className="flex items-center justify-between mb-2">
-                      // @ts-expect-error TS(17004): Cannot use JSX unless the
                       '--jsx' flag is provided... Remove this comment to see the
                       full error message
                       <h4
-                        // @ts-expect-error TS(2339): Property 'do1' does not exist on type 'never'.
                         className={`text-lg font-semibold ${timelineData.do1 ? 'text-orange-900' : 'text-gray-700'} flex items-center`}
                       >
-                        DO1 Executed // @ts-expect-error TS(2339): Property
                         'do1' does not exist on type 'never'.
                         {timelineData.do1?._id && (
-                          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                           <svg
                             className="ml-2 w-4 h-4 text-orange-600"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
                           >
-                            // @ts-expect-error TS(17004): Cannot use JSX unless
                             the '--jsx' flag is provided... Remove this comment
                             to see the full error message
                             <path
@@ -878,87 +724,66 @@ const DOTimeline = () => {
                           </svg>
                         )}
                       </h4>
-                      // @ts-expect-error TS(17004): Cannot use JSX unless the
                       '--jsx' flag is provided... Remove this comment to see the
                       full error message
                       <span
-                        // @ts-expect-error TS(2339): Property 'do1' does not exist on type 'never'.
                         className={`text-sm font-medium ${timelineData.do1 ? 'text-orange-600' : 'text-gray-500'}`}
                       >
                         Step 4
                       </span>
                     </div>
-                    // @ts-expect-error TS(17004): Cannot use JSX unless the
                     '--jsx' flag is provided... Remove this comment to see the
                     full error message
                     <div
-                      // @ts-expect-error TS(2339): Property 'do1' does not exist on type 'never'.
                       className={`space-y-2 text-sm ${timelineData.do1 ? 'text-orange-800' : 'text-gray-600'}`}
                     >
-                      // @ts-expect-error TS(17004): Cannot use JSX unless the
                       '--jsx' flag is provided... Remove this comment to see the
                       full error message
                       <p>
-                        // @ts-expect-error TS(17004): Cannot use JSX unless the
                         '--jsx' flag is provided... Remove this comment to see
                         the full error message
-                        <strong>DO1 ID:</strong> // @ts-expect-error TS(2339):
                         Property 'do1' does not exist on type 'never'.
                         {timelineData.do1?._id || 'N/A'}
                       </p>
-                      // @ts-expect-error TS(17004): Cannot use JSX unless the
                       '--jsx' flag is provided... Remove this comment to see the
                       full error message
                       <p>
-                        // @ts-expect-error TS(17004): Cannot use JSX unless the
                         '--jsx' flag is provided... Remove this comment to see
                         the full error message
-                        <strong>DO1 Number:</strong> // @ts-expect-error
                         TS(2339): Property 'do1' does not exist on type 'never'.
                         {timelineData.do1?.do1Number || 'N/A'}
                       </p>
-                      // @ts-expect-error TS(17004): Cannot use JSX unless the
                       '--jsx' flag is provided... Remove this comment to see the
                       full error message
                       <p>
-                        // @ts-expect-error TS(17004): Cannot use JSX unless the
                         '--jsx' flag is provided... Remove this comment to see
                         the full error message
-                        <strong>Executed:</strong> // @ts-expect-error TS(2339):
                         Property 'do1' does not exist on type 'never'.
                         {formatDate(timelineData.do1?.createdAt)}
                       </p>
-                      // @ts-expect-error TS(17004): Cannot use JSX unless the
                       '--jsx' flag is provided... Remove this comment to see the
                       full error message
                       <p>
-                        // @ts-expect-error TS(17004): Cannot use JSX unless the
                         '--jsx' flag is provided... Remove this comment to see
                         the full error message
                         <strong>Status:</strong>
-                        // @ts-expect-error TS(17004): Cannot use JSX unless the
                         '--jsx' flag is provided... Remove this comment to see
                         the full error message
                         <span
                           className={`ml-1 inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                            // @ts-expect-error TS(2339): Property 'do1' does not exist on type 'never'.
                             timelineData.do1
                               ? 'bg-orange-100 text-orange-800'
                               : 'bg-gray-100 text-gray-600'
                           }`}
                         >
-                          // @ts-expect-error TS(2339): Property 'do1' does not
                           exist on type 'never'.
                           {timelineData.do1
-                            ? // @ts-expect-error TS(2339): Property 'do1' does not exist on type 'never'.
                               timelineData.do1.status.toUpperCase()
                             : 'NOT FOUND'}
                         </span>
                       </p>
-                      // @ts-expect-error TS(2339): Property 'do1' does not
                       exist on type 'never'.
                       {timelineData.do1?._id && (
-                        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                         <p className="text-xs text-orange-600 mt-2">
                           Click to view DO1 details →
                         </p>
@@ -968,57 +793,43 @@ const DOTimeline = () => {
                 </div>
               </div>
               {/* Step 5: DO2 Executed → Invoice Generated */}
-              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
               flag is provided... Remove this comment to see the full error
               message
               <div className="relative flex items-start">
-                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
                 flag is provided... Remove this comment to see the full error
                 message
                 <div className="absolute left-0 top-0">
-                  // @ts-expect-error TS(2339): Property 'do2' does not exist on
                   type 'never'.
                   {getStatusIcon(timelineData.do2, !!timelineData.do2)}
                 </div>
-                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
                 flag is provided... Remove this comment to see the full error
                 message
                 <div className="ml-12 flex-1">
-                  // @ts-expect-error TS(17004): Cannot use JSX unless the
                   '--jsx' flag is provided... Remove this comment to see the
                   full error message
                   <div
-                    // @ts-expect-error TS(2339): Property 'do2' does not exist on type 'never'.
                     className={`p-6 rounded-lg border ${timelineData.do2 ? 'bg-indigo-50 border-indigo-200' : 'bg-gray-50 border-gray-200'} ${timelineData.do2?._id ? 'cursor-pointer hover:bg-indigo-100 transition-colors' : ''}`}
                     onClick={() =>
-                      // @ts-expect-error TS(2339): Property 'do2' does not exist on type 'never'.
                       timelineData.do2?._id &&
-                      // @ts-expect-error TS(2339): Property 'do2' does not exist on type 'never'.
                       navigateToDO2(timelineData.do2._id)
                     }
                   >
-                    // @ts-expect-error TS(17004): Cannot use JSX unless the
                     '--jsx' flag is provided... Remove this comment to see the
                     full error message
                     <div className="flex items-center justify-between mb-2">
-                      // @ts-expect-error TS(17004): Cannot use JSX unless the
                       '--jsx' flag is provided... Remove this comment to see the
                       full error message
                       <h4
-                        // @ts-expect-error TS(2339): Property 'do2' does not exist on type 'never'.
                         className={`text-lg font-semibold ${timelineData.do2 ? 'text-indigo-900' : 'text-gray-700'} flex items-center`}
                       >
-                        DO2 Executed → Invoice Generated // @ts-expect-error
                         TS(2339): Property 'do2' does not exist on type 'never'.
                         {timelineData.do2?._id && (
-                          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                           <svg
                             className="ml-2 w-4 h-4 text-indigo-600"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
                           >
-                            // @ts-expect-error TS(17004): Cannot use JSX unless
                             the '--jsx' flag is provided... Remove this comment
                             to see the full error message
                             <path
@@ -1030,105 +841,79 @@ const DOTimeline = () => {
                           </svg>
                         )}
                       </h4>
-                      // @ts-expect-error TS(17004): Cannot use JSX unless the
                       '--jsx' flag is provided... Remove this comment to see the
                       full error message
                       <span
-                        // @ts-expect-error TS(2339): Property 'do2' does not exist on type 'never'.
                         className={`text-sm font-medium ${timelineData.do2 ? 'text-indigo-600' : 'text-gray-500'}`}
                       >
                         Step 5
                       </span>
                     </div>
-                    // @ts-expect-error TS(17004): Cannot use JSX unless the
                     '--jsx' flag is provided... Remove this comment to see the
                     full error message
                     <div
-                      // @ts-expect-error TS(2339): Property 'do2' does not exist on type 'never'.
                       className={`space-y-2 text-sm ${timelineData.do2 ? 'text-indigo-800' : 'text-gray-600'}`}
                     >
-                      // @ts-expect-error TS(17004): Cannot use JSX unless the
                       '--jsx' flag is provided... Remove this comment to see the
                       full error message
                       <p>
-                        // @ts-expect-error TS(17004): Cannot use JSX unless the
                         '--jsx' flag is provided... Remove this comment to see
                         the full error message
-                        <strong>DO2 ID:</strong> // @ts-expect-error TS(2339):
                         Property 'do2' does not exist on type 'never'.
                         {timelineData.do2?._id || 'N/A'}
                       </p>
-                      // @ts-expect-error TS(17004): Cannot use JSX unless the
                       '--jsx' flag is provided... Remove this comment to see the
                       full error message
                       <p>
-                        // @ts-expect-error TS(17004): Cannot use JSX unless the
                         '--jsx' flag is provided... Remove this comment to see
                         the full error message
-                        <strong>DO2 Number:</strong> // @ts-expect-error
                         TS(2339): Property 'do2' does not exist on type 'never'.
                         {timelineData.do2?.do2Number || 'N/A'}
                       </p>
-                      // @ts-expect-error TS(17004): Cannot use JSX unless the
                       '--jsx' flag is provided... Remove this comment to see the
                       full error message
                       <p>
-                        // @ts-expect-error TS(17004): Cannot use JSX unless the
                         '--jsx' flag is provided... Remove this comment to see
                         the full error message
-                        <strong>Executed:</strong> // @ts-expect-error TS(2339):
                         Property 'do2' does not exist on type 'never'.
                         {formatDate(timelineData.do2?.createdAt)}
                       </p>
-                      // @ts-expect-error TS(17004): Cannot use JSX unless the
                       '--jsx' flag is provided... Remove this comment to see the
                       full error message
                       <p>
-                        // @ts-expect-error TS(17004): Cannot use JSX unless the
                         '--jsx' flag is provided... Remove this comment to see
                         the full error message
                         <strong>Status:</strong>
-                        // @ts-expect-error TS(17004): Cannot use JSX unless the
                         '--jsx' flag is provided... Remove this comment to see
                         the full error message
                         <span
                           className={`ml-1 inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                            // @ts-expect-error TS(2339): Property 'do2' does not exist on type 'never'.
                             timelineData.do2
                               ? 'bg-indigo-100 text-indigo-800'
                               : 'bg-gray-100 text-gray-600'
                           }`}
                         >
-                          // @ts-expect-error TS(2339): Property 'do2' does not
                           exist on type 'never'.
                           {timelineData.do2
-                            ? // @ts-expect-error TS(2339): Property 'do2' does not exist on type 'never'.
                               timelineData.do2.status.toUpperCase()
                             : 'NOT FOUND'}
                         </span>
                       </p>
-                      // @ts-expect-error TS(2339): Property 'invoice' does not
                       exist on type 'never'.
                       {timelineData.invoice && (
-                        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                         <div className="mt-3 pt-3 border-t border-indigo-200">
-                          // @ts-expect-error TS(17004): Cannot use JSX unless
                           the '--jsx' flag is provided... Remove this comment to
                           see the full error message
                           <p>
-                            // @ts-expect-error TS(17004): Cannot use JSX unless
                             the '--jsx' flag is provided... Remove this comment
                             to see the full error message
-                            <strong>Invoice Number:</strong> // @ts-expect-error
                             TS(2339): Property 'invoice' does not exist on type
                             'never'.
                             {timelineData.invoice.invoiceNumber}
                           </p>
-                          // @ts-expect-error TS(17004): Cannot use JSX unless
                           the '--jsx' flag is provided... Remove this comment to
                           see the full error message
                           <p>
-                            // @ts-expect-error TS(17004): Cannot use JSX unless
                             the '--jsx' flag is provided... Remove this comment
                             to see the full error message
                             <strong>Invoice Generated:</strong> //
@@ -1136,26 +921,21 @@ const DOTimeline = () => {
                             not exist on type 'never'.
                             {formatDate(timelineData.invoice.generatedAt)}
                           </p>
-                          // @ts-expect-error TS(17004): Cannot use JSX unless
                           the '--jsx' flag is provided... Remove this comment to
                           see the full error message
                           <p>
-                            // @ts-expect-error TS(17004): Cannot use JSX unless
                             the '--jsx' flag is provided... Remove this comment
                             to see the full error message
                             <strong>Tally Push:</strong>
-                            // @ts-expect-error TS(17004): Cannot use JSX unless
                             the '--jsx' flag is provided... Remove this comment
                             to see the full error message
                             <span
                               className={`ml-1 inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                                // @ts-expect-error TS(2339): Property 'invoice' does not exist on type 'never'.
                                 timelineData.invoice.pushedToTally
                                   ? 'bg-green-100 text-green-800'
                                   : 'bg-yellow-100 text-yellow-800'
                               }`}
                             >
-                              // @ts-expect-error TS(2339): Property 'invoice'
                               does not exist on type 'never'.
                               {timelineData.invoice.pushedToTally
                                 ? 'PUSHED'
@@ -1164,10 +944,8 @@ const DOTimeline = () => {
                           </p>
                         </div>
                       )}
-                      // @ts-expect-error TS(2339): Property 'do2' does not
                       exist on type 'never'.
                       {timelineData.do2?._id && (
-                        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                         <p className="text-xs text-indigo-600 mt-2">
                           Click to view invoice details →
                         </p>
@@ -1181,30 +959,22 @@ const DOTimeline = () => {
         </div>
       )}
       {/* Instructions */}
-      // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
       provided... Remove this comment to see the full error message
       <div className="mt-8 p-4 bg-gray-50 border border-gray-200 rounded-md">
-        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
         provided... Remove this comment to see the full error message
         <h3 className="text-sm font-medium text-gray-800 mb-2">How to use</h3>
-        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
         provided... Remove this comment to see the full error message
         <ul className="text-sm text-gray-700 space-y-1">
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <li>
             • Enter either a Lead ID or PO ID to view the complete timeline
           </li>
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <li>• Green checkmarks indicate completed steps</li>
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <li>• Yellow spinners indicate in-progress steps</li>
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <li>• Gray question marks indicate steps not yet started</li>
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <li>• Each step shows relevant IDs, timestamps, and status</li>
         </ul>

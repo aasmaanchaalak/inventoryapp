@@ -17,7 +17,6 @@ const FormError = ({ error, className = '' }: any) => {
   }
 
   return (
-    // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <p className={`mt-1 text-sm text-red-500 ${className}`}>{error.message}</p>
   );
 };

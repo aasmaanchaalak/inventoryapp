@@ -107,7 +107,6 @@ const InventoryAddForm = () => {
 
       const result = await createInventoryItem(
         'http://localhost:5000/api/inventory',
-        // @ts-expect-error TS(2345): Argument of type '{ productType: any; size: any; t... Remove this comment to see the full error message
         inventoryData
       );
 
@@ -125,24 +124,18 @@ const InventoryAddForm = () => {
   };
 
   return (
-    // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md">
-      // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
       provided... Remove this comment to see the full error message
       <h2 className="text-2xl font-bold text-gray-900 mb-6">
         Add New Inventory Item
       </h2>
-      // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
       provided... Remove this comment to see the full error message
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
         provided... Remove this comment to see the full error message
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Product Type */}
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <div>
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <label
@@ -151,7 +144,6 @@ const InventoryAddForm = () => {
             >
               Product Type *
             </label>
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <select
@@ -161,27 +153,22 @@ const InventoryAddForm = () => {
                 errors.productType ? 'border-red-500' : 'border-gray-300'
               }`}
             >
-              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
               flag is provided... Remove this comment to see the full error
               message
               <option value="">Select a product type</option>
               {STEEL_TUBE_CATEGORIES.map((category) => (
-                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                 <option key={category.value} value={category.value}>
                   {category.label}
                 </option>
               ))}
             </select>
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             {errors.productType && <FormError error={errors.productType} />}
           </div>
           {/* Size */}
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <div>
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <label
@@ -190,7 +177,6 @@ const InventoryAddForm = () => {
             >
               Size *
             </label>
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <input
@@ -202,16 +188,13 @@ const InventoryAddForm = () => {
               }`}
               placeholder="e.g., 40x40, 25x50, 32"
             />
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             {errors.size && <FormError error={errors.size} />}
           </div>
           {/* Thickness */}
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <div>
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <label
@@ -220,7 +203,6 @@ const InventoryAddForm = () => {
             >
               Thickness (mm) *
             </label>
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <input
@@ -233,16 +215,13 @@ const InventoryAddForm = () => {
               }`}
               placeholder="e.g., 2.5"
             />
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             {errors.thickness && <FormError error={errors.thickness} />}
           </div>
           {/* Available Quantity */}
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <div>
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <label
@@ -251,7 +230,6 @@ const InventoryAddForm = () => {
             >
               Available Quantity (tons) *
             </label>
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <input
@@ -264,16 +242,13 @@ const InventoryAddForm = () => {
               }`}
               placeholder="e.g., 150.5"
             />
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             {errors.availableQty && <FormError error={errors.availableQty} />}
           </div>
           {/* Rate */}
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <div>
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <label
@@ -282,7 +257,6 @@ const InventoryAddForm = () => {
             >
               Rate (₹ per ton)
             </label>
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <input
@@ -294,16 +268,13 @@ const InventoryAddForm = () => {
               }`}
               placeholder="45000"
             />
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             {errors.rate && <FormError error={errors.rate} />}
           </div>
           {/* HSN Code */}
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <div>
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <label
@@ -312,7 +283,6 @@ const InventoryAddForm = () => {
             >
               HSN Code
             </label>
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <input
@@ -324,16 +294,13 @@ const InventoryAddForm = () => {
               }`}
               placeholder="7306"
             />
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             {errors.hsnCode && <FormError error={errors.hsnCode} />}
           </div>
           {/* Min Stock Level */}
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <div>
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <label
@@ -342,7 +309,6 @@ const InventoryAddForm = () => {
             >
               Minimum Stock Level (tons)
             </label>
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <input
@@ -355,16 +321,13 @@ const InventoryAddForm = () => {
               }`}
               placeholder="10"
             />
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             {errors.minStockLevel && <FormError error={errors.minStockLevel} />}
           </div>
           {/* Max Stock Level */}
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <div>
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <label
@@ -373,7 +336,6 @@ const InventoryAddForm = () => {
             >
               Maximum Stock Level (tons)
             </label>
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <input
@@ -386,30 +348,24 @@ const InventoryAddForm = () => {
               }`}
               placeholder="10000"
             />
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             {errors.maxStockLevel && <FormError error={errors.maxStockLevel} />}
           </div>
         </div>
         {/* Location Section */}
-        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
         provided... Remove this comment to see the full error message
         <div className="border-t pt-6">
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <h3 className="text-lg font-medium text-gray-900 mb-4">
             Location Information
           </h3>
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Warehouse Name */}
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <div>
-              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
               flag is provided... Remove this comment to see the full error
               message
               <label
@@ -418,7 +374,6 @@ const InventoryAddForm = () => {
               >
                 Warehouse Name
               </label>
-              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
               flag is provided... Remove this comment to see the full error
               message
               <input
@@ -431,16 +386,13 @@ const InventoryAddForm = () => {
                 placeholder="Main Warehouse"
               />
               {errors.warehouseName && (
-                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                 <FormError error={errors.warehouseName} />
               )}
             </div>
             {/* Warehouse Section */}
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <div>
-              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
               flag is provided... Remove this comment to see the full error
               message
               <label
@@ -449,7 +401,6 @@ const InventoryAddForm = () => {
               >
                 Warehouse Section
               </label>
-              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
               flag is provided... Remove this comment to see the full error
               message
               <input
@@ -462,30 +413,24 @@ const InventoryAddForm = () => {
                 placeholder="Steel Tubes"
               />
               {errors.warehouseSection && (
-                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                 <FormError error={errors.warehouseSection} />
               )}
             </div>
           </div>
         </div>
         {/* Supplier Section */}
-        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
         provided... Remove this comment to see the full error message
         <div className="border-t pt-6">
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <h3 className="text-lg font-medium text-gray-900 mb-4">
             Supplier Information
           </h3>
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Supplier Name */}
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <div>
-              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
               flag is provided... Remove this comment to see the full error
               message
               <label
@@ -494,7 +439,6 @@ const InventoryAddForm = () => {
               >
                 Supplier Name
               </label>
-              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
               flag is provided... Remove this comment to see the full error
               message
               <input
@@ -506,17 +450,14 @@ const InventoryAddForm = () => {
                 }`}
                 placeholder="Steel Tube Industries Ltd."
               />
-              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
               flag is provided... Remove this comment to see the full error
               message
               {errors.supplierName && <FormError error={errors.supplierName} />}
             </div>
             {/* Supplier Contact */}
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <div>
-              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
               flag is provided... Remove this comment to see the full error
               message
               <label
@@ -525,7 +466,6 @@ const InventoryAddForm = () => {
               >
                 Supplier Contact
               </label>
-              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
               flag is provided... Remove this comment to see the full error
               message
               <input
@@ -538,17 +478,14 @@ const InventoryAddForm = () => {
                 placeholder="+91-9876543210"
               />
               {errors.supplierContact && (
-                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                 <FormError error={errors.supplierContact} />
               )}
             </div>
           </div>
         </div>
         {/* Submit Buttons */}
-        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
         provided... Remove this comment to see the full error message
         <div className="flex justify-end space-x-4 pt-6 border-t">
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <button
             type="button"
@@ -557,7 +494,6 @@ const InventoryAddForm = () => {
           >
             Reset
           </button>
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <button
             type="submit"

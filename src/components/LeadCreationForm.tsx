@@ -78,19 +78,14 @@ const LeadCreationForm = () => {
   };
 
   return (
-    // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
-      // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
       provided... Remove this comment to see the full error message
       <h2 className="text-2xl font-bold text-gray-900 mb-6">Create New Lead</h2>
-      // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
       provided... Remove this comment to see the full error message
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* Customer Name */}
-        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
         provided... Remove this comment to see the full error message
         <div>
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <label
             htmlFor="customerName"
@@ -98,7 +93,6 @@ const LeadCreationForm = () => {
           >
             Customer Name *
           </label>
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <input
             type="text"
@@ -109,15 +103,12 @@ const LeadCreationForm = () => {
             }`}
             placeholder="Enter customer name"
           />
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           {errors.customerName && <FormError error={errors.customerName} />}
         </div>
         {/* Phone Number */}
-        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
         provided... Remove this comment to see the full error message
         <div>
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <label
             htmlFor="phone"
@@ -125,7 +116,6 @@ const LeadCreationForm = () => {
           >
             Phone Number *
           </label>
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <input
             type="tel"
@@ -136,15 +126,12 @@ const LeadCreationForm = () => {
             }`}
             placeholder="Enter phone number"
           />
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           {errors.phone && <FormError error={errors.phone} />}
         </div>
         {/* Email */}
-        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
         provided... Remove this comment to see the full error message
         <div>
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <label
             htmlFor="email"
@@ -152,7 +139,6 @@ const LeadCreationForm = () => {
           >
             Email
           </label>
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <input
             type="email"
@@ -163,15 +149,12 @@ const LeadCreationForm = () => {
             }`}
             placeholder="Enter email address"
           />
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           {errors.email && <FormError error={errors.email} />}
         </div>
         {/* Address */}
-        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
         provided... Remove this comment to see the full error message
         <div>
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <label
             htmlFor="address"
@@ -179,7 +162,6 @@ const LeadCreationForm = () => {
           >
             Address
           </label>
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <textarea
             id="address"
@@ -190,18 +172,14 @@ const LeadCreationForm = () => {
             }`}
             placeholder="Enter address"
           />
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           {errors.address && <FormError error={errors.address} />}
         </div>
         {/* GSTIN and PAN in same row */}
-        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
         provided... Remove this comment to see the full error message
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <div>
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <label
@@ -210,7 +188,6 @@ const LeadCreationForm = () => {
             >
               GSTIN
             </label>
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <input
@@ -222,15 +199,12 @@ const LeadCreationForm = () => {
               }`}
               placeholder="Enter GSTIN"
             />
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             {errors.gstin && <FormError error={errors.gstin} />}
           </div>
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <div>
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <label
@@ -239,7 +213,6 @@ const LeadCreationForm = () => {
             >
               PAN
             </label>
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <input
@@ -251,17 +224,14 @@ const LeadCreationForm = () => {
               }`}
               placeholder="Enter PAN"
             />
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             {errors.pan && <FormError error={errors.pan} />}
           </div>
         </div>
         {/* Product Interest */}
-        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
         provided... Remove this comment to see the full error message
         <div>
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <label
             htmlFor="productInterest"
@@ -269,7 +239,6 @@ const LeadCreationForm = () => {
           >
             Product Interest *
           </label>
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <select
             id="productInterest"
@@ -278,27 +247,22 @@ const LeadCreationForm = () => {
               errors.productInterest ? 'border-red-500' : 'border-gray-300'
             }`}
           >
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <option value="">Select a product</option>
             {STEEL_TUBE_CATEGORIES.map((category) => (
-              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <option key={category.value} value={category.value}>
                 {category.label}
               </option>
             ))}
           </select>
           {errors.productInterest && (
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
             <FormError error={errors.productInterest} />
           )}
         </div>
         {/* Lead Source */}
-        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
         provided... Remove this comment to see the full error message
         <div>
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <label
             htmlFor="leadSource"
@@ -306,7 +270,6 @@ const LeadCreationForm = () => {
           >
             Lead Source *
           </label>
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <select
             id="leadSource"
@@ -315,26 +278,21 @@ const LeadCreationForm = () => {
               errors.leadSource ? 'border-red-500' : 'border-gray-300'
             }`}
           >
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <option value="">Select a lead source</option>
             {LEAD_SOURCES.map((source) => (
-              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <option key={source.value} value={source.value}>
                 {source.label}
               </option>
             ))}
           </select>
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           {errors.leadSource && <FormError error={errors.leadSource} />}
         </div>
         {/* Notes */}
-        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
         provided... Remove this comment to see the full error message
         <div>
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <label
             htmlFor="notes"
@@ -342,7 +300,6 @@ const LeadCreationForm = () => {
           >
             Notes
           </label>
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <textarea
             id="notes"
@@ -353,10 +310,8 @@ const LeadCreationForm = () => {
           />
         </div>
         {/* Submit Button */}
-        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
         provided... Remove this comment to see the full error message
         <div className="flex justify-end space-x-4">
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <button
             type="button"
@@ -365,7 +320,6 @@ const LeadCreationForm = () => {
           >
             Reset
           </button>
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <button
             type="submit"

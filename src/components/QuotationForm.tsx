@@ -97,11 +97,8 @@ const QuotationForm = () => {
         {
           type: '',
           size: '',
-          // @ts-expect-error TS(2322): Type 'string' is not assignable to type 'number'.
           thickness: '',
-          // @ts-expect-error TS(2322): Type 'string' is not assignable to type 'number'.
           quantity: '',
-          // @ts-expect-error TS(2322): Type 'string' is not assignable to type 'number'.
           rate: '',
           tax: STEEL_TUBE_TAX_RATE,
         },
@@ -243,11 +240,8 @@ const QuotationForm = () => {
     append({
       type: '',
       size: '',
-      // @ts-expect-error TS(2322): Type 'string' is not assignable to type 'number'.
       thickness: '',
-      // @ts-expect-error TS(2322): Type 'string' is not assignable to type 'number'.
       quantity: '',
-      // @ts-expect-error TS(2322): Type 'string' is not assignable to type 'number'.
       rate: '',
       tax: STEEL_TUBE_TAX_RATE,
     });
@@ -262,24 +256,18 @@ const QuotationForm = () => {
   const overallTotals = calculateOverallTotal();
 
   return (
-    // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
     <div className="max-w-6xl mx-auto p-6 bg-white rounded-lg shadow-md">
-      // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
       provided... Remove this comment to see the full error message
       <h2 className="text-3xl font-bold text-gray-900 mb-6">
         Create Quotation
       </h2>
-      // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
       provided... Remove this comment to see the full error message
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* Lead Selection */}
-        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
         provided... Remove this comment to see the full error message
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <div>
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <label
@@ -289,17 +277,13 @@ const QuotationForm = () => {
               Select Lead *
             </label>
             {isLeadsError ? (
-              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <div className="p-3 bg-red-50 border border-red-200 rounded-md">
-                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
                 flag is provided... Remove this comment to see the full error
                 message
                 <p className="text-sm text-red-500 mb-2">
-                  // @ts-expect-error TS(2339): Property 'message' does not
                   exist on type 'never'. Failed to load leads:{' '}
                   {leadsError?.message || 'Unknown error'}
                 </p>
-                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
                 flag is provided... Remove this comment to see the full error
                 message
                 <button
@@ -311,7 +295,6 @@ const QuotationForm = () => {
                 </button>
               </div>
             ) : (
-              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
               <select
                 id="leadId"
                 {...register('leadId')}
@@ -320,31 +303,25 @@ const QuotationForm = () => {
                   errors.leadId ? 'border-red-500' : 'border-gray-300'
                 } ${isLoadingLeads ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
-                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
                 flag is provided... Remove this comment to see the full error
                 message
                 <option value="">
                   {isLoadingLeads ? 'Loading leads...' : 'Select a lead'}
                 </option>
                 {leads.map((lead) => (
-                  // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                   <option key={lead._id} value={lead._id}>
-                    // @ts-expect-error TS(2339): Property 'name' does not exist
                     on type 'never'.
                     {lead.name} - {lead.phone} ({lead.product})
                   </option>
                 ))}
               </select>
             )}
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             {errors.leadId && <FormError error={errors.leadId} />}
           </div>
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <div>
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <label
@@ -353,7 +330,6 @@ const QuotationForm = () => {
             >
               Quotation Validity (Days) *
             </label>
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <input
@@ -367,24 +343,19 @@ const QuotationForm = () => {
               min="1"
               max="365"
             />
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             {errors.validity && <FormError error={errors.validity} />}
           </div>
         </div>
         {/* Items Table */}
-        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
         provided... Remove this comment to see the full error message
         <div className="space-y-4">
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <div className="flex justify-between items-center">
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <h3 className="text-lg font-semibold text-gray-900">Items</h3>
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <button
@@ -395,76 +366,62 @@ const QuotationForm = () => {
               + Add Item
             </button>
           </div>
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <div className="overflow-x-auto">
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <table className="min-w-full divide-y divide-gray-200 border border-gray-200 rounded-lg">
-              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
               flag is provided... Remove this comment to see the full error
               message
               <thead className="bg-gray-50">
-                // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
                 flag is provided... Remove this comment to see the full error
                 message
                 <tr>
-                  // @ts-expect-error TS(17004): Cannot use JSX unless the
                   '--jsx' flag is provided... Remove this comment to see the
                   full error message
                   <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Type *
                   </th>
-                  // @ts-expect-error TS(17004): Cannot use JSX unless the
                   '--jsx' flag is provided... Remove this comment to see the
                   full error message
                   <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Size *
                   </th>
-                  // @ts-expect-error TS(17004): Cannot use JSX unless the
                   '--jsx' flag is provided... Remove this comment to see the
                   full error message
                   <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Thickness (mm) *
                   </th>
-                  // @ts-expect-error TS(17004): Cannot use JSX unless the
                   '--jsx' flag is provided... Remove this comment to see the
                   full error message
                   <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Quantity (tons) *
                   </th>
-                  // @ts-expect-error TS(17004): Cannot use JSX unless the
                   '--jsx' flag is provided... Remove this comment to see the
                   full error message
                   <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Rate (₹) *
                   </th>
-                  // @ts-expect-error TS(17004): Cannot use JSX unless the
                   '--jsx' flag is provided... Remove this comment to see the
                   full error message
                   <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Tax % *
                   </th>
-                  // @ts-expect-error TS(17004): Cannot use JSX unless the
                   '--jsx' flag is provided... Remove this comment to see the
                   full error message
                   <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Subtotal (₹)
                   </th>
-                  // @ts-expect-error TS(17004): Cannot use JSX unless the
                   '--jsx' flag is provided... Remove this comment to see the
                   full error message
                   <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Tax (₹)
                   </th>
-                  // @ts-expect-error TS(17004): Cannot use JSX unless the
                   '--jsx' flag is provided... Remove this comment to see the
                   full error message
                   <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Total (₹)
                   </th>
-                  // @ts-expect-error TS(17004): Cannot use JSX unless the
                   '--jsx' flag is provided... Remove this comment to see the
                   full error message
                   <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -472,7 +429,6 @@ const QuotationForm = () => {
                   </th>
                 </tr>
               </thead>
-              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
               flag is provided... Remove this comment to see the full error
               message
               <tbody className="bg-white divide-y divide-gray-200">
@@ -481,13 +437,10 @@ const QuotationForm = () => {
                   const totals = calculateRowTotal(item);
 
                   return (
-                    // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                     <tr key={field.id} className="hover:bg-gray-50">
-                      // @ts-expect-error TS(17004): Cannot use JSX unless the
                       '--jsx' flag is provided... Remove this comment to see the
                       full error message
                       <td className="px-3 py-4 whitespace-nowrap">
-                        // @ts-expect-error TS(17004): Cannot use JSX unless the
                         '--jsx' flag is provided... Remove this comment to see
                         the full error message
                         <select
@@ -498,23 +451,19 @@ const QuotationForm = () => {
                               : 'border-gray-300'
                           }`}
                         >
-                          // @ts-expect-error TS(17004): Cannot use JSX unless
                           the '--jsx' flag is provided... Remove this comment to
                           see the full error message
                           <option value="">Select type</option>
                           {STEEL_TUBE_CATEGORIES.map((category) => (
-                            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                             <option key={category.value} value={category.value}>
                               {category.label}
                             </option>
                           ))}
                         </select>
                       </td>
-                      // @ts-expect-error TS(17004): Cannot use JSX unless the
                       '--jsx' flag is provided... Remove this comment to see the
                       full error message
                       <td className="px-3 py-4 whitespace-nowrap">
-                        // @ts-expect-error TS(17004): Cannot use JSX unless the
                         '--jsx' flag is provided... Remove this comment to see
                         the full error message
                         <input
@@ -528,11 +477,9 @@ const QuotationForm = () => {
                           placeholder="100x100mm"
                         />
                       </td>
-                      // @ts-expect-error TS(17004): Cannot use JSX unless the
                       '--jsx' flag is provided... Remove this comment to see the
                       full error message
                       <td className="px-3 py-4 whitespace-nowrap">
-                        // @ts-expect-error TS(17004): Cannot use JSX unless the
                         '--jsx' flag is provided... Remove this comment to see
                         the full error message
                         <input
@@ -547,11 +494,9 @@ const QuotationForm = () => {
                           placeholder="2.0"
                         />
                       </td>
-                      // @ts-expect-error TS(17004): Cannot use JSX unless the
                       '--jsx' flag is provided... Remove this comment to see the
                       full error message
                       <td className="px-3 py-4 whitespace-nowrap">
-                        // @ts-expect-error TS(17004): Cannot use JSX unless the
                         '--jsx' flag is provided... Remove this comment to see
                         the full error message
                         <input
@@ -566,11 +511,9 @@ const QuotationForm = () => {
                           placeholder="10.0"
                         />
                       </td>
-                      // @ts-expect-error TS(17004): Cannot use JSX unless the
                       '--jsx' flag is provided... Remove this comment to see the
                       full error message
                       <td className="px-3 py-4 whitespace-nowrap">
-                        // @ts-expect-error TS(17004): Cannot use JSX unless the
                         '--jsx' flag is provided... Remove this comment to see
                         the full error message
                         <input
@@ -585,11 +528,9 @@ const QuotationForm = () => {
                           placeholder="50000"
                         />
                       </td>
-                      // @ts-expect-error TS(17004): Cannot use JSX unless the
                       '--jsx' flag is provided... Remove this comment to see the
                       full error message
                       <td className="px-3 py-4 whitespace-nowrap">
-                        // @ts-expect-error TS(17004): Cannot use JSX unless the
                         '--jsx' flag is provided... Remove this comment to see
                         the full error message
                         <input
@@ -604,30 +545,25 @@ const QuotationForm = () => {
                           placeholder="12"
                         />
                       </td>
-                      // @ts-expect-error TS(17004): Cannot use JSX unless the
                       '--jsx' flag is provided... Remove this comment to see the
                       full error message
                       <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-900">
                         ₹{totals.subtotal.toLocaleString('en-IN')}
                       </td>
-                      // @ts-expect-error TS(17004): Cannot use JSX unless the
                       '--jsx' flag is provided... Remove this comment to see the
                       full error message
                       <td className="px-3 py-4 whitespace-nowrap text-sm text-gray-900">
                         ₹{totals.taxAmount.toLocaleString('en-IN')}
                       </td>
-                      // @ts-expect-error TS(17004): Cannot use JSX unless the
                       '--jsx' flag is provided... Remove this comment to see the
                       full error message
                       <td className="px-3 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">
                         ₹{totals.total.toLocaleString('en-IN')}
                       </td>
-                      // @ts-expect-error TS(17004): Cannot use JSX unless the
                       '--jsx' flag is provided... Remove this comment to see the
                       full error message
                       <td className="px-3 py-4 whitespace-nowrap">
                         {fields.length > 1 && (
-                          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is provided... Remove this comment to see the full error message
                           <button
                             type="button"
                             onClick={() => removeProductRow(index)}
@@ -643,61 +579,48 @@ const QuotationForm = () => {
               </tbody>
             </table>
           </div>
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           {errors.items && <FormError error={errors.items} />}
         </div>
         {/* Totals Summary */}
-        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
         provided... Remove this comment to see the full error message
         <div className="bg-gray-50 p-4 rounded-lg">
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <h4 className="text-lg font-semibold text-gray-900 mb-3">
             Quotation Summary
           </h4>
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <div className="text-center">
-              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
               flag is provided... Remove this comment to see the full error
               message
               <p className="text-sm text-gray-600">Subtotal</p>
-              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
               flag is provided... Remove this comment to see the full error
               message
               <p className="text-xl font-semibold text-gray-900">
                 ₹{overallTotals.subtotal.toLocaleString('en-IN')}
               </p>
             </div>
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <div className="text-center">
-              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
               flag is provided... Remove this comment to see the full error
               message
               <p className="text-sm text-gray-600">Total Tax</p>
-              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
               flag is provided... Remove this comment to see the full error
               message
               <p className="text-xl font-semibold text-gray-900">
                 ₹{overallTotals.totalTax.toLocaleString('en-IN')}
               </p>
             </div>
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <div className="text-center">
-              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
               flag is provided... Remove this comment to see the full error
               message
               <p className="text-sm text-gray-600">Grand Total</p>
-              // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
               flag is provided... Remove this comment to see the full error
               message
               <p className="text-2xl font-bold text-blue-600">
@@ -707,10 +630,8 @@ const QuotationForm = () => {
           </div>
         </div>
         {/* Delivery Terms */}
-        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
         provided... Remove this comment to see the full error message
         <div>
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <label
             htmlFor="deliveryTerms"
@@ -718,7 +639,6 @@ const QuotationForm = () => {
           >
             Delivery Terms *
           </label>
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <textarea
             id="deliveryTerms"
@@ -729,15 +649,12 @@ const QuotationForm = () => {
             }`}
             placeholder="Enter delivery terms and conditions..."
           />
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           {errors.deliveryTerms && <FormError error={errors.deliveryTerms} />}
         </div>
         {/* Action Buttons */}
-        // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag is
         provided... Remove this comment to see the full error message
         <div className="flex justify-between items-center pt-6">
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <button
             type="button"
@@ -746,10 +663,8 @@ const QuotationForm = () => {
           >
             Reset Form
           </button>
-          // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx' flag
           is provided... Remove this comment to see the full error message
           <div className="flex space-x-4">
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <button
@@ -760,7 +675,6 @@ const QuotationForm = () => {
             >
               {isGeneratingPDF ? 'Generating PDF...' : 'Generate Quotation PDF'}
             </button>
-            // @ts-expect-error TS(17004): Cannot use JSX unless the '--jsx'
             flag is provided... Remove this comment to see the full error
             message
             <button
