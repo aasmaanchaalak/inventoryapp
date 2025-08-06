@@ -13,14 +13,15 @@ router.get('/', async (req, res) => {
       pushedToTally,
       dateFrom,
       dateTo,
-      search
+      search,
     } = req.query;
 
     // Build filter object
     const filter = {};
-    
+
     if (status) filter.status = status;
-    if (pushedToTally !== undefined) filter.pushedToTally = pushedToTally === 'true';
+    if (pushedToTally !== undefined)
+      filter.pushedToTally = pushedToTally === 'true';
     if (dateFrom || dateTo) {
       filter.date = {};
       if (dateFrom) filter.date.$gte = new Date(dateFrom);
@@ -30,7 +31,7 @@ router.get('/', async (req, res) => {
       filter.$or = [
         { invoiceNumber: { $regex: search, $options: 'i' } },
         { 'metadata.customerName': { $regex: search, $options: 'i' } },
-        { 'metadata.do2Number': { $regex: search, $options: 'i' } }
+        { 'metadata.do2Number': { $regex: search, $options: 'i' } },
       ];
     }
 
@@ -55,12 +56,12 @@ router.get('/', async (req, res) => {
           _id: null,
           totalInvoices: { $sum: 1 },
           totalPushedToTally: {
-            $sum: { $cond: ['$pushedToTally', 1, 0] }
+            $sum: { $cond: ['$pushedToTally', 1, 0] },
           },
           totalAmount: { $sum: '$metadata.grandTotal' },
-          averageAmount: { $avg: '$metadata.grandTotal' }
-        }
-      }
+          averageAmount: { $avg: '$metadata.grandTotal' },
+        },
+      },
     ]);
 
     res.json({
@@ -71,23 +72,22 @@ router.get('/', async (req, res) => {
           totalInvoices: 0,
           totalPushedToTally: 0,
           totalAmount: 0,
-          averageAmount: 0
+          averageAmount: 0,
         },
         pagination: {
           page: parseInt(page),
           limit: parseInt(limit),
           total,
-          pages: Math.ceil(total / parseInt(limit))
-        }
-      }
+          pages: Math.ceil(total / parseInt(limit)),
+        },
+      },
     });
-
   } catch (error) {
     console.error('Error fetching invoices:', error);
     res.status(500).json({
       success: false,
       message: 'Internal server error',
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -97,34 +97,36 @@ router.get('/:id', async (req, res) => {
   try {
     const invoice = await Invoice.findById(req.params.id)
       .populate('do2Id', 'do2Number status items poId')
-      .populate('do2Id.poId', 'poNumber customerName customerAddress customerGstin customerPan');
+      .populate(
+        'do2Id.poId',
+        'poNumber customerName customerAddress customerGstin customerPan'
+      );
 
     if (!invoice) {
       return res.status(404).json({
         success: false,
-        message: 'Invoice not found'
+        message: 'Invoice not found',
       });
     }
 
     res.json({
       success: true,
-      data: invoice
+      data: invoice,
     });
-
   } catch (error) {
     console.error('Error fetching invoice:', error);
-    
+
     if (error.name === 'CastError') {
       return res.status(400).json({
         success: false,
-        message: 'Invalid invoice ID'
+        message: 'Invalid invoice ID',
       });
     }
 
     res.status(500).json({
       success: false,
       message: 'Internal server error',
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -132,17 +134,13 @@ router.get('/:id', async (req, res) => {
 // POST /api/invoices - Create new invoice record
 router.post('/', async (req, res) => {
   try {
-    const {
-      do2Id,
-      invoicePDFPath,
-      metadata
-    } = req.body;
+    const { do2Id, invoicePDFPath, metadata } = req.body;
 
     // Validate required fields
     if (!do2Id) {
       return res.status(400).json({
         success: false,
-        message: 'DO2 ID is required'
+        message: 'DO2 ID is required',
       });
     }
 
@@ -151,7 +149,7 @@ router.post('/', async (req, res) => {
     if (existingInvoice) {
       return res.status(400).json({
         success: false,
-        message: 'Invoice already exists for this DO2'
+        message: 'Invoice already exists for this DO2',
       });
     }
 
@@ -160,14 +158,14 @@ router.post('/', async (req, res) => {
     if (!do2) {
       return res.status(404).json({
         success: false,
-        message: 'DO2 not found'
+        message: 'DO2 not found',
       });
     }
 
     if (do2.status !== 'executed') {
       return res.status(400).json({
         success: false,
-        message: 'DO2 must be executed before creating invoice'
+        message: 'DO2 must be executed before creating invoice',
       });
     }
 
@@ -181,10 +179,10 @@ router.post('/', async (req, res) => {
         totalTax: metadata?.totalTax || 0,
         grandTotal: metadata?.grandTotal || 0,
         customerName: metadata?.customerName || '',
-        do2Number: metadata?.do2Number || do2.do2Number
+        do2Number: metadata?.do2Number || do2.do2Number,
       },
       status: 'generated',
-      remarks: 'Invoice generated successfully'
+      remarks: 'Invoice generated successfully',
     });
 
     await invoice.save();
@@ -192,15 +190,14 @@ router.post('/', async (req, res) => {
     res.status(201).json({
       success: true,
       message: 'Invoice created successfully',
-      data: invoice
+      data: invoice,
     });
-
   } catch (error) {
     console.error('Error creating invoice:', error);
     res.status(500).json({
       success: false,
       message: 'Internal server error',
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -215,7 +212,7 @@ router.put('/:id/push-to-tally', async (req, res) => {
     if (!invoice) {
       return res.status(404).json({
         success: false,
-        message: 'Invoice not found'
+        message: 'Invoice not found',
       });
     }
 
@@ -231,15 +228,14 @@ router.put('/:id/push-to-tally', async (req, res) => {
     res.json({
       success: true,
       message: 'Invoice updated with Tally push information',
-      data: invoice
+      data: invoice,
     });
-
   } catch (error) {
     console.error('Error updating invoice for Tally push:', error);
     res.status(500).json({
       success: false,
       message: 'Internal server error',
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -250,31 +246,29 @@ router.put('/:id', async (req, res) => {
     const { id } = req.params;
     const updateData = req.body;
 
-    const invoice = await Invoice.findByIdAndUpdate(
-      id,
-      updateData,
-      { new: true, runValidators: true }
-    );
+    const invoice = await Invoice.findByIdAndUpdate(id, updateData, {
+      new: true,
+      runValidators: true,
+    });
 
     if (!invoice) {
       return res.status(404).json({
         success: false,
-        message: 'Invoice not found'
+        message: 'Invoice not found',
       });
     }
 
     res.json({
       success: true,
       message: 'Invoice updated successfully',
-      data: invoice
+      data: invoice,
     });
-
   } catch (error) {
     console.error('Error updating invoice:', error);
     res.status(500).json({
       success: false,
       message: 'Internal server error',
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -287,21 +281,20 @@ router.delete('/:id', async (req, res) => {
     if (!invoice) {
       return res.status(404).json({
         success: false,
-        message: 'Invoice not found'
+        message: 'Invoice not found',
       });
     }
 
     res.json({
       success: true,
-      message: 'Invoice deleted successfully'
+      message: 'Invoice deleted successfully',
     });
-
   } catch (error) {
     console.error('Error deleting invoice:', error);
     res.status(500).json({
       success: false,
       message: 'Internal server error',
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -315,7 +308,7 @@ router.get('/:id/audit-trail', async (req, res) => {
     if (!invoice) {
       return res.status(404).json({
         success: false,
-        message: 'Invoice not found'
+        message: 'Invoice not found',
       });
     }
 
@@ -331,24 +324,23 @@ router.get('/:id/audit-trail', async (req, res) => {
         do2Id: invoice.do2Id,
         auditTrail: invoice.auditTrail,
         auditSummary,
-        totalEvents: invoice.auditTrail.length
-      }
+        totalEvents: invoice.auditTrail.length,
+      },
     });
-
   } catch (error) {
     console.error('Error fetching audit trail:', error);
-    
+
     if (error.name === 'CastError') {
       return res.status(400).json({
         success: false,
-        message: 'Invalid invoice ID'
+        message: 'Invalid invoice ID',
       });
     }
 
     res.status(500).json({
       success: false,
       message: 'Internal server error',
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -362,7 +354,7 @@ router.post('/:id/audit-entry', async (req, res) => {
     if (!event) {
       return res.status(400).json({
         success: false,
-        message: 'Event is required'
+        message: 'Event is required',
       });
     }
 
@@ -370,12 +362,17 @@ router.post('/:id/audit-entry', async (req, res) => {
     if (!invoice) {
       return res.status(404).json({
         success: false,
-        message: 'Invoice not found'
+        message: 'Invoice not found',
       });
     }
 
     // Add audit entry
-    await invoice.addAuditEntry(event, performedBy || 'system', notes || '', metadata || {});
+    await invoice.addAuditEntry(
+      event,
+      performedBy || 'system',
+      notes || '',
+      metadata || {}
+    );
 
     res.json({
       success: true,
@@ -383,26 +380,25 @@ router.post('/:id/audit-entry', async (req, res) => {
       data: {
         invoiceId: invoice._id,
         invoiceNumber: invoice.invoiceNumber,
-        latestEntry: invoice.getLatestAuditEntry()
-      }
+        latestEntry: invoice.getLatestAuditEntry(),
+      },
     });
-
   } catch (error) {
     console.error('Error adding audit entry:', error);
-    
+
     if (error.name === 'CastError') {
       return res.status(400).json({
         success: false,
-        message: 'Invalid invoice ID'
+        message: 'Invalid invoice ID',
       });
     }
 
     res.status(500).json({
       success: false,
       message: 'Internal server error',
-      error: error.message
+      error: error.message,
     });
   }
 });
 
-module.exports = router; 
+module.exports = router;

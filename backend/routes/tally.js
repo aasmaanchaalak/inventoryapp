@@ -13,19 +13,22 @@ router.post('/push', async (req, res) => {
     if (!do2Id) {
       return res.status(400).json({
         success: false,
-        message: 'DO2 ID is required'
+        message: 'DO2 ID is required',
       });
     }
 
     // Fetch DO2 with populated PO data
     const do2 = await DO2.findById(do2Id)
-      .populate('poId', 'poNumber customerName customerAddress customerGstin customerPan')
+      .populate(
+        'poId',
+        'poNumber customerName customerAddress customerGstin customerPan'
+      )
       .populate('do1Id', 'do1Number');
 
     if (!do2) {
       return res.status(404).json({
         success: false,
-        message: 'DO2 not found'
+        message: 'DO2 not found',
       });
     }
 
@@ -33,7 +36,7 @@ router.post('/push', async (req, res) => {
     if (do2.status !== 'executed') {
       return res.status(400).json({
         success: false,
-        message: 'DO2 must be executed before pushing to Tally'
+        message: 'DO2 must be executed before pushing to Tally',
       });
     }
 
@@ -46,10 +49,10 @@ router.post('/push', async (req, res) => {
     };
 
     // Prepare items for Tally
-    const tallyItems = do2.items.map(item => {
+    const tallyItems = do2.items.map((item) => {
       const itemTotal = item.dispatchedQuantity * item.rate;
       const tax = calculateTax(itemTotal);
-      
+
       return {
         hsnCode: item.hsnCode,
         productName: `${item.type.charAt(0).toUpperCase() + item.type.slice(1)} Tube ${item.size} × ${item.thickness}mm`,
@@ -60,7 +63,7 @@ router.post('/push', async (req, res) => {
         cgst: tax.cgst,
         sgst: tax.sgst,
         totalTax: tax.total,
-        totalAmount: itemTotal + tax.total
+        totalAmount: itemTotal + tax.total,
       };
     });
 
@@ -108,7 +111,9 @@ router.post('/push', async (req, res) => {
               <ISLASTLEVEL>No</ISLASTLEVEL>
               <AMOUNT>-${grandTotal.toFixed(2)}</AMOUNT>
             </ALLLEDGERENTRIES.LIST>
-            ${tallyItems.map(item => `
+            ${tallyItems
+              .map(
+                (item) => `
             <ALLLEDGERENTRIES.LIST>
               <LEDGERNAME>Sales</LEDGERNAME>
               <ISDEEMEDPOSITIVE>No</ISDEEMEDPOSITIVE>
@@ -135,7 +140,9 @@ router.post('/push', async (req, res) => {
               <ISPARTYLEDGER>No</ISPARTYLEDGER>
               <ISLASTLEVEL>No</ISLASTLEVEL>
               <AMOUNT>${item.sgst.toFixed(2)}</AMOUNT>
-            </ALLLEDGERENTRIES.LIST>`).join('')}
+            </ALLLEDGERENTRIES.LIST>`
+              )
+              .join('')}
             <ALLLEDGERENTRIES.LIST>
               <LEDGERNAME>Inventory</LEDGERNAME>
               <ISDEEMEDPOSITIVE>Yes</ISDEEMEDPOSITIVE>
@@ -155,18 +162,20 @@ router.post('/push', async (req, res) => {
     // Prepare Tally JSON payload
     const tallyJSON = {
       voucher: {
-        date: new Date(do2.executionDetails.executedAt).toLocaleDateString('dd/MM/yyyy'),
+        date: new Date(do2.executionDetails.executedAt).toLocaleDateString(
+          'dd/MM/yyyy'
+        ),
         voucherTypeName: 'Sales',
         voucherNumber: do2.do2Number,
         reference: do2.poId.poNumber,
         partyLedgerName: do2.poId.customerName,
         basicBuyerIdentification: {
           partyGstin: do2.poId.customerGstin,
-          partyPan: do2.poId.customerPan
+          partyPan: do2.poId.customerPan,
         },
         basicSellerIdentification: {
           companyGstin: do2.companyInfo.gstin,
-          companyPan: do2.companyInfo.pan
+          companyPan: do2.companyInfo.pan,
         },
         allLedgerEntries: [
           {
@@ -176,9 +185,9 @@ router.post('/push', async (req, res) => {
             removeZeroEntries: 'No',
             isPartyLedger: 'Yes',
             isLastLevel: 'No',
-            amount: `-${grandTotal.toFixed(2)}`
+            amount: `-${grandTotal.toFixed(2)}`,
           },
-          ...tallyItems.flatMap(item => [
+          ...tallyItems.flatMap((item) => [
             {
               ledgerName: 'Sales',
               isDeemedPositive: 'No',
@@ -186,7 +195,7 @@ router.post('/push', async (req, res) => {
               removeZeroEntries: 'No',
               isPartyLedger: 'No',
               isLastLevel: 'No',
-              amount: item.amount.toFixed(2)
+              amount: item.amount.toFixed(2),
             },
             {
               ledgerName: 'CGST',
@@ -195,7 +204,7 @@ router.post('/push', async (req, res) => {
               removeZeroEntries: 'No',
               isPartyLedger: 'No',
               isLastLevel: 'No',
-              amount: item.cgst.toFixed(2)
+              amount: item.cgst.toFixed(2),
             },
             {
               ledgerName: 'SGST',
@@ -204,8 +213,8 @@ router.post('/push', async (req, res) => {
               removeZeroEntries: 'No',
               isPartyLedger: 'No',
               isLastLevel: 'No',
-              amount: item.sgst.toFixed(2)
-            }
+              amount: item.sgst.toFixed(2),
+            },
           ]),
           {
             ledgerName: 'Inventory',
@@ -214,10 +223,10 @@ router.post('/push', async (req, res) => {
             removeZeroEntries: 'No',
             isPartyLedger: 'No',
             isLastLevel: 'No',
-            amount: `-${subtotal.toFixed(2)}`
-          }
+            amount: `-${subtotal.toFixed(2)}`,
+          },
         ],
-        items: tallyItems.map(item => ({
+        items: tallyItems.map((item) => ({
           stockItemName: item.productName,
           rate: item.rate.toFixed(2),
           amount: item.amount.toFixed(2),
@@ -230,16 +239,18 @@ router.post('/push', async (req, res) => {
           cgstAmount: item.cgst.toFixed(2),
           sgstAmount: item.sgst.toFixed(2),
           totalTaxAmount: item.totalTax.toFixed(2),
-          totalAmount: item.totalAmount.toFixed(2)
-        }))
+          totalAmount: item.totalAmount.toFixed(2),
+        })),
       },
       summary: {
         subtotal: subtotal.toFixed(2),
         totalTax: totalTax.toFixed(2),
         grandTotal: grandTotal.toFixed(2),
         totalItems: tallyItems.length,
-        totalQuantity: tallyItems.reduce((sum, item) => sum + item.quantity, 0).toFixed(2)
-      }
+        totalQuantity: tallyItems
+          .reduce((sum, item) => sum + item.quantity, 0)
+          .toFixed(2),
+      },
     };
 
     // Mock Tally push (console log for now)
@@ -266,7 +277,7 @@ router.post('/push', async (req, res) => {
       invoiceRecord.status = 'pushed_to_tally';
       invoiceRecord.remarks = 'Successfully pushed to Tally ERP';
       await invoiceRecord.save();
-      
+
       // Add audit trail entry for Tally push
       await invoiceRecord.addAuditEntry(
         'tally_push',
@@ -279,10 +290,10 @@ router.post('/push', async (req, res) => {
           totalAmount: grandTotal,
           tallyVoucherNumber: invoiceRecord.tallyVoucherNumber,
           itemsCount: tallyItems.length,
-          payloadId: invoiceRecord.tallyVoucherNumber
+          payloadId: invoiceRecord.tallyVoucherNumber,
         }
       );
-      
+
       // Add audit trail entry for Tally push success
       await invoiceRecord.addAuditEntry(
         'tally_push_success',
@@ -294,13 +305,13 @@ router.post('/push', async (req, res) => {
           customerName: do2.poId.customerName,
           totalAmount: grandTotal,
           tallyVoucherNumber: invoiceRecord.tallyVoucherNumber,
-          itemsCount: tallyItems.length
+          itemsCount: tallyItems.length,
         }
       );
     }
 
     // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     res.json({
       success: true,
@@ -315,17 +326,16 @@ router.post('/push', async (req, res) => {
         grandTotal: grandTotal.toFixed(2),
         formats: {
           xml: tallyXML,
-          json: tallyJSON
-        }
-      }
+          json: tallyJSON,
+        },
+      },
     });
-
   } catch (error) {
     console.error('Error pushing DO2 to Tally:', error);
     res.status(500).json({
       success: false,
       message: 'Internal server error',
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -334,7 +344,7 @@ router.post('/push', async (req, res) => {
 const formatCurrency = (amount) => {
   return new Intl.NumberFormat('en-IN', {
     style: 'currency',
-    currency: 'INR'
+    currency: 'INR',
   }).format(amount);
 };
 
@@ -350,22 +360,21 @@ router.get('/status/:do2Id', async (req, res) => {
       pushedAt: new Date().toISOString(),
       tallyVoucherNumber: `TALLY-${Date.now()}`,
       status: 'success',
-      remarks: 'Successfully pushed to Tally ERP'
+      remarks: 'Successfully pushed to Tally ERP',
     };
 
     res.json({
       success: true,
-      data: mockStatus
+      data: mockStatus,
     });
-
   } catch (error) {
     console.error('Error fetching Tally status:', error);
     res.status(500).json({
       success: false,
       message: 'Internal server error',
-      error: error.message
+      error: error.message,
     });
   }
 });
 
-module.exports = router; 
+module.exports = router;

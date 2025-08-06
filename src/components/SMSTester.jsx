@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { FormError } from './common';
 
 const SMSTester = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -10,7 +11,6 @@ const SMSTester = () => {
     register,
     handleSubmit,
     formState: { errors },
-    reset
   } = useForm();
 
   const onSubmit = async (data) => {
@@ -29,7 +29,7 @@ const SMSTester = () => {
           message: data.message,
           clientName: data.clientName,
           do2Id: data.do2Id,
-          companyName: data.companyName
+          companyName: data.companyName,
         }),
       });
 
@@ -62,7 +62,7 @@ const SMSTester = () => {
           phone: '9876543210', // Test phone number
           clientName: 'Test Customer',
           do2Id: 'DO2-2024-001',
-          companyName: 'Steel Tubes Co.'
+          companyName: 'Steel Tubes Co.',
         }),
       });
 
@@ -83,15 +83,25 @@ const SMSTester = () => {
   return (
     <div className="max-w-4xl mx-auto p-6">
       <div className="bg-white shadow-md rounded-lg p-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">SMS Gateway Tester</h2>
-        
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">
+          SMS Gateway Tester
+        </h2>
+
         {/* Configuration Info */}
         <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-md">
-          <h3 className="text-lg font-semibold text-blue-900 mb-2">Configuration</h3>
+          <h3 className="text-lg font-semibold text-blue-900 mb-2">
+            Configuration
+          </h3>
           <div className="text-sm text-blue-800 space-y-1">
-            <p><strong>Gateway:</strong> MSG91</p>
-            <p><strong>API URL:</strong> https://api.msg91.com/api/v5/flow/</p>
-            <p><strong>Environment Variables Required:</strong></p>
+            <p>
+              <strong>Gateway:</strong> MSG91
+            </p>
+            <p>
+              <strong>API URL:</strong> https://api.msg91.com/api/v5/flow/
+            </p>
+            <p>
+              <strong>Environment Variables Required:</strong>
+            </p>
             <ul className="ml-4 list-disc">
               <li>MSG91_API_KEY - Your MSG91 API key</li>
               <li>MSG91_SENDER_ID - Sender ID (e.g., INVENTORY)</li>
@@ -103,7 +113,9 @@ const SMSTester = () => {
 
         {/* Test Custom SMS */}
         <div className="mb-8">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Test Custom SMS</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            Test Custom SMS
+          </h3>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -112,19 +124,17 @@ const SMSTester = () => {
                 </label>
                 <input
                   type="tel"
-                  {...register('phone', { 
+                  {...register('phone', {
                     required: 'Phone number is required',
                     pattern: {
                       value: /^[0-9+\-\s()]+$/,
-                      message: 'Invalid phone number format'
-                    }
+                      message: 'Invalid phone number format',
+                    },
                   })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="9876543210 or +919876543210"
                 />
-                {errors.phone && (
-                  <p className="text-red-600 text-sm mt-1">{errors.phone.message}</p>
-                )}
+                {errors.phone && <FormError error={errors.phone} />}
               </div>
 
               <div>
@@ -133,13 +143,13 @@ const SMSTester = () => {
                 </label>
                 <input
                   type="text"
-                  {...register('clientName', { required: 'Client name is required' })}
+                  {...register('clientName', {
+                    required: 'Client name is required',
+                  })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="John Doe"
                 />
-                {errors.clientName && (
-                  <p className="text-red-600 text-sm mt-1">{errors.clientName.message}</p>
-                )}
+                {errors.clientName && <FormError error={errors.clientName} />}
               </div>
 
               <div>
@@ -152,9 +162,7 @@ const SMSTester = () => {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="DO2-2024-001"
                 />
-                {errors.do2Id && (
-                  <p className="text-red-600 text-sm mt-1">{errors.do2Id.message}</p>
-                )}
+                {errors.do2Id && <FormError error={errors.do2Id} />}
               </div>
 
               <div>
@@ -163,13 +171,13 @@ const SMSTester = () => {
                 </label>
                 <input
                   type="text"
-                  {...register('companyName', { required: 'Company name is required' })}
+                  {...register('companyName', {
+                    required: 'Company name is required',
+                  })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Steel Tubes Co."
                 />
-                {errors.companyName && (
-                  <p className="text-red-600 text-sm mt-1">{errors.companyName.message}</p>
-                )}
+                {errors.companyName && <FormError error={errors.companyName} />}
               </div>
             </div>
 
@@ -193,7 +201,7 @@ const SMSTester = () => {
               >
                 {isLoading ? 'Sending...' : 'Send Custom SMS'}
               </button>
-              
+
               <button
                 type="button"
                 onClick={testDO2Notification}
@@ -209,11 +217,19 @@ const SMSTester = () => {
         {/* Results */}
         {result && (
           <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-md">
-            <h3 className="text-lg font-semibold text-green-900 mb-2">SMS Sent Successfully</h3>
+            <h3 className="text-lg font-semibold text-green-900 mb-2">
+              SMS Sent Successfully
+            </h3>
             <div className="text-sm text-green-800 space-y-1">
-              <p><strong>Message ID:</strong> {result.messageId}</p>
-              <p><strong>Status:</strong> {result.success ? 'Success' : 'Failed'}</p>
-              <p><strong>Response:</strong></p>
+              <p>
+                <strong>Message ID:</strong> {result.messageId}
+              </p>
+              <p>
+                <strong>Status:</strong> {result.success ? 'Success' : 'Failed'}
+              </p>
+              <p>
+                <strong>Response:</strong>
+              </p>
               <pre className="bg-white p-2 rounded text-xs overflow-auto">
                 {JSON.stringify(result.response, null, 2)}
               </pre>
@@ -223,7 +239,9 @@ const SMSTester = () => {
 
         {error && (
           <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-md">
-            <h3 className="text-lg font-semibold text-red-900 mb-2">SMS Failed</h3>
+            <h3 className="text-lg font-semibold text-red-900 mb-2">
+              SMS Failed
+            </h3>
             <p className="text-red-800">{error}</p>
           </div>
         )}
@@ -233,7 +251,9 @@ const SMSTester = () => {
           <h3 className="text-sm font-medium text-gray-800 mb-2">How to use</h3>
           <ul className="text-sm text-gray-700 space-y-1">
             <li>• Configure MSG91 API credentials in environment variables</li>
-            <li>• Use "Test DO2 Notification" for standard dispatch notification</li>
+            <li>
+              • Use "Test DO2 Notification" for standard dispatch notification
+            </li>
             <li>• Use "Send Custom SMS" for custom messages</li>
             <li>• Phone numbers should include country code (+91 for India)</li>
             <li>• SMS will be sent automatically when DO2 is executed</li>
@@ -244,4 +264,4 @@ const SMSTester = () => {
   );
 };
 
-export default SMSTester; 
+export default SMSTester;

@@ -38,11 +38,9 @@ When working on this application, you MUST use the Playwright MCP tools to test 
 
 #### Required Testing Steps
 ```bash
-# 1. Start the development server first
-npm run dev
-
-# 2. Use Playwright MCP tools to:
-# - Navigate to affected pages/components
+# The development server is already running on port 3000
+# Simply use Playwright MCP tools to:
+# - Navigate to http://localhost:3000 for testing
 # - Take screenshots for visual verification
 # - Test form submissions and user interactions
 # - Verify API responses and error handling
@@ -78,6 +76,122 @@ If Playwright testing reveals issues:
 3. **Fix the underlying issue** - don't just patch symptoms
 4. **Re-test thoroughly** to ensure the fix works
 5. **Test related functionality** that might be affected
+
+## Task Management and Git Workflow
+
+### TODO.md Task Completion
+When you complete a task during development:
+
+1. **Check TODO.md**: Search for the completed task in the TODO.md file
+2. **Mark as Complete**: If the task exists in TODO.md, change `- [ ]` to `- [x]` to mark it complete
+3. **Update Task Status**: This provides clear progress tracking for the project
+
+#### Example Task Completion
+```markdown
+# Before completion
+- [ ] **Fix inventory items flickering bug on Inventory Dashboard page**
+
+# After completion
+- [x] **Fix inventory items flickering bug on Inventory Dashboard page**
+```
+
+### Git Commit Guidelines
+After successfully testing changes with Playwright MCP:
+
+#### When to Commit
+- **REQUIRED**: After Playwright testing confirms changes work correctly
+- **REQUIRED**: Before marking any TODO item as complete
+- **ALWAYS**: Include test results in commit verification
+
+#### Terminal Workflow for Testing and Committing
+```bash
+# Development server is already running on http://localhost:3000
+# Use terminal for git commands and other operations:
+git status
+git diff
+git add .
+git commit -m "..."
+```
+
+#### Commit Message Format
+```bash
+git commit -m "$(cat <<'EOF'
+[Component/Feature]: Brief description of changes
+
+- Specific change 1
+- Specific change 2
+- Specific change 3
+
+✅ Tested with Playwright MCP:
+- [Test scenario 1 result]
+- [Test scenario 2 result]
+- Screenshots verified in: [location]
+
+Fixes: [Related TODO item if applicable]
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+EOF
+)"
+```
+
+#### Git Commands - IMPORTANT RESTRICTIONS
+**✅ ALLOWED Git Operations:**
+- `git status` - Check working tree status
+- `git diff` - View changes made
+- `git add` - Stage files for commit
+- `git commit` - Create commits with detailed messages
+- `git log` - View commit history
+
+**❌ FORBIDDEN Git Operations:**
+- `git push` - NEVER push to remote repository
+- `git checkout` - NEVER change branches
+- `git merge` - NEVER merge branches
+- `git rebase` - NEVER rebase commits
+- Any commands that modify remote state or branch structure
+
+#### Example Complete Workflow
+```bash
+# 1. Make code changes
+# 2. Test with Playwright MCP (navigate to http://localhost:3000)
+# 3. Check TODO.md and mark task complete if applicable
+# 4. Commit changes:
+
+git status
+git diff
+git add .
+git commit -m "$(cat <<'EOF'
+Fix: Update product categories to steel tube industry specific
+
+- Replace generic categories (Electronics, Clothing) with steel tube products
+- Add Square Tubes, Rectangular Tubes, Round Tubes, Oval Tubes, Custom Steel Products
+- Update LeadCreation.jsx product dropdown options
+- Ensure form validation accepts new categories
+
+✅ Tested with Playwright MCP:
+- Verified new categories appear in Lead Creation form
+- Tested form submission with new product types
+- Screenshots confirmed UI displays correctly
+
+Fixes: TODO.md - Update product categories task
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+EOF
+)"
+```
+
+### Development Server Management
+**IMPORTANT**: The development server is already running and managed for you:
+
+1. **Application URL**: Always available at `http://localhost:3000`
+2. **No server management needed**: Server is automatically maintained
+3. **Direct testing access**: Use Playwright MCP to navigate to localhost:3000
+4. **Consistent environment**: Server stays running for reliable testing
+
+This ensures a stable testing environment without server management overhead during development.
 
 ### Individual Testing
 ```bash

@@ -15,19 +15,22 @@ router.get('/:do2Id/pdf', async (req, res) => {
     if (!do2Id) {
       return res.status(400).json({
         success: false,
-        message: 'DO2 ID is required'
+        message: 'DO2 ID is required',
       });
     }
 
     // Fetch DO2 with populated data
     const do2 = await DO2.findById(do2Id)
-      .populate('poId', 'poNumber customerName customerAddress customerGstin customerPan leadId')
+      .populate(
+        'poId',
+        'poNumber customerName customerAddress customerGstin customerPan leadId'
+      )
       .populate('do1Id', 'do1Number');
 
     if (!do2) {
       return res.status(404).json({
         success: false,
-        message: 'DO2 not found'
+        message: 'DO2 not found',
       });
     }
 
@@ -36,7 +39,7 @@ router.get('/:do2Id/pdf', async (req, res) => {
     if (!lead) {
       return res.status(404).json({
         success: false,
-        message: 'Lead information not found'
+        message: 'Lead information not found',
       });
     }
 
@@ -44,7 +47,7 @@ router.get('/:do2Id/pdf', async (req, res) => {
     if (do2.status !== 'executed') {
       return res.status(400).json({
         success: false,
-        message: 'DO2 must be executed before generating invoice'
+        message: 'DO2 must be executed before generating invoice',
       });
     }
 
@@ -57,10 +60,10 @@ router.get('/:do2Id/pdf', async (req, res) => {
     };
 
     // Prepare invoice items
-    const invoiceItems = do2.items.map(item => {
+    const invoiceItems = do2.items.map((item) => {
       const itemTotal = item.dispatchedQuantity * item.rate;
       const tax = calculateTax(itemTotal);
-      
+
       return {
         description: `${item.type.charAt(0).toUpperCase() + item.type.slice(1)} Tube ${item.size} × ${item.thickness}mm`,
         hsnCode: item.hsnCode,
@@ -71,7 +74,7 @@ router.get('/:do2Id/pdf', async (req, res) => {
         cgst: tax.cgst,
         sgst: tax.sgst,
         totalTax: tax.total,
-        totalAmount: itemTotal + tax.total
+        totalAmount: itemTotal + tax.total,
       };
     });
 
@@ -84,11 +87,13 @@ router.get('/:do2Id/pdf', async (req, res) => {
 
     // Generate invoice number
     const invoiceNumber = `INV-${new Date().getFullYear()}-${String(Date.now()).slice(-6)}`;
-    const invoiceDate = new Date(do2.executionDetails.executedAt).toLocaleDateString('en-IN');
+    const invoiceDate = new Date(
+      do2.executionDetails.executedAt
+    ).toLocaleDateString('en-IN');
 
     // Create or update invoice record
     let invoiceRecord = await Invoice.findOne({ do2Id: do2Id });
-    
+
     if (!invoiceRecord) {
       // Create new invoice record
       invoiceRecord = new Invoice({
@@ -101,14 +106,14 @@ router.get('/:do2Id/pdf', async (req, res) => {
           totalTax: totalTax,
           grandTotal: grandTotal,
           customerName: do2.poId.customerName,
-          do2Number: do2.do2Number
+          do2Number: do2.do2Number,
         },
         status: 'generated',
-        remarks: 'Invoice PDF generated successfully'
+        remarks: 'Invoice PDF generated successfully',
       });
-      
+
       await invoiceRecord.save();
-      
+
       // Add audit trail entry for invoice generation
       await invoiceRecord.addAuditEntry(
         'generated',
@@ -119,7 +124,7 @@ router.get('/:do2Id/pdf', async (req, res) => {
           do2Number: do2.do2Number,
           customerName: do2.poId.customerName,
           totalAmount: grandTotal,
-          invoiceNumber: invoiceRecord.invoiceNumber
+          invoiceNumber: invoiceRecord.invoiceNumber,
         }
       );
     }
@@ -127,15 +132,15 @@ router.get('/:do2Id/pdf', async (req, res) => {
     // Create PDF document
     const doc = new PDFDocument({
       size: 'A4',
-      margin: 50
+      margin: 50,
     });
 
     // Capture PDF buffer for email attachment
     const pdfChunks = [];
-    doc.on('data', chunk => pdfChunks.push(chunk));
+    doc.on('data', (chunk) => pdfChunks.push(chunk));
     doc.on('end', async () => {
       const pdfBuffer = Buffer.concat(pdfChunks);
-      
+
       // Send email with PDF attachment
       try {
         const emailResult = await emailService.sendInvoiceEmail(
@@ -145,10 +150,13 @@ router.get('/:do2Id/pdf', async (req, res) => {
           do2.do2Number,
           pdfBuffer
         );
-        
+
         if (emailResult.success) {
-          console.log('Invoice email sent successfully:', emailResult.messageId);
-          
+          console.log(
+            'Invoice email sent successfully:',
+            emailResult.messageId
+          );
+
           // Add audit trail entry for email sending
           if (invoiceRecord) {
             await invoiceRecord.addAuditEntry(
@@ -158,13 +166,13 @@ router.get('/:do2Id/pdf', async (req, res) => {
               {
                 messageId: emailResult.messageId,
                 recipientEmail: lead.email || 'customer@example.com',
-                recipientName: lead.name
+                recipientName: lead.name,
               }
             );
           }
         } else {
           console.error('Failed to send invoice email:', emailResult.error);
-          
+
           // Add audit trail entry for email failure
           if (invoiceRecord) {
             await invoiceRecord.addAuditEntry(
@@ -174,7 +182,7 @@ router.get('/:do2Id/pdf', async (req, res) => {
               {
                 error: emailResult.error,
                 recipientEmail: lead.email || 'customer@example.com',
-                recipientName: lead.name
+                recipientName: lead.name,
               }
             );
           }
@@ -186,7 +194,10 @@ router.get('/:do2Id/pdf', async (req, res) => {
 
     // Set response headers
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `inline; filename="invoice-${do2.do2Number}.pdf"`);
+    res.setHeader(
+      'Content-Disposition',
+      `inline; filename="invoice-${do2.do2Number}.pdf"`
+    );
 
     // Add audit trail entry for PDF generation/viewing
     if (invoiceRecord) {
@@ -199,7 +210,7 @@ router.get('/:do2Id/pdf', async (req, res) => {
           do2Number: do2.do2Number,
           customerName: do2.poId.customerName,
           totalAmount: grandTotal,
-          invoiceNumber: invoiceRecord.invoiceNumber
+          invoiceNumber: invoiceRecord.invoiceNumber,
         }
       );
     }
@@ -216,7 +227,7 @@ router.get('/:do2Id/pdf', async (req, res) => {
           customerName: do2.poId.customerName,
           totalAmount: grandTotal,
           invoiceNumber: invoiceRecord.invoiceNumber,
-          downloadTimestamp: new Date().toISOString()
+          downloadTimestamp: new Date().toISOString(),
         }
       );
     }
@@ -238,14 +249,28 @@ router.get('/:do2Id/pdf', async (req, res) => {
     };
 
     // Header
-    addText('STEEL TUBE INDUSTRIES LTD.', 50, 50, { fontSize: 20, font: 'Helvetica-Bold' });
-    addText('Manufacturing Excellence in Steel Tubes', 50, 75, { fontSize: 12, color: '#666' });
-    
+    addText('STEEL TUBE INDUSTRIES LTD.', 50, 50, {
+      fontSize: 20,
+      font: 'Helvetica-Bold',
+    });
+    addText('Manufacturing Excellence in Steel Tubes', 50, 75, {
+      fontSize: 12,
+      color: '#666',
+    });
+
     // Company details
     addText('123 Industrial Area, Manufacturing District', 50, 100);
     addText('City - 123456, State, India', 50, 115);
-    addText('Phone: +91-9876543210 | Email: info@steeltubeindustries.com', 50, 130);
-    addText(`GSTIN: ${do2.companyInfo.gstin} | PAN: ${do2.companyInfo.pan}`, 50, 145);
+    addText(
+      'Phone: +91-9876543210 | Email: info@steeltubeindustries.com',
+      50,
+      130
+    );
+    addText(
+      `GSTIN: ${do2.companyInfo.gstin} | PAN: ${do2.companyInfo.pan}`,
+      50,
+      145
+    );
 
     // Invoice details (right side)
     addText('INVOICE', 400, 50, { fontSize: 24, font: 'Helvetica-Bold' });
@@ -281,11 +306,17 @@ router.get('/:do2Id/pdf', async (req, res) => {
     const colX = [50, 250, 310, 370, 430, 510];
 
     // Table header
-    addText('Description', colX[0], tableY, { fontSize: 10, font: 'Helvetica-Bold' });
+    addText('Description', colX[0], tableY, {
+      fontSize: 10,
+      font: 'Helvetica-Bold',
+    });
     addText('HSN', colX[1], tableY, { fontSize: 10, font: 'Helvetica-Bold' });
     addText('Qty', colX[2], tableY, { fontSize: 10, font: 'Helvetica-Bold' });
     addText('Rate', colX[3], tableY, { fontSize: 10, font: 'Helvetica-Bold' });
-    addText('Amount', colX[4], tableY, { fontSize: 10, font: 'Helvetica-Bold' });
+    addText('Amount', colX[4], tableY, {
+      fontSize: 10,
+      font: 'Helvetica-Bold',
+    });
     addText('GST %', colX[5], tableY, { fontSize: 10, font: 'Helvetica-Bold' });
 
     // Draw table header line
@@ -303,8 +334,12 @@ router.get('/:do2Id/pdf', async (req, res) => {
       addText(item.description, colX[0], currentY, { fontSize: 9 });
       addText(item.hsnCode, colX[1], currentY, { fontSize: 9 });
       addText(item.quantity.toString(), colX[2], currentY, { fontSize: 9 });
-      addText(`₹${item.rate.toLocaleString()}`, colX[3], currentY, { fontSize: 9 });
-      addText(`₹${item.amount.toLocaleString()}`, colX[4], currentY, { fontSize: 9 });
+      addText(`₹${item.rate.toLocaleString()}`, colX[3], currentY, {
+        fontSize: 9,
+      });
+      addText(`₹${item.amount.toLocaleString()}`, colX[4], currentY, {
+        fontSize: 9,
+      });
       addText(`${gstRate}%`, colX[5], currentY, { fontSize: 9 });
 
       currentY += 20;
@@ -315,79 +350,176 @@ router.get('/:do2Id/pdf', async (req, res) => {
 
     // Totals section
     const totalsY = currentY + 20;
-    
+
     // Right align totals
     const totalsX = 400;
     const labelWidth = 100;
     const valueWidth = 80;
 
-    addText('Sub Total:', totalsX, totalsY, { fontSize: 10, font: 'Helvetica-Bold' });
-    addText(`₹${subtotal.toLocaleString()}`, totalsX + labelWidth, totalsY, { fontSize: 10 });
+    addText('Sub Total:', totalsX, totalsY, {
+      fontSize: 10,
+      font: 'Helvetica-Bold',
+    });
+    addText(`₹${subtotal.toLocaleString()}`, totalsX + labelWidth, totalsY, {
+      fontSize: 10,
+    });
 
     addText('CGST (9%):', totalsX, totalsY + 20, { fontSize: 10 });
-    addText(`₹${totalCGST.toLocaleString()}`, totalsX + labelWidth, totalsY + 20, { fontSize: 10 });
+    addText(
+      `₹${totalCGST.toLocaleString()}`,
+      totalsX + labelWidth,
+      totalsY + 20,
+      { fontSize: 10 }
+    );
 
     addText('SGST (9%):', totalsX, totalsY + 40, { fontSize: 10 });
-    addText(`₹${totalSGST.toLocaleString()}`, totalsX + labelWidth, totalsY + 40, { fontSize: 10 });
+    addText(
+      `₹${totalSGST.toLocaleString()}`,
+      totalsX + labelWidth,
+      totalsY + 40,
+      { fontSize: 10 }
+    );
 
     // Grand total line
-    drawLine(totalsX, totalsY + 55, totalsX + labelWidth + valueWidth, totalsY + 55);
+    drawLine(
+      totalsX,
+      totalsY + 55,
+      totalsX + labelWidth + valueWidth,
+      totalsY + 55
+    );
 
-    addText('GRAND TOTAL:', totalsX, totalsY + 70, { fontSize: 12, font: 'Helvetica-Bold' });
-    addText(`₹${grandTotal.toLocaleString()}`, totalsX + labelWidth, totalsY + 70, { fontSize: 12, font: 'Helvetica-Bold' });
+    addText('GRAND TOTAL:', totalsX, totalsY + 70, {
+      fontSize: 12,
+      font: 'Helvetica-Bold',
+    });
+    addText(
+      `₹${grandTotal.toLocaleString()}`,
+      totalsX + labelWidth,
+      totalsY + 70,
+      { fontSize: 12, font: 'Helvetica-Bold' }
+    );
 
     // Amount in words
     const amountInWords = numberToWords(Math.round(grandTotal));
-    addText(`Amount in Words: ${amountInWords} Rupees Only`, 50, totalsY + 100, { fontSize: 10, font: 'Helvetica-Bold' });
+    addText(
+      `Amount in Words: ${amountInWords} Rupees Only`,
+      50,
+      totalsY + 100,
+      { fontSize: 10, font: 'Helvetica-Bold' }
+    );
 
     // Terms and conditions
-    addText('Terms & Conditions:', 50, totalsY + 130, { fontSize: 10, font: 'Helvetica-Bold' });
-    addText('1. Payment is due within 30 days of invoice date', 50, totalsY + 150, { fontSize: 9 });
-    addText('2. Goods once sold will not be taken back', 50, totalsY + 165, { fontSize: 9 });
-    addText('3. Subject to local jurisdiction', 50, totalsY + 180, { fontSize: 9 });
+    addText('Terms & Conditions:', 50, totalsY + 130, {
+      fontSize: 10,
+      font: 'Helvetica-Bold',
+    });
+    addText(
+      '1. Payment is due within 30 days of invoice date',
+      50,
+      totalsY + 150,
+      { fontSize: 9 }
+    );
+    addText('2. Goods once sold will not be taken back', 50, totalsY + 165, {
+      fontSize: 9,
+    });
+    addText('3. Subject to local jurisdiction', 50, totalsY + 180, {
+      fontSize: 9,
+    });
     addText('4. E. & O.E.', 50, totalsY + 195, { fontSize: 9 });
 
     // Digital signature section
     const signatureY = totalsY + 220;
-    
+
     // Company signature
-    addText('For Steel Tube Industries Ltd.', 50, signatureY, { fontSize: 10, font: 'Helvetica-Bold' });
+    addText('For Steel Tube Industries Ltd.', 50, signatureY, {
+      fontSize: 10,
+      font: 'Helvetica-Bold',
+    });
     addText('Authorized Signatory', 50, signatureY + 15, { fontSize: 9 });
-    
+
     // Signature box
     doc.rect(50, signatureY + 25, 150, 60);
-    addText('Digital Signature', 70, signatureY + 50, { fontSize: 8, color: '#999' });
+    addText('Digital Signature', 70, signatureY + 50, {
+      fontSize: 8,
+      color: '#999',
+    });
 
     // Customer signature
-    addText('Customer Signature', 350, signatureY, { fontSize: 10, font: 'Helvetica-Bold' });
-    
+    addText('Customer Signature', 350, signatureY, {
+      fontSize: 10,
+      font: 'Helvetica-Bold',
+    });
+
     // Customer signature box
     doc.rect(350, signatureY + 25, 150, 60);
-    addText('Customer Stamp & Signature', 370, signatureY + 50, { fontSize: 8, color: '#999' });
+    addText('Customer Stamp & Signature', 370, signatureY + 50, {
+      fontSize: 8,
+      color: '#999',
+    });
 
     // Footer
     const footerY = 750;
-    addText('Thank you for your business!', 50, footerY, { fontSize: 10, color: '#666' });
-    addText(`Generated on: ${new Date().toLocaleString('en-IN')}`, 400, footerY, { fontSize: 8, color: '#999' });
+    addText('Thank you for your business!', 50, footerY, {
+      fontSize: 10,
+      color: '#666',
+    });
+    addText(
+      `Generated on: ${new Date().toLocaleString('en-IN')}`,
+      400,
+      footerY,
+      { fontSize: 8, color: '#999' }
+    );
 
     // Finalize PDF
     doc.end();
-
   } catch (error) {
     console.error('Error generating invoice PDF:', error);
     res.status(500).json({
       success: false,
       message: 'Internal server error',
-      error: error.message
+      error: error.message,
     });
   }
 });
 
 // Helper function to convert number to words
 function numberToWords(num) {
-  const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
-  const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
-  const teens = ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+  const ones = [
+    '',
+    'One',
+    'Two',
+    'Three',
+    'Four',
+    'Five',
+    'Six',
+    'Seven',
+    'Eight',
+    'Nine',
+  ];
+  const tens = [
+    '',
+    '',
+    'Twenty',
+    'Thirty',
+    'Forty',
+    'Fifty',
+    'Sixty',
+    'Seventy',
+    'Eighty',
+    'Ninety',
+  ];
+  const teens = [
+    'Ten',
+    'Eleven',
+    'Twelve',
+    'Thirteen',
+    'Fourteen',
+    'Fifteen',
+    'Sixteen',
+    'Seventeen',
+    'Eighteen',
+    'Nineteen',
+  ];
 
   function convertLessThanOneThousand(n) {
     if (n === 0) return '';
@@ -395,16 +527,22 @@ function numberToWords(num) {
     if (n < 10) return ones[n];
     if (n < 20) return teens[n - 10];
     if (n < 100) {
-      return tens[Math.floor(n / 10)] + (n % 10 !== 0 ? ' ' + ones[n % 10] : '');
+      return (
+        tens[Math.floor(n / 10)] + (n % 10 !== 0 ? ' ' + ones[n % 10] : '')
+      );
     }
     if (n < 1000) {
-      return ones[Math.floor(n / 100)] + ' Hundred' + (n % 100 !== 0 ? ' and ' + convertLessThanOneThousand(n % 100) : '');
+      return (
+        ones[Math.floor(n / 100)] +
+        ' Hundred' +
+        (n % 100 !== 0 ? ' and ' + convertLessThanOneThousand(n % 100) : '')
+      );
     }
   }
 
   function convert(n) {
     if (n === 0) return 'Zero';
-    
+
     const crore = Math.floor(n / 10000000);
     const lakh = Math.floor((n % 10000000) / 100000);
     const thousand = Math.floor((n % 100000) / 1000);
@@ -439,7 +577,7 @@ router.post('/test-email', async (req, res) => {
     if (!email) {
       return res.status(400).json({
         success: false,
-        message: 'Email address is required'
+        message: 'Email address is required',
       });
     }
 
@@ -451,25 +589,24 @@ router.post('/test-email', async (req, res) => {
         success: true,
         message: 'Test email sent successfully',
         data: {
-          messageId: result.messageId
-        }
+          messageId: result.messageId,
+        },
       });
     } else {
       res.status(500).json({
         success: false,
         message: 'Failed to send test email',
-        error: result.error
+        error: result.error,
       });
     }
-
   } catch (error) {
     console.error('Error sending test email:', error);
     res.status(500).json({
       success: false,
       message: 'Internal server error',
-      error: error.message
+      error: error.message,
     });
   }
 });
 
-module.exports = router; 
+module.exports = router;

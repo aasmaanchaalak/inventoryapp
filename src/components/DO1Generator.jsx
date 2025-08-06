@@ -1,33 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-
-// Validation schema
-const schema = yup.object({
-  poId: yup.string().required('Please select a PO'),
-  doNumber: yup.string().required('DO number is required'),
-  dispatchDate: yup.date().required('Dispatch date is required'),
-  remarks: yup.string().optional(),
-  items: yup.array().of(
-    yup.object({
-      itemId: yup.string().required(),
-      type: yup.string().required(),
-      size: yup.string().required(),
-      thickness: yup.number().required(),
-      availableStock: yup.number().required(),
-      dispatchedQuantity: yup.number()
-        .required('Dispatched quantity is required')
-        .min(0.1, 'Minimum 0.1 tons')
-        .test('max-stock', 'Cannot dispatch more than available stock', function(value) {
-          const availableStock = this.parent.availableStock;
-          return value <= availableStock;
-        }),
-      rate: yup.number().required(),
-      total: yup.number().required()
-    })
-  ).min(1, 'At least one item must be dispatched')
-}).required();
+import { STEEL_TUBE_TAX_RATE, calculateTaxAmount } from '../config/taxRates';
 
 const DO1Generator = () => {
   const [pendingPOs, setPendingPOs] = useState([]);
@@ -35,6 +8,8 @@ const DO1Generator = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [doNumber, setDoNumber] = useState(null);
+  const [existingDO1s, setExistingDO1s] = useState([]);
+  const [isLoadingDO1s, setIsLoadingDO1s] = useState(false);
 
   const {
     control,
@@ -43,27 +18,46 @@ const DO1Generator = () => {
     watch,
     setValue,
     formState: { errors, isSubmitting: formIsSubmitting },
-    reset
+    reset,
   } = useForm({
-    resolver: yupResolver(schema),
     defaultValues: {
       dispatchDate: new Date().toISOString().split('T')[0],
-      items: []
-    }
+      items: [],
+    },
   });
 
   const { fields, replace } = useFieldArray({
     control,
-    name: "items"
+    name: 'items',
   });
 
   const watchedPoId = watch('poId');
 
-  // Fetch pending POs on component mount
+  // Fetch existing DO1s from database
+  const fetchExistingDO1s = async () => {
+    setIsLoadingDO1s(true);
+    try {
+      const response = await fetch(
+        'http://localhost:5000/api/do1?sortBy=createdAt&sortOrder=desc&limit=10'
+      );
+      if (response.ok) {
+        const data = await response.json();
+        setExistingDO1s(data.data || []);
+      }
+    } catch (error) {
+      console.error('Error fetching existing DO1s:', error);
+    } finally {
+      setIsLoadingDO1s(false);
+    }
+  };
+
+  // Fetch pending POs and existing DO1s on component mount
   useEffect(() => {
     const fetchPendingPOs = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/pos?status=pending');
+        const response = await fetch(
+          'http://localhost:5000/api/pos?status=pending'
+        );
         if (response.ok) {
           const data = await response.json();
           setPendingPOs(data.data || []);
@@ -73,7 +67,11 @@ const DO1Generator = () => {
       }
     };
 
-    fetchPendingPOs();
+    const fetchData = async () => {
+      await Promise.all([fetchPendingPOs(), fetchExistingDO1s()]);
+    };
+
+    fetchData();
   }, []);
 
   // Fetch PO details when PO is selected
@@ -86,25 +84,29 @@ const DO1Generator = () => {
       }
 
       try {
-        const response = await fetch(`http://localhost:5000/api/pos/${watchedPoId}/details`);
+        const response = await fetch(
+          `http://localhost:5000/api/pos/${watchedPoId}/details`
+        );
         if (response.ok) {
           const data = await response.json();
           setSelectedPO(data.data);
-          
-          // Auto-fill items with available stock
-          const itemsWithStock = data.data.items.map((item, index) => ({
-            itemId: item._id || `item-${index}`,
-            type: item.type,
-            size: item.size,
-            thickness: item.thickness,
-            availableStock: getAvailableStock(item), // Mock function - replace with actual stock API
-            dispatchedQuantity: 0,
-            rate: item.rate,
-            total: 0,
-            hsnCode: item.hsnCode,
-            originalQuantity: item.quantity
-          }));
-          
+
+          // Auto-fill items with available stock - properly await stock data
+          const itemsWithStock = await Promise.all(
+            data.data.items.map(async (item, index) => ({
+              itemId: item._id || `item-${index}`,
+              type: item.type,
+              size: item.size,
+              thickness: item.thickness,
+              availableStock: await getAvailableStock(item),
+              dispatchedQuantity: 0,
+              rate: item.rate,
+              total: 0,
+              hsnCode: item.hsnCode,
+              originalQuantity: item.quantity,
+            }))
+          );
+
           replace(itemsWithStock);
         }
       } catch (error) {
@@ -118,22 +120,24 @@ const DO1Generator = () => {
   // Real function to get available stock from inventory API
   const getAvailableStock = async (item) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/inventory/summary?productType=${item.type}&size=${item.size}&thickness=${item.thickness}`);
+      const response = await fetch(
+        `http://localhost:5000/api/inventory/summary?productType=${item.type}&size=${item.size}&thickness=${item.thickness}`
+      );
       if (response.ok) {
         const data = await response.json();
-        const inventoryItem = data.data.inventory.find(inv => 
-          inv.productType === item.type && 
-          inv.size === item.size && 
-          inv.thickness === item.thickness
+        const inventoryItem = data.data.inventory.find(
+          (inv) =>
+            inv.productType === item.type &&
+            inv.size === item.size &&
+            inv.thickness === item.thickness
         );
         return inventoryItem ? inventoryItem.availableQty : 0;
       }
     } catch (error) {
       console.error('Error fetching inventory:', error);
     }
-    // Fallback to mock data if API fails
-    const baseStock = item.quantity * 0.8;
-    return Math.round((baseStock + Math.random() * item.quantity * 0.4) * 10) / 10;
+    // Return 0 if API fails - no fallback to mock data
+    return 0;
   };
 
   // Calculate total for an item
@@ -146,26 +150,34 @@ const DO1Generator = () => {
     const item = fields[index];
     const newQuantity = parseFloat(value) || 0;
     const newTotal = calculateItemTotal(newQuantity, item.rate);
-    
+
     setValue(`items.${index}.dispatchedQuantity`, newQuantity);
     setValue(`items.${index}.total`, newTotal);
   };
 
   // Calculate overall totals
   const calculateTotals = () => {
-    if (!fields || fields.length === 0) return { subtotal: 0, totalTax: 0, grandTotal: 0 };
-    
-    const totals = fields.map(item => {
+    if (!fields || fields.length === 0)
+      return { subtotal: 0, totalTax: 0, grandTotal: 0 };
+
+    const totals = fields.map((item) => {
       const subtotal = item.dispatchedQuantity * item.rate;
-      const taxAmount = subtotal * 0.18; // 18% GST
-      const total = subtotal + taxAmount;
-      return { subtotal, taxAmount, total };
+      const calculation = calculateTaxAmount(
+        subtotal,
+        STEEL_TUBE_TAX_RATE,
+        item.type
+      );
+      return {
+        subtotal: calculation.subtotal,
+        taxAmount: calculation.taxAmount,
+        total: calculation.total,
+      };
     });
-    
+
     const subtotal = totals.reduce((sum, item) => sum + item.subtotal, 0);
     const totalTax = totals.reduce((sum, item) => sum + item.taxAmount, 0);
     const grandTotal = subtotal + totalTax;
-    
+
     return { subtotal, totalTax, grandTotal };
   };
 
@@ -173,15 +185,25 @@ const DO1Generator = () => {
     setIsSubmitting(true);
     try {
       // Filter items that have dispatched quantity > 0
-      const dispatchedItems = data.items.filter(item => item.dispatchedQuantity > 0);
-      
+      const dispatchedItems = data.items.filter(
+        (item) => item.dispatchedQuantity > 0
+      );
+
       if (dispatchedItems.length === 0) {
         throw new Error('Please dispatch at least one item');
       }
 
       const do1Data = {
         poId: data.poId,
-        items: dispatchedItems
+        dispatchDate: data.dispatchDate,
+        remarks: data.remarks,
+        items: dispatchedItems.map((item) => ({
+          ...item,
+          // Ensure all required fields are present
+          availableStock: item.availableStock || 0,
+          hsnCode: item.hsnCode || '7306',
+          originalQuantity: item.originalQuantity || item.dispatchedQuantity,
+        })),
       };
 
       const response = await fetch('http://localhost:5000/api/do1', {
@@ -199,7 +221,10 @@ const DO1Generator = () => {
         setShowConfirmation(true);
         reset();
         setSelectedPO(null);
-        
+
+        // Refresh the DO1s list to show the newly created DO1
+        await fetchExistingDO1s();
+
         // Show DO2 information if generated
         if (result.data.do2Generated) {
           console.log('DO2 auto-generated:', result.data.do2);
@@ -223,7 +248,7 @@ const DO1Generator = () => {
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
-      currency: 'INR'
+      currency: 'INR',
     }).format(amount);
   };
 
@@ -231,73 +256,56 @@ const DO1Generator = () => {
 
   return (
     <div className="max-w-6xl mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-3xl font-bold text-gray-900 mb-6">Generate DO1 (Dispatch Order)</h2>
-      
+      <h2 className="text-3xl font-bold text-gray-900 mb-6">
+        Generate DO1 (Dispatch Order)
+      </h2>
+
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* PO Selection */}
         <div>
-          <label htmlFor="poId" className="block text-sm font-medium text-gray-700 mb-2">
+          <label
+            htmlFor="poId"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
             Select Purchase Order *
           </label>
           <select
             id="poId"
             {...register('poId')}
-            className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-              errors.poId ? 'border-red-500' : 'border-gray-300'
-            }`}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
             <option value="">Select a pending PO</option>
             {pendingPOs.map((po) => (
               <option key={po._id} value={po._id}>
-                {po.poNumber} - {po.leadId?.name || 'Unknown Customer'} 
-                ({formatCurrency(po.totalAmount)})
+                {po.poNumber} - {po.leadId?.name || 'Unknown Customer'}(
+                {formatCurrency(po.totalAmount)})
               </option>
             ))}
           </select>
-          {errors.poId && (
-            <p className="mt-1 text-sm text-red-600">{errors.poId.message}</p>
-          )}
         </div>
 
         {/* DO Details */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label htmlFor="doNumber" className="block text-sm font-medium text-gray-700 mb-2">
-              DO Number *
-            </label>
-            <input
-              type="text"
-              id="doNumber"
-              {...register('doNumber')}
-              className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                errors.doNumber ? 'border-red-500' : 'border-gray-300'
-              }`}
-              placeholder="DO-2024-001"
-            />
-            {errors.doNumber && (
-              <p className="mt-1 text-sm text-red-600">{errors.doNumber.message}</p>
-            )}
-          </div>
-
-          <div>
-            <label htmlFor="dispatchDate" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="dispatchDate"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Dispatch Date *
             </label>
             <input
               type="date"
               id="dispatchDate"
               {...register('dispatchDate')}
-              className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                errors.dispatchDate ? 'border-red-500' : 'border-gray-300'
-              }`}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
-            {errors.dispatchDate && (
-              <p className="mt-1 text-sm text-red-600">{errors.dispatchDate.message}</p>
-            )}
           </div>
 
           <div>
-            <label htmlFor="remarks" className="block text-sm font-medium text-gray-700 mb-2">
+            <label
+              htmlFor="remarks"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
               Remarks
             </label>
             <input
@@ -313,7 +321,9 @@ const DO1Generator = () => {
         {/* Selected PO Summary */}
         {selectedPO && (
           <div className="bg-gray-50 p-4 rounded-lg">
-            <h3 className="text-lg font-semibold text-gray-900 mb-3">PO Summary</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-3">
+              PO Summary
+            </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div>
                 <p className="text-sm text-gray-600">PO Number</p>
@@ -325,7 +335,9 @@ const DO1Generator = () => {
               </div>
               <div>
                 <p className="text-sm text-gray-600">Total Amount</p>
-                <p className="font-medium text-green-600">{formatCurrency(selectedPO.totalAmount)}</p>
+                <p className="font-medium text-green-600">
+                  {formatCurrency(selectedPO.totalAmount)}
+                </p>
               </div>
               <div>
                 <p className="text-sm text-gray-600">Quotation</p>
@@ -338,30 +350,56 @@ const DO1Generator = () => {
         {/* Items Table */}
         {fields.length > 0 && (
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900">Dispatch Items</h3>
+            <h3 className="text-lg font-semibold text-gray-900">
+              Dispatch Items
+            </h3>
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-100">
                   <tr>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Size</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Thickness</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Available Stock</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Dispatch Qty</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Rate</th>
-                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
+                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                      Type
+                    </th>
+                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                      Size
+                    </th>
+                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                      Thickness
+                    </th>
+                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                      Available Stock
+                    </th>
+                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                      Dispatch Qty
+                    </th>
+                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                      Rate
+                    </th>
+                    <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                      Total
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {fields.map((item, index) => (
                     <tr key={index} className="hover:bg-gray-50">
-                      <td className="px-3 py-2 text-sm text-gray-900">{item.type}</td>
-                      <td className="px-3 py-2 text-sm text-gray-900">{item.size}</td>
-                      <td className="px-3 py-2 text-sm text-gray-900">{item.thickness}mm</td>
                       <td className="px-3 py-2 text-sm text-gray-900">
-                        <span className={`font-medium ${
-                          item.availableStock > 0 ? 'text-green-600' : 'text-red-600'
-                        }`}>
+                        {item.type}
+                      </td>
+                      <td className="px-3 py-2 text-sm text-gray-900">
+                        {item.size}
+                      </td>
+                      <td className="px-3 py-2 text-sm text-gray-900">
+                        {item.thickness}mm
+                      </td>
+                      <td className="px-3 py-2 text-sm text-gray-900">
+                        <span
+                          className={`font-medium ${
+                            item.availableStock > 0
+                              ? 'text-green-600'
+                              : 'text-red-500'
+                          }`}
+                        >
                           {item.availableStock} tons
                         </span>
                       </td>
@@ -372,19 +410,16 @@ const DO1Generator = () => {
                           min="0"
                           max={item.availableStock}
                           {...register(`items.${index}.dispatchedQuantity`)}
-                          onChange={(e) => handleQuantityChange(index, e.target.value)}
-                          className={`w-20 px-2 py-1 border rounded text-sm ${
-                            errors.items?.[index]?.dispatchedQuantity ? 'border-red-500' : 'border-gray-300'
-                          }`}
+                          onChange={(e) =>
+                            handleQuantityChange(index, e.target.value)
+                          }
+                          className="w-20 px-2 py-1 border border-gray-300 rounded text-sm"
                           disabled={item.availableStock <= 0}
                         />
-                        {errors.items?.[index]?.dispatchedQuantity && (
-                          <p className="text-xs text-red-600 mt-1">
-                            {errors.items[index].dispatchedQuantity.message}
-                          </p>
-                        )}
                       </td>
-                      <td className="px-3 py-2 text-sm text-gray-900">{formatCurrency(item.rate)}</td>
+                      <td className="px-3 py-2 text-sm text-gray-900">
+                        {formatCurrency(item.rate)}
+                      </td>
                       <td className="px-3 py-2 text-sm font-medium text-gray-900">
                         {formatCurrency(item.total)}
                       </td>
@@ -399,15 +434,23 @@ const DO1Generator = () => {
               <div className="flex justify-end space-x-8">
                 <div>
                   <p className="text-sm text-gray-600">Subtotal</p>
-                  <p className="text-lg font-semibold">{formatCurrency(overallTotals.subtotal)}</p>
+                  <p className="text-lg font-semibold">
+                    {formatCurrency(overallTotals.subtotal)}
+                  </p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Tax (18%)</p>
-                  <p className="text-lg font-semibold">{formatCurrency(overallTotals.totalTax)}</p>
+                  <p className="text-sm text-gray-600">
+                    Tax ({STEEL_TUBE_TAX_RATE}%)
+                  </p>
+                  <p className="text-lg font-semibold">
+                    {formatCurrency(overallTotals.totalTax)}
+                  </p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-600">Grand Total</p>
-                  <p className="text-xl font-bold text-green-600">{formatCurrency(overallTotals.grandTotal)}</p>
+                  <p className="text-xl font-bold text-green-600">
+                    {formatCurrency(overallTotals.grandTotal)}
+                  </p>
                 </div>
               </div>
             </div>
@@ -423,7 +466,7 @@ const DO1Generator = () => {
           >
             Reset Form
           </button>
-          
+
           <button
             type="submit"
             disabled={isSubmitting || formIsSubmitting || !selectedPO}
@@ -434,22 +477,133 @@ const DO1Generator = () => {
         </div>
       </form>
 
+      {/* Existing DO1s Section */}
+      <div className="mt-8 border-t pt-8">
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="text-2xl font-bold text-gray-900">Recent DO1s</h3>
+          <button
+            onClick={fetchExistingDO1s}
+            disabled={isLoadingDO1s}
+            className="px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 border border-blue-200 rounded-md hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
+          >
+            {isLoadingDO1s ? 'Loading...' : 'Refresh'}
+          </button>
+        </div>
+
+        {isLoadingDO1s ? (
+          <div className="text-center py-8">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <p className="mt-2 text-gray-600">Loading DO1s...</p>
+          </div>
+        ) : existingDO1s.length > 0 ? (
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    DO Number
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    PO Number
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Customer
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Dispatch Date
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Items
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Total Amount
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Status
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {existingDO1s.map((do1) => (
+                  <tr key={do1._id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">
+                      {do1.doNumber}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {do1.poId?.poNumber || 'N/A'}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {do1.poId?.leadId?.name || 'Unknown'}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {new Date(do1.dispatchDate).toLocaleDateString()}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {do1.items?.length || 0} items
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {formatCurrency(do1.totals?.grandTotal || 0)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span
+                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                          do1.status === 'executed'
+                            ? 'bg-green-100 text-green-800'
+                            : do1.status === 'pending'
+                              ? 'bg-yellow-100 text-yellow-800'
+                              : 'bg-gray-100 text-gray-800'
+                        }`}
+                      >
+                        {do1.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="text-center py-8">
+            <p className="text-gray-500">
+              No DO1s found. Create your first DO1 using the form above.
+            </p>
+          </div>
+        )}
+      </div>
+
       {/* Confirmation Modal */}
       {showConfirmation && doNumber && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
           <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
             <div className="mt-3 text-center">
               <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
-                <svg className="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                <svg
+                  className="h-6 w-6 text-green-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M5 13l4 4L19 7"
+                  ></path>
                 </svg>
               </div>
-              <h3 className="text-lg font-medium text-gray-900 mt-4">DO1 Generated Successfully!</h3>
+              <h3 className="text-lg font-medium text-gray-900 mt-4">
+                DO1 Generated Successfully!
+              </h3>
               <div className="mt-4">
-                <p className="text-sm text-gray-600 mb-2">Your DO1 number is:</p>
-                <p className="text-xl font-bold text-green-600 mb-4">{doNumber}</p>
+                <p className="text-sm text-gray-600 mb-2">
+                  Your DO1 number is:
+                </p>
+                <p className="text-xl font-bold text-green-600 mb-4">
+                  {doNumber}
+                </p>
                 <p className="text-sm text-gray-600">
-                  The dispatch order has been created and items have been allocated for dispatch.
+                  The dispatch order has been created and items have been
+                  allocated for dispatch.
                 </p>
               </div>
               <div className="mt-6">
@@ -468,4 +622,4 @@ const DO1Generator = () => {
   );
 };
 
-export default DO1Generator; 
+export default DO1Generator;

@@ -11,15 +11,15 @@ const InvoiceDashboard = () => {
   const {
     register,
     watch,
-    formState: { errors }
+    formState: { errors },
   } = useForm({
     defaultValues: {
       status: '',
       pushedToTally: '',
       dateFrom: '',
       dateTo: '',
-      search: ''
-    }
+      search: '',
+    },
   });
 
   const watchedFilters = watch();
@@ -31,11 +31,13 @@ const InvoiceDashboard = () => {
       const queryParams = new URLSearchParams({
         page: currentPage,
         limit: 20,
-        ...filterParams
+        ...filterParams,
       }).toString();
-      
-      const response = await fetch(`http://localhost:5000/api/invoices?${queryParams}`);
-      
+
+      const response = await fetch(
+        `http://localhost:5000/api/invoices?${queryParams}`
+      );
+
       if (response.ok) {
         const data = await response.json();
         setInvoices(data.data.invoices || []);
@@ -72,7 +74,7 @@ const InvoiceDashboard = () => {
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
-      currency: 'INR'
+      currency: 'INR',
     }).format(amount);
   };
 
@@ -81,7 +83,7 @@ const InvoiceDashboard = () => {
     return new Date(dateString).toLocaleDateString('en-IN', {
       year: 'numeric',
       month: 'short',
-      day: 'numeric'
+      day: 'numeric',
     });
   };
 
@@ -90,11 +92,13 @@ const InvoiceDashboard = () => {
     const statusColors = {
       generated: 'bg-blue-100 text-blue-800',
       pushed_to_tally: 'bg-green-100 text-green-800',
-      failed: 'bg-red-100 text-red-800'
+      failed: 'bg-red-100 text-red-800',
     };
-    
+
     return (
-      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${statusColors[status] || 'bg-gray-100 text-gray-800'}`}>
+      <span
+        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${statusColors[status] || 'bg-gray-100 text-gray-800'}`}
+      >
         {status.replace('_', ' ').toUpperCase()}
       </span>
     );
@@ -105,13 +109,21 @@ const InvoiceDashboard = () => {
     return pushedToTally ? (
       <span className="text-green-600" title="Pushed to Tally">
         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+          <path
+            fillRule="evenodd"
+            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+            clipRule="evenodd"
+          />
         </svg>
       </span>
     ) : (
       <span className="text-red-600" title="Not pushed to Tally">
         <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+          <path
+            fillRule="evenodd"
+            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+            clipRule="evenodd"
+          />
         </svg>
       </span>
     );
@@ -125,8 +137,10 @@ const InvoiceDashboard = () => {
   // Download invoice PDF
   const downloadInvoice = async (do2Id) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/invoice/${do2Id}/pdf`);
-      
+      const response = await fetch(
+        `http://localhost:5000/api/invoice/${do2Id}/pdf`
+      );
+
       if (response.ok) {
         const blob = await response.blob();
         const url = window.URL.createObjectURL(blob);
@@ -145,20 +159,36 @@ const InvoiceDashboard = () => {
 
   return (
     <div className="max-w-7xl mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-3xl font-bold text-gray-900 mb-6">Invoice Dashboard</h2>
-      
+      <h2 className="text-3xl font-bold text-gray-900 mb-6">
+        Invoice Dashboard
+      </h2>
+
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <div className="bg-blue-50 p-6 rounded-lg">
           <div className="flex items-center">
             <div className="p-3 bg-blue-100 rounded-full">
-              <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              <svg
+                className="w-6 h-6 text-blue-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                ></path>
               </svg>
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-blue-600">Total Invoices</p>
-              <p className="text-2xl font-bold text-blue-900">{summary.totalInvoices || 0}</p>
+              <p className="text-sm font-medium text-blue-600">
+                Total Invoices
+              </p>
+              <p className="text-2xl font-bold text-blue-900">
+                {summary.totalInvoices || 0}
+              </p>
             </div>
           </div>
         </div>
@@ -166,13 +196,27 @@ const InvoiceDashboard = () => {
         <div className="bg-green-50 p-6 rounded-lg">
           <div className="flex items-center">
             <div className="p-3 bg-green-100 rounded-full">
-              <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              <svg
+                className="w-6 h-6 text-green-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                ></path>
               </svg>
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-green-600">Pushed to Tally</p>
-              <p className="text-2xl font-bold text-green-900">{summary.totalPushedToTally || 0}</p>
+              <p className="text-sm font-medium text-green-600">
+                Pushed to Tally
+              </p>
+              <p className="text-2xl font-bold text-green-900">
+                {summary.totalPushedToTally || 0}
+              </p>
             </div>
           </div>
         </div>
@@ -180,13 +224,27 @@ const InvoiceDashboard = () => {
         <div className="bg-yellow-50 p-6 rounded-lg">
           <div className="flex items-center">
             <div className="p-3 bg-yellow-100 rounded-full">
-              <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+              <svg
+                className="w-6 h-6 text-yellow-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
+                ></path>
               </svg>
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-yellow-600">Total Amount</p>
-              <p className="text-2xl font-bold text-yellow-900">{formatCurrency(summary.totalAmount || 0)}</p>
+              <p className="text-sm font-medium text-yellow-600">
+                Total Amount
+              </p>
+              <p className="text-2xl font-bold text-yellow-900">
+                {formatCurrency(summary.totalAmount || 0)}
+              </p>
             </div>
           </div>
         </div>
@@ -194,13 +252,27 @@ const InvoiceDashboard = () => {
         <div className="bg-purple-50 p-6 rounded-lg">
           <div className="flex items-center">
             <div className="p-3 bg-purple-100 rounded-full">
-              <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+              <svg
+                className="w-6 h-6 text-purple-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                ></path>
               </svg>
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-purple-600">Average Amount</p>
-              <p className="text-2xl font-bold text-purple-900">{formatCurrency(summary.averageAmount || 0)}</p>
+              <p className="text-sm font-medium text-purple-600">
+                Average Amount
+              </p>
+              <p className="text-2xl font-bold text-purple-900">
+                {formatCurrency(summary.averageAmount || 0)}
+              </p>
             </div>
           </div>
         </div>
@@ -211,7 +283,10 @@ const InvoiceDashboard = () => {
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Filters</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
           <div>
-            <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="status"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Status
             </label>
             <select
@@ -227,7 +302,10 @@ const InvoiceDashboard = () => {
           </div>
 
           <div>
-            <label htmlFor="pushedToTally" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="pushedToTally"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Tally Push
             </label>
             <select
@@ -242,7 +320,10 @@ const InvoiceDashboard = () => {
           </div>
 
           <div>
-            <label htmlFor="dateFrom" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="dateFrom"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               From Date
             </label>
             <input
@@ -254,7 +335,10 @@ const InvoiceDashboard = () => {
           </div>
 
           <div>
-            <label htmlFor="dateTo" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="dateTo"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               To Date
             </label>
             <input
@@ -266,7 +350,10 @@ const InvoiceDashboard = () => {
           </div>
 
           <div>
-            <label htmlFor="search" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="search"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Search
             </label>
             <input
@@ -285,13 +372,29 @@ const InvoiceDashboard = () => {
         <div className="px-6 py-4 border-b border-gray-200">
           <h3 className="text-lg font-semibold text-gray-900">Invoices</h3>
         </div>
-        
+
         {isLoading ? (
           <div className="p-6 text-center">
             <div className="inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-white bg-blue-500 hover:bg-blue-400 transition ease-in-out duration-150 cursor-not-allowed">
-              <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              <svg
+                className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
               </svg>
               Loading invoices...
             </div>
@@ -387,18 +490,48 @@ const InvoiceDashboard = () => {
                           className="text-blue-600 hover:text-blue-900"
                           title="Download PDF"
                         >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                            ></path>
                           </svg>
                         </button>
                         <button
-                          onClick={() => window.open(`http://localhost:5000/api/invoice/${invoice.do2Id}/pdf`, '_blank')}
+                          onClick={() =>
+                            window.open(
+                              `http://localhost:5000/api/invoice/${invoice.do2Id}/pdf`,
+                              '_blank'
+                            )
+                          }
                           className="text-green-600 hover:text-green-900"
                           title="View PDF"
                         >
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                            ></path>
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                            ></path>
                           </svg>
                         </button>
                       </div>
@@ -445,4 +578,4 @@ const InvoiceDashboard = () => {
   );
 };
 
-export default InvoiceDashboard; 
+export default InvoiceDashboard;

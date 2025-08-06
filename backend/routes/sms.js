@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const { sendSMS, sendDO2ExecutionNotification } = require('../services/smsService');
+const {
+  sendSMS,
+  sendDO2ExecutionNotification,
+} = require('../services/smsService');
 
 // POST /api/sms/test - Test custom SMS
 router.post('/test', async (req, res) => {
@@ -11,7 +14,7 @@ router.post('/test', async (req, res) => {
     if (!phone) {
       return res.status(400).json({
         success: false,
-        message: 'Phone number is required'
+        message: 'Phone number is required',
       });
     }
 
@@ -29,23 +32,22 @@ router.post('/test', async (req, res) => {
         success: true,
         message: 'SMS sent successfully',
         messageId: result.messageId,
-        response: result.response
+        response: result.response,
       });
     } else {
       res.status(400).json({
         success: false,
         message: 'Failed to send SMS',
         error: result.error,
-        response: result.response
+        response: result.response,
       });
     }
-
   } catch (error) {
     console.error('Error testing SMS:', error);
     res.status(500).json({
       success: false,
       message: 'Internal server error',
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -59,7 +61,7 @@ router.post('/test-do2', async (req, res) => {
     if (!phone || !clientName || !do2Id) {
       return res.status(400).json({
         success: false,
-        message: 'Phone, client name, and DO2 ID are required'
+        message: 'Phone, client name, and DO2 ID are required',
       });
     }
 
@@ -77,23 +79,22 @@ router.post('/test-do2', async (req, res) => {
         message: 'DO2 notification sent successfully',
         messageId: result.messageId,
         response: result.response,
-        sentMessage: `Dear ${clientName}, your steel tubes order (DO#${do2Id}) has been dispatched. Invoice will be sent shortly. - ${companyName || 'Your Company'}`
+        sentMessage: `Dear ${clientName}, your steel tubes order (DO#${do2Id}) has been dispatched. Invoice will be sent shortly. - ${companyName || 'Your Company'}`,
       });
     } else {
       res.status(400).json({
         success: false,
         message: 'Failed to send DO2 notification',
         error: result.error,
-        response: result.response
+        response: result.response,
       });
     }
-
   } catch (error) {
     console.error('Error testing DO2 notification:', error);
     res.status(500).json({
       success: false,
       message: 'Internal server error',
-      error: error.message
+      error: error.message,
     });
   }
 });
@@ -105,24 +106,25 @@ router.get('/status', async (req, res) => {
       gateway: 'MSG91',
       apiKey: process.env.MSG91_API_KEY ? 'Configured' : 'Not configured',
       senderId: process.env.MSG91_SENDER_ID || 'Not configured',
-      templateId: process.env.MSG91_TEMPLATE_ID ? 'Configured' : 'Not configured',
-      companyName: process.env.COMPANY_NAME || 'Not configured'
+      templateId: process.env.MSG91_TEMPLATE_ID
+        ? 'Configured'
+        : 'Not configured',
+      companyName: process.env.COMPANY_NAME || 'Not configured',
     };
 
     res.json({
       success: true,
       message: 'SMS service status',
-      config
+      config,
     });
-
   } catch (error) {
     console.error('Error getting SMS status:', error);
     res.status(500).json({
       success: false,
       message: 'Internal server error',
-      error: error.message
+      error: error.message,
     });
   }
 });
 
-module.exports = router; 
+module.exports = router;

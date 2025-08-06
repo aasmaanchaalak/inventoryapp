@@ -6,8 +6,8 @@ const emailConfig = {
   service: 'gmail',
   auth: {
     user: process.env.EMAIL_USER || 'your-email@gmail.com',
-    pass: process.env.EMAIL_PASS || 'your-app-password'
-  }
+    pass: process.env.EMAIL_PASS || 'your-app-password',
+  },
 };
 
 // Create transporter
@@ -22,20 +22,30 @@ class EmailService {
   }
 
   // Send invoice email
-  async sendInvoiceEmail(toEmail, customerName, invoiceNumber, do2Number, pdfBuffer) {
+  async sendInvoiceEmail(
+    toEmail,
+    customerName,
+    invoiceNumber,
+    do2Number,
+    pdfBuffer
+  ) {
     try {
       const mailOptions = {
         from: `"${this.fromName}" <${this.fromEmail}>`,
         to: toEmail,
         subject: `Tax Invoice from ${this.fromName} - ${invoiceNumber}`,
-        html: this.generateInvoiceEmailHTML(customerName, invoiceNumber, do2Number),
+        html: this.generateInvoiceEmailHTML(
+          customerName,
+          invoiceNumber,
+          do2Number
+        ),
         attachments: [
           {
             filename: `invoice-${do2Number}.pdf`,
             content: pdfBuffer,
-            contentType: 'application/pdf'
-          }
-        ]
+            contentType: 'application/pdf',
+          },
+        ],
       };
 
       const result = await this.transporter.sendMail(mailOptions);
@@ -43,13 +53,13 @@ class EmailService {
       return {
         success: true,
         messageId: result.messageId,
-        message: 'Invoice email sent successfully'
+        message: 'Invoice email sent successfully',
       };
     } catch (error) {
       console.error('Error sending invoice email:', error);
       return {
         success: false,
-        error: error.message
+        error: error.message,
       };
     }
   }
@@ -187,23 +197,23 @@ class EmailService {
           <p>This is a test email from the Steel Tube Industries invoice system.</p>
           <p>If you received this email, the email service is working correctly.</p>
           <p>Sent at: ${new Date().toLocaleString('en-IN')}</p>
-        `
+        `,
       };
 
       const result = await this.transporter.sendMail(mailOptions);
       return {
         success: true,
         messageId: result.messageId,
-        message: 'Test email sent successfully'
+        message: 'Test email sent successfully',
       };
     } catch (error) {
       console.error('Error sending test email:', error);
       return {
         success: false,
-        error: error.message
+        error: error.message,
       };
     }
   }
 }
 
-module.exports = new EmailService(); 
+module.exports = new EmailService();
