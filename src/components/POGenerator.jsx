@@ -53,7 +53,7 @@ const POGenerator = () => {
   useEffect(() => {
     const fetchLeads = async () => {
       try {
-        const data = await fetchLeadsData('http://localhost:5000/api/leads');
+        const data = await fetchLeadsData('http://localhost:5001/api/leads');
         if (data.success) {
           const allLeads = data.data || [];
 
@@ -96,7 +96,7 @@ const POGenerator = () => {
 
       try {
         const data = await fetchQuotationsData(
-          `http://localhost:5000/api/quotations?leadId=${watchedLeadId}`
+          `http://localhost:5001/api/quotations?leadId=${watchedLeadId}`
         );
         if (data.success) {
           setQuotations(data.data || []);
@@ -128,7 +128,7 @@ const POGenerator = () => {
         remarks: data.remarks || '',
       };
 
-      const result = await createPO('http://localhost:5000/api/pos', poData);
+      const result = await createPO('http://localhost:5001/api/pos', poData);
 
       if (result.success) {
         setPoNumber(result.data.poNumber);

@@ -41,7 +41,11 @@ router.post('/', async (req, res) => {
       pan: pan || undefined,
       product: productInterest,
       source: leadSource,
-      notes: notes || '',
+      notes: notes ? [{
+        text: String(notes),
+        user: 'System',
+        timestamp: new Date(),
+      }] : [],
     });
 
     // Save to database
@@ -303,6 +307,123 @@ router.get('/timeline/:leadId', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error fetching timeline data',
+    });
+  }
+});
+
+// PUT /api/leads/:id - Update a lead
+router.put('/:id', async (req, res) => {
+  try {
+    const leadId = req.params.id;
+    const updates = req.body;
+
+    // Validate leadId format
+    if (!leadId || !/^[0-9a-fA-F]{24}$/.test(leadId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid lead ID format',
+      });
+    }
+
+    // Find and update the lead
+    const updatedLead = await Lead.findByIdAndUpdate(
+      leadId,
+      updates,
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedLead) {
+      return res.status(404).json({
+        success: false,
+        message: 'Lead not found',
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Lead updated successfully',
+      data: updatedLead,
+    });
+  } catch (error) {
+    console.error('Error updating lead:', error);
+
+    // Handle validation errors
+    if (error.name === 'ValidationError') {
+      const validationErrors = Object.values(error.errors).map(
+        (err) => err.message
+      );
+      return res.status(400).json({
+        success: false,
+        message: 'Validation failed',
+        errors: validationErrors,
+      });
+    }
+
+    res.status(500).json({
+      success: false,
+      message: 'Error updating lead',
+    });
+  }
+});
+
+// POST /api/leads/:id/notes - Add a note to a lead
+router.post('/:id/notes', async (req, res) => {
+  try {
+    const leadId = req.params.id;
+    const { text, user } = req.body;
+
+    // Validate leadId format
+    if (!leadId || !/^[0-9a-fA-F]{24}$/.test(leadId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid lead ID format',
+      });
+    }
+
+    if (!text || !text.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Note text is required',
+      });
+    }
+
+    // Find the lead
+    const lead = await Lead.findById(leadId);
+    if (!lead) {
+      return res.status(404).json({
+        success: false,
+        message: 'Lead not found',
+      });
+    }
+
+    // Initialize notes array if it doesn't exist
+    if (!lead.notes) {
+      lead.notes = [];
+    }
+
+    // Create new note object
+    const newNote = {
+      text: text.trim(),
+      user: user || 'System',
+      timestamp: new Date(),
+    };
+
+    // Add note to the beginning of the array (most recent first)
+    lead.notes.unshift(newNote);
+
+    // Save the updated lead
+    await lead.save();
+
+    res.json({
+      success: true,
+      message: 'Note added successfully',
+      data: newNote,
+    });
+  } catch (error) {
+    console.error('Error adding note to lead:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error adding note to lead',
     });
   }
 });

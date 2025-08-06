@@ -46,7 +46,7 @@ const schema = yup
   })
   .required();
 
-const LeadCreationForm = () => {
+const LeadCreationForm = ({ onSuccess }) => {
   // API hook for creating leads
   const { post: createLead, isLoading: isCreatingLead } = useApi();
 
@@ -61,11 +61,15 @@ const LeadCreationForm = () => {
 
   const onSubmit = async (data) => {
     try {
-      const result = await createLead('http://localhost:5000/api/leads', data);
+      const result = await createLead('http://localhost:5001/api/leads', data);
 
       if (result.success) {
         alert(result.message || 'Lead created successfully!');
         reset();
+        // Call onSuccess callback if provided (for modal usage)
+        if (onSuccess) {
+          onSuccess(result.data);
+        }
       } else {
         // Handle API-level errors
         alert(result.message || 'Failed to create lead. Please try again.');

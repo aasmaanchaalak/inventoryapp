@@ -74,11 +74,23 @@ const leadSchema = new mongoose.Schema(
         message: 'Please select a valid lead source',
       },
     },
-    notes: {
-      type: String,
-      trim: true,
-      maxlength: [1000, 'Notes cannot be more than 1000 characters'],
-    },
+    notes: [{
+      text: {
+        type: String,
+        required: true,
+        trim: true,
+        maxlength: [1000, 'Note text cannot be more than 1000 characters'],
+      },
+      user: {
+        type: String,
+        required: true,
+        default: 'System',
+      },
+      timestamp: {
+        type: Date,
+        default: Date.now,
+      },
+    }],
   },
   {
     timestamps: true, // This automatically adds createdAt and updatedAt fields

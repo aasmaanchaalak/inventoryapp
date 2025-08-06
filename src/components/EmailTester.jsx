@@ -19,7 +19,7 @@ const EmailTester = () => {
 
     try {
       const response = await fetch(
-        'http://localhost:5000/api/invoice/test-email',
+        'http://localhost:5001/api/invoice/test-email',
         {
           method: 'POST',
           headers: {

@@ -106,7 +106,7 @@ const InventoryAddForm = () => {
       };
 
       const result = await createInventoryItem(
-        'http://localhost:5000/api/inventory',
+        'http://localhost:5001/api/inventory',
         inventoryData
       );
 

@@ -32,7 +32,7 @@ const InvoiceViewer = () => {
 
     try {
       // Fetch DO2 data for invoice summary
-      const response = await fetch(`http://localhost:5000/api/do2/${do2Id}`);
+      const response = await fetch(`http://localhost:5001/api/do2/${do2Id}`);
 
       if (response.ok) {
         const data = await response.json();
@@ -56,7 +56,7 @@ const InvoiceViewer = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:5000/api/invoice/${do2Id}/pdf`
+        `http://localhost:5001/api/invoice/${do2Id}/pdf`
       );
 
       if (response.ok) {
@@ -73,7 +73,7 @@ const InvoiceViewer = () => {
         // Add audit trail entry for download
         try {
           await fetch(
-            `http://localhost:5000/api/invoices/${do2Id}/audit-entry`,
+            `http://localhost:5001/api/invoices/${do2Id}/audit-entry`,
             {
               method: 'POST',
               headers: {
@@ -106,12 +106,12 @@ const InvoiceViewer = () => {
   };
 
   const viewInvoice = async (do2Id) => {
-    const pdfUrl = `http://localhost:5000/api/invoice/${do2Id}/pdf`;
+    const pdfUrl = `http://localhost:5001/api/invoice/${do2Id}/pdf`;
     window.open(pdfUrl, '_blank');
 
     // Add audit trail entry for viewing
     try {
-      await fetch(`http://localhost:5000/api/invoices/${do2Id}/audit-entry`, {
+      await fetch(`http://localhost:5001/api/invoices/${do2Id}/audit-entry`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

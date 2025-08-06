@@ -27,7 +27,7 @@ router.get('/weekly-do-summary', async (req, res) => {
       ? new Date(startDate)
       : new Date(end.getTime() - 12 * 7 * 24 * 60 * 60 * 1000);
 
-    // Aggregate DO1 data by week
+    // Aggregate DO1 data by week - using totals field which is pre-calculated
     const do1Data = await DO1.aggregate([
       {
         $match: {
@@ -38,10 +38,8 @@ router.get('/weekly-do-summary', async (req, res) => {
         $group: {
           _id: { $dateToString: { format: '%Y-%U', date: '$createdAt' } },
           totalDOs: { $sum: 1 },
-          totalVolume: { $sum: { $sum: '$items.quantity' } },
-          totalValue: {
-            $sum: { $sum: { $multiply: ['$items.quantity', '$items.rate'] } },
-          },
+          totalVolume: { $sum: { $size: '$items' } }, // Approximate volume based on item count
+          totalValue: { $sum: '$totals.grandTotal' }, // Use pre-calculated total
         },
       },
       {
@@ -49,7 +47,7 @@ router.get('/weekly-do-summary', async (req, res) => {
       },
     ]);
 
-    // Aggregate DO2 data by week
+    // Aggregate DO2 data by week - using totals field which is pre-calculated
     const do2Data = await DO2.aggregate([
       {
         $match: {
@@ -60,12 +58,8 @@ router.get('/weekly-do-summary', async (req, res) => {
         $group: {
           _id: { $dateToString: { format: '%Y-%U', date: '$createdAt' } },
           totalDOs: { $sum: 1 },
-          totalVolume: { $sum: { $sum: '$items.remainingQuantity' } },
-          totalValue: {
-            $sum: {
-              $sum: { $multiply: ['$items.remainingQuantity', '$items.rate'] },
-            },
-          },
+          totalVolume: { $sum: { $size: '$items' } }, // Approximate volume based on item count
+          totalValue: { $sum: '$totals.grandTotal' }, // Use pre-calculated total
         },
       },
       {
@@ -166,10 +160,8 @@ router.get('/top-clients', async (req, res) => {
           _id: '$lead._id',
           clientName: { $first: '$lead.name' },
           clientId: { $first: '$lead._id' },
-          totalVolume: { $sum: { $sum: '$items.quantity' } },
-          totalValue: {
-            $sum: { $sum: { $multiply: ['$items.quantity', '$items.rate'] } },
-          },
+          totalVolume: { $sum: { $size: '$items' } }, // Approximate volume based on item count
+          totalValue: { $sum: '$totals.grandTotal' }, // Use pre-calculated total
           doCount: { $sum: 1 },
         },
       },
@@ -214,6 +206,12 @@ router.get('/top-products', async (req, res) => {
         $unwind: '$items',
       },
       {
+        $addFields: {
+          'items.sizeStr': { $toString: '$items.size' },
+          'items.thicknessStr': { $toString: '$items.thickness' },
+        },
+      },
+      {
         $group: {
           _id: {
             type: '$items.type',
@@ -225,31 +223,18 @@ router.get('/top-products', async (req, res) => {
               $concat: [
                 '$items.type',
                 ' - ',
-                '$items.size',
+                '$items.sizeStr',
                 ' (',
-                '$items.thickness',
-                ')',
-              ],
-            },
-          },
-          productId: {
-            $first: {
-              $concat: [
-                '$items.type',
-                '_',
-                '$items.size',
-                '_',
-                '$items.thickness',
+                '$items.thicknessStr',
+                'mm)',
               ],
             },
           },
           type: { $first: '$items.type' },
           size: { $first: '$items.size' },
           thickness: { $first: '$items.thickness' },
-          totalVolume: { $sum: '$items.quantity' },
-          totalValue: {
-            $sum: { $multiply: ['$items.quantity', '$items.rate'] },
-          },
+          totalVolume: { $sum: '$items.dispatchedQuantity' },
+          totalValue: { $sum: '$items.total' }, // Use pre-calculated item total
           dispatchCount: { $sum: 1 },
         },
       },
@@ -291,7 +276,7 @@ router.get('/low-stock', async (req, res) => {
         $project: {
           productId: '$_id',
           productName: {
-            $concat: ['$productType', ' - ', '$size', ' (', '$thickness', ')'],
+            $concat: ['$productType', ' - ', { $toString: '$size' }, ' (', { $toString: '$thickness' }, 'mm)'],
           },
           type: '$productType',
           size: '$size',

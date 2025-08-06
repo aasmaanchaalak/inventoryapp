@@ -18,7 +18,7 @@ const TallyPush = () => {
     setResult(null);
 
     try {
-      const response = await fetch('http://localhost:5000/api/tally/push', {
+      const response = await fetch('http://localhost:5001/api/tally/push', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

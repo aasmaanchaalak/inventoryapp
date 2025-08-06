@@ -18,7 +18,7 @@ const InvoiceGenerator = () => {
 
     try {
       // Open PDF in new window/tab
-      const pdfUrl = `http://localhost:5000/api/invoice/${data.do2Id}/pdf`;
+      const pdfUrl = `http://localhost:5001/api/invoice/${data.do2Id}/pdf`;
       window.open(pdfUrl, '_blank');
     } catch (error) {
       setError('Error generating invoice: ' + error.message);
@@ -30,7 +30,7 @@ const InvoiceGenerator = () => {
   const downloadInvoice = async (do2Id) => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/invoice/${do2Id}/pdf`
+        `http://localhost:5001/api/invoice/${do2Id}/pdf`
       );
 
       if (response.ok) {

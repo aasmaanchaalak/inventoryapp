@@ -51,10 +51,18 @@ const ReportsDashboard = () => {
     try {
       // Fetch all reports data
       const [weeklyDO, topClients, topProducts, lowStock] = await Promise.all([
-        fetch('/api/reports/weekly-do-summary').then((res) => res.json()),
-        fetch('/api/reports/top-clients').then((res) => res.json()),
-        fetch('/api/reports/top-products').then((res) => res.json()),
-        fetch('/api/reports/low-stock').then((res) => res.json()),
+        fetch('http://localhost:5001/api/reports/weekly-do-summary').then(
+          (res) => res.json()
+        ),
+        fetch('http://localhost:5001/api/reports/top-clients').then((res) =>
+          res.json()
+        ),
+        fetch('http://localhost:5001/api/reports/top-products').then((res) =>
+          res.json()
+        ),
+        fetch('http://localhost:5001/api/reports/low-stock').then((res) =>
+          res.json()
+        ),
       ]);
 
       setReportsData({

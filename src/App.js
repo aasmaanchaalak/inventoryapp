@@ -6,7 +6,9 @@ import {
   useParams,
 } from 'react-router-dom';
 import './App.css';
-import LeadCreationForm from './components/LeadCreationForm';
+import LeadsDashboard from './components/LeadsDashboard';
+import LeadWorkflowView from './components/LeadWorkflowView';
+import PendingOrdersDashboard from './components/PendingOrdersDashboard';
 import QuotationForm from './components/QuotationForm';
 import POGenerator from './components/POGenerator';
 import DO1Generator from './components/DO1Generator';
@@ -34,7 +36,8 @@ function Dashboard() {
     {
       title: 'Core Workflow',
       items: [
-        { key: 'leads', label: 'Lead Creation', icon: '👥' },
+        { key: 'leads', label: 'Leads', icon: '👥' },
+        { key: 'pendingOrders', label: 'Pending Orders', icon: '⏳' },
         { key: 'quotations', label: 'Quotation Form', icon: '📋' },
         { key: 'pos', label: 'PO Generator', icon: '📄' },
         { key: 'do1', label: 'DO1 Generator', icon: '📦' },
@@ -208,7 +211,8 @@ function Dashboard() {
           </div>
 
           {/* Form Content */}
-          {activeForm === 'leads' && <LeadCreationForm />}
+          {activeForm === 'leads' && <LeadsDashboard />}
+          {activeForm === 'pendingOrders' && <PendingOrdersDashboard />}
           {activeForm === 'quotations' && <QuotationForm />}
           {activeForm === 'pos' && <POGenerator />}
           {activeForm === 'do1' && <DO1Generator />}
@@ -360,6 +364,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<Dashboard />} />
+        <Route path="/leads" element={<Dashboard />} />
         <Route path="/leads/:id" element={<LeadDetailPage />} />
         <Route path="/quotations/:id" element={<QuotationDetailPage />} />
         <Route path="/pos/:id" element={<PODetailPage />} />

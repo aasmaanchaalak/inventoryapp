@@ -30,7 +30,7 @@ const DispatchCalendar = () => {
     try {
       // Fetch calendar data from the new endpoint
       const response = await fetch(
-        'http://localhost:5000/api/do2/calendar?status=pending'
+        'http://localhost:5001/api/do2/calendar?status=pending'
       );
 
       if (!response.ok) {

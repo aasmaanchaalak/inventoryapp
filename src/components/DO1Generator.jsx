@@ -38,7 +38,7 @@ const DO1Generator = () => {
     setIsLoadingDO1s(true);
     try {
       const response = await fetch(
-        'http://localhost:5000/api/do1?sortBy=createdAt&sortOrder=desc&limit=10'
+        'http://localhost:5001/api/do1?sortBy=createdAt&sortOrder=desc&limit=10'
       );
       if (response.ok) {
         const data = await response.json();
@@ -56,7 +56,7 @@ const DO1Generator = () => {
     const fetchPendingPOs = async () => {
       try {
         const response = await fetch(
-          'http://localhost:5000/api/pos?status=pending'
+          'http://localhost:5001/api/pos?status=pending'
         );
         if (response.ok) {
           const data = await response.json();
@@ -85,7 +85,7 @@ const DO1Generator = () => {
 
       try {
         const response = await fetch(
-          `http://localhost:5000/api/pos/${watchedPoId}/details`
+          `http://localhost:5001/api/pos/${watchedPoId}/details`
         );
         if (response.ok) {
           const data = await response.json();
@@ -121,7 +121,7 @@ const DO1Generator = () => {
   const getAvailableStock = async (item) => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/inventory/summary?productType=${item.type}&size=${item.size}&thickness=${item.thickness}`
+        `http://localhost:5001/api/inventory/summary?productType=${item.type}&size=${item.size}&thickness=${item.thickness}`
       );
       if (response.ok) {
         const data = await response.json();
@@ -155,13 +155,17 @@ const DO1Generator = () => {
     setValue(`items.${index}.total`, newTotal);
   };
 
-  // Calculate overall totals
+  // Calculate overall totals using current form values
   const calculateTotals = () => {
     if (!fields || fields.length === 0)
       return { subtotal: 0, totalTax: 0, grandTotal: 0 };
 
-    const totals = fields.map((item) => {
-      const subtotal = item.dispatchedQuantity * item.rate;
+    const formValues = watch('items') || [];
+
+    const totals = fields.map((item, index) => {
+      const formItem = formValues[index] || {};
+      const dispatchedQuantity = parseFloat(formItem.dispatchedQuantity) || 0;
+      const subtotal = dispatchedQuantity * item.rate;
       const calculation = calculateTaxAmount(
         subtotal,
         STEEL_TUBE_TAX_RATE,
@@ -206,7 +210,7 @@ const DO1Generator = () => {
         })),
       };
 
-      const response = await fetch('http://localhost:5000/api/do1', {
+      const response = await fetch('http://localhost:5001/api/do1', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -421,7 +425,12 @@ const DO1Generator = () => {
                         {formatCurrency(item.rate)}
                       </td>
                       <td className="px-3 py-2 text-sm font-medium text-gray-900">
-                        {formatCurrency(item.total)}
+                        {formatCurrency(
+                          calculateItemTotal(
+                            watch(`items.${index}.dispatchedQuantity`) || 0,
+                            item.rate
+                          )
+                        )}
                       </td>
                     </tr>
                   ))}
