@@ -35,7 +35,7 @@ const InvoiceDashboard = () => {
       }).toString();
 
       const response = await fetch(
-        `http://localhost:5000/api/invoices?${queryParams}`
+        `http://localhost:5001/api/invoices?${queryParams}`
       );
 
       if (response.ok) {
@@ -138,7 +138,7 @@ const InvoiceDashboard = () => {
   const downloadInvoice = async (do2Id) => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/invoice/${do2Id}/pdf`
+        `http://localhost:5001/api/invoice/${do2Id}/pdf`
       );
 
       if (response.ok) {
@@ -507,7 +507,7 @@ const InvoiceDashboard = () => {
                         <button
                           onClick={() =>
                             window.open(
-                              `http://localhost:5000/api/invoice/${invoice.do2Id}/pdf`,
+                              `http://localhost:5001/api/invoice/${invoice.do2Id}/pdf`,
                               '_blank'
                             )
                           }

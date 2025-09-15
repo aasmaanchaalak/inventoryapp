@@ -118,7 +118,7 @@ const QuotationForm = () => {
   useEffect(() => {
     const fetchLeads = async () => {
       try {
-        const data = await fetchLeadsData('http://localhost:5000/api/leads');
+        const data = await fetchLeadsData('http://localhost:5001/api/leads');
         if (data.success) {
           const allLeads = data.data || [];
 
@@ -199,7 +199,7 @@ const QuotationForm = () => {
       };
 
       const result = await createQuotation(
-        'http://localhost:5000/api/quotations',
+        'http://localhost:5001/api/quotations',
         quotationData
       );
 

@@ -32,11 +32,11 @@ const DOTimeline = () => {
       let response;
       if (type === 'lead') {
         response = await fetch(
-          `http://localhost:5000/api/leads/timeline/${identifier}`
+          `http://localhost:5001/api/leads/timeline/${identifier}`
         );
       } else {
         response = await fetch(
-          `http://localhost:5000/api/pos/timeline/${identifier}`
+          `http://localhost:5001/api/pos/timeline/${identifier}`
         );
       }
 

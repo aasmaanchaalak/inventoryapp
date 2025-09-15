@@ -43,7 +43,7 @@ A full-stack React application with Node.js/Express backend for managing leads w
 
 Create a `.env` file in the root directory:
 ```env
-PORT=5000
+PORT=5001
 MONGODB_URI=mongodb://localhost:27017/inventoryapp
 NODE_ENV=development
 ```
@@ -54,7 +54,7 @@ NODE_ENV=development
 ```bash
 npm run dev
 ```
-This will start both the React frontend (port 3000) and Express backend (port 5000).
+This will start both the React frontend (port 3000) and Express backend (port 5001).
 
 **Frontend Only**
 ```bash
@@ -182,7 +182,7 @@ The API includes comprehensive error handling for:
 ## Development
 
 - Frontend runs on `http://localhost:3000`
-- Backend API runs on `http://localhost:5000`
+- Backend API runs on `http://localhost:5001`
 - MongoDB should be running on `mongodb://localhost:27017`
 
 ## Production

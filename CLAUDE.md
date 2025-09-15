@@ -12,7 +12,7 @@ npm run dev
 # Start frontend only (port 3000)
 npm start
 
-# Start backend only (port 5000)
+# Start backend only (port 5001)
 npm run server
 ```
 
@@ -196,10 +196,10 @@ This ensures a stable testing environment without server management overhead dur
 ### Individual Testing
 ```bash
 # Test specific API endpoints using curl or Postman
-curl http://localhost:5000/api/health
+curl http://localhost:5001/api/health
 
 # Test SMS functionality
-curl -X POST http://localhost:5000/api/sms/test \
+curl -X POST http://localhost:5001/api/sms/test \
   -H "Content-Type: application/json" \
   -d '{"phone": "9876543210", "message": "Test message"}'
 ```
@@ -258,7 +258,7 @@ curl -X POST http://localhost:5000/api/sms/test \
 ### Environment Configuration
 - `.env` file required for MongoDB URI, MSG91 SMS credentials, email settings
 - Default MongoDB: `mongodb://localhost:27017/inventoryapp`
-- Backend port: 5000, Frontend port: 3000
+- Backend port: 5001, Frontend port: 3000
 
 ### External Integrations
 

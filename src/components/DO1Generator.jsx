@@ -38,7 +38,7 @@ const DO1Generator = () => {
     setIsLoadingDO1s(true);
     try {
       const response = await fetch(
-        'http://localhost:5000/api/do1?sortBy=createdAt&sortOrder=desc&limit=10'
+        'http://localhost:5001/api/do1?sortBy=createdAt&sortOrder=desc&limit=10'
       );
       if (response.ok) {
         const data = await response.json();
@@ -56,7 +56,7 @@ const DO1Generator = () => {
     const fetchPendingPOs = async () => {
       try {
         const response = await fetch(
-          'http://localhost:5000/api/pos?status=pending'
+          'http://localhost:5001/api/pos?status=pending'
         );
         if (response.ok) {
           const data = await response.json();
@@ -85,7 +85,7 @@ const DO1Generator = () => {
 
       try {
         const response = await fetch(
-          `http://localhost:5000/api/pos/${watchedPoId}/details`
+          `http://localhost:5001/api/pos/${watchedPoId}/details`
         );
         if (response.ok) {
           const data = await response.json();
@@ -121,7 +121,7 @@ const DO1Generator = () => {
   const getAvailableStock = async (item) => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/inventory/summary?productType=${item.type}&size=${item.size}&thickness=${item.thickness}`
+        `http://localhost:5001/api/inventory/summary?productType=${item.type}&size=${item.size}&thickness=${item.thickness}`
       );
       if (response.ok) {
         const data = await response.json();
@@ -206,7 +206,7 @@ const DO1Generator = () => {
         })),
       };
 
-      const response = await fetch('http://localhost:5000/api/do1', {
+      const response = await fetch('http://localhost:5001/api/do1', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

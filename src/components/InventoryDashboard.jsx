@@ -45,7 +45,7 @@ const InventoryDashboard = () => {
     try {
       const queryParams = new URLSearchParams(filterParams).toString();
       const data = await fetchInventoryData(
-        `http://localhost:5000/api/inventory/summary?${queryParams}`
+        `http://localhost:5001/api/inventory/summary?${queryParams}`
       );
 
       if (data && data.success) {
