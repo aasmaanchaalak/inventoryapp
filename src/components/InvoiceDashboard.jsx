@@ -55,7 +55,7 @@ const InvoiceDashboard = () => {
   // Fetch invoices on component mount
   useEffect(() => {
     fetchInvoices();
-  }, [currentPage]); // Remove unstable fetchInvoices dependency
+  }, [currentPage]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Apply filters when they change
   useEffect(() => {
@@ -67,7 +67,7 @@ const InvoiceDashboard = () => {
     });
     setCurrentPage(1); // Reset to first page when filters change
     fetchInvoices(filterParams);
-  }, [watchedFilters]); // Remove unstable fetchInvoices dependency
+  }, [watchedFilters]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Format currency
   const formatCurrency = (amount) => {

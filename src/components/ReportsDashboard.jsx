@@ -79,11 +79,11 @@ const ReportsDashboard = () => {
       // Error handling is now managed by useApi hooks
       console.error('Error fetching reports data:', error);
     }
-  }, []); // Remove unstable API dependencies to prevent infinite loops
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     fetchReportsData();
-  }, []); // Remove unstable fetchReportsData dependency
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const renderWeeklyDOSummary = () => (
     <div className="space-y-6">

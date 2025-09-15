@@ -222,9 +222,10 @@ export const useApi = (config = {}) => {
 
   // Cleanup all active controllers on unmount
   useEffect(() => {
+    // Copy the current ref value to a variable inside the effect
+    const controllers = activeControllers.current;
     return () => {
       // Cancel all active requests on unmount
-      const controllers = activeControllers.current;
       controllers.forEach((controller) => {
         controller.abort();
       });

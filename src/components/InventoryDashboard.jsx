@@ -67,7 +67,7 @@ const InventoryDashboard = () => {
         setStockByType([]);
       }
     },
-    [authLoading, isAuthenticated] // Remove unstable fetchInventoryData dependency
+    [authLoading, isAuthenticated, fetchInventoryData]
   );
 
   // Retry handler that refetches current filters
@@ -80,14 +80,14 @@ const InventoryDashboard = () => {
     });
     // Call fetchInventory directly without dependency to avoid infinite loops
     fetchInventory(filterParams);
-  }, [watchedFilters]); // Remove unstable fetchInventory dependency
+  }, [watchedFilters]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Fetch inventory on component mount and when auth state changes
   useEffect(() => {
     if (isAuthenticated && !authLoading) {
       fetchInventory();
     }
-  }, [isAuthenticated, authLoading]); // Depend on stable auth state instead of fetchInventory
+  }, [isAuthenticated, authLoading]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Apply filters when they change (debounced to avoid infinite requests)
   useEffect(() => {

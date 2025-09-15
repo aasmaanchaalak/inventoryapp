@@ -84,7 +84,7 @@ const POGenerator = () => {
     };
 
     fetchLeads();
-  }, []); // Remove unstable fetchLeadsData dependency to prevent infinite loops
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Fetch quotations when lead is selected
   useEffect(() => {
@@ -108,7 +108,7 @@ const POGenerator = () => {
     };
 
     fetchQuotations();
-  }, [watchedLeadId]); // Remove unstable fetchQuotationsData dependency to prevent infinite loops
+  }, [watchedLeadId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Update selected quotation when quotation is selected
   useEffect(() => {
