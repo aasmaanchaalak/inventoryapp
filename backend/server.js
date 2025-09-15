@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const { requireAuth } = require('./middleware/auth');
 require('dotenv').config();
 
 const app = express();
@@ -38,6 +39,7 @@ const invoicesRoutes = require('./routes/invoices');
 const smsRoutes = require('./routes/sms');
 const reportsRoutes = require('./routes/reports');
 
+// API routes (temporarily without authentication)
 app.use('/api/leads', leadsRoutes);
 app.use('/api/quotations', quotationsRoutes);
 app.use('/api/pos', purchaseOrderRoutes);

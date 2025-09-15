@@ -60,29 +60,36 @@ router.post('/', async (req, res) => {
     }
 
     // Create the DO1 with status 'executed'
-    console.log('Creating DO1 with data:', { poId, dispatchDate, remarks, itemsCount: items.length });
+    console.log('Creating DO1 with data:', {
+      poId,
+      dispatchDate,
+      remarks,
+      itemsCount: items.length,
+    });
     const do1 = new DO1({
       poId,
       // Remove doNumber - let the pre-save hook generate it
       dispatchDate: dispatchDate ? new Date(dispatchDate) : new Date(),
       remarks,
       status: 'executed',
-      items: await Promise.all(items.map(async (item) => {
-        // Get the actual available stock for validation
-        const actualStock = await getAvailableStock(item);
-        return {
-          itemId: item.itemId,
-          type: item.type,
-          size: item.size,
-          thickness: item.thickness,
-          availableStock: actualStock,
-          dispatchedQuantity: item.dispatchedQuantity,
-          rate: item.rate,
-          total: Math.round(item.dispatchedQuantity * item.rate * 100) / 100,
-          hsnCode: item.hsnCode || '7306',
-          originalQuantity: item.originalQuantity || item.dispatchedQuantity,
-        };
-      })),
+      items: await Promise.all(
+        items.map(async (item) => {
+          // Get the actual available stock for validation
+          const actualStock = await getAvailableStock(item);
+          return {
+            itemId: item.itemId,
+            type: item.type,
+            size: item.size,
+            thickness: item.thickness,
+            availableStock: actualStock,
+            dispatchedQuantity: item.dispatchedQuantity,
+            rate: item.rate,
+            total: Math.round(item.dispatchedQuantity * item.rate * 100) / 100,
+            hsnCode: item.hsnCode || '7306',
+            originalQuantity: item.originalQuantity || item.dispatchedQuantity,
+          };
+        })
+      ),
       totals: {
         subtotal:
           Math.round(
@@ -114,7 +121,10 @@ router.post('/', async (req, res) => {
       console.log('DO1 saved successfully, final doNumber:', do1.doNumber);
     } catch (saveError) {
       console.error('Error saving DO1:', saveError);
-      console.error('DO1 data at time of error:', JSON.stringify(do1.toObject(), null, 2));
+      console.error(
+        'DO1 data at time of error:',
+        JSON.stringify(do1.toObject(), null, 2)
+      );
       throw saveError;
     }
 
@@ -123,22 +133,32 @@ router.post('/', async (req, res) => {
     try {
       for (const item of items) {
         if (item.dispatchedQuantity > 0) {
-          const inventoryUpdate = await updateInventoryForDO1(item, do1.doNumber);
+          const inventoryUpdate = await updateInventoryForDO1(
+            item,
+            do1.doNumber
+          );
           inventoryUpdates.push(inventoryUpdate);
         }
       }
-      console.log(`Successfully updated inventory for ${inventoryUpdates.length} items in DO1: ${do1.doNumber}`);
+      console.log(
+        `Successfully updated inventory for ${inventoryUpdates.length} items in DO1: ${do1.doNumber}`
+      );
     } catch (inventoryError) {
-      console.error(`Critical error updating inventory for DO1 ${do1.doNumber}:`, inventoryError);
-      
+      console.error(
+        `Critical error updating inventory for DO1 ${do1.doNumber}:`,
+        inventoryError
+      );
+
       // Rollback: Delete the created DO1 if inventory update fails
       try {
         await DO1.findByIdAndDelete(do1._id);
-        console.log(`Rolled back DO1 ${do1.doNumber} due to inventory update failure`);
+        console.log(
+          `Rolled back DO1 ${do1.doNumber} due to inventory update failure`
+        );
       } catch (rollbackError) {
         console.error('Failed to rollback DO1:', rollbackError);
       }
-      
+
       return res.status(500).json({
         success: false,
         message: `Failed to update inventory for DO1: ${inventoryError.message}`,
@@ -151,7 +171,9 @@ router.post('/', async (req, res) => {
 
     // Auto-generate DO2 for remaining quantities
     let do2Data = null;
-    console.log(`DO1 ${do1.doNumber} saved successfully. Now generating DO2 for remaining quantities...`);
+    console.log(
+      `DO1 ${do1.doNumber} saved successfully. Now generating DO2 for remaining quantities...`
+    );
     try {
       const DO2 = require('../models/DO2');
 
@@ -197,7 +219,9 @@ router.post('/', async (req, res) => {
         });
 
         await do2.save();
-        console.log(`✅ DO2 ${do2.do2Number} created successfully for remaining quantities`);
+        console.log(
+          `✅ DO2 ${do2.do2Number} created successfully for remaining quantities`
+        );
 
         do2Data = {
           do2Number: do2.do2Number,
@@ -261,19 +285,19 @@ router.post('/', async (req, res) => {
 const getAvailableStock = async (item) => {
   try {
     const Inventory = require('../models/Inventory');
-    
+
     // Find the inventory item that matches the DO1 item specifications
     const inventoryItem = await Inventory.findOne({
       productType: item.type,
       size: item.size,
       thickness: item.thickness,
-      isActive: true
+      isActive: true,
     });
 
     if (inventoryItem) {
       return inventoryItem.availableQty;
     }
-    
+
     // If no exact match found, return 0 to prevent dispatch
     return 0;
   } catch (error) {
@@ -551,7 +575,9 @@ const updateInventoryForDO1 = async (item, doNumber) => {
   try {
     const Inventory = require('../models/Inventory');
 
-    console.log(`DO1 Inventory Update - Processing: ${item.type} ${item.size} ${item.thickness}mm, Dispatching: ${item.dispatchedQuantity} tons`);
+    console.log(
+      `DO1 Inventory Update - Processing: ${item.type} ${item.size} ${item.thickness}mm, Dispatching: ${item.dispatchedQuantity} tons`
+    );
 
     // Find or create inventory item
     const inventory = await Inventory.findOrCreate({
@@ -562,11 +588,15 @@ const updateInventoryForDO1 = async (item, doNumber) => {
       hsnCode: item.hsnCode || '7306',
     });
 
-    console.log(`Found inventory: ${inventory.productType} ${inventory.size} - Current stock: ${inventory.availableQty} tons`);
+    console.log(
+      `Found inventory: ${inventory.productType} ${inventory.size} - Current stock: ${inventory.availableQty} tons`
+    );
 
     // Check if sufficient stock is available
     if (inventory.availableQty < item.dispatchedQuantity) {
-      throw new Error(`Insufficient stock for ${item.type} ${item.size}. Available: ${inventory.availableQty} tons, Required: ${item.dispatchedQuantity} tons`);
+      throw new Error(
+        `Insufficient stock for ${item.type} ${item.size}. Available: ${inventory.availableQty} tons, Required: ${item.dispatchedQuantity} tons`
+      );
     }
 
     // Update stock (reduce by dispatched quantity)
@@ -577,7 +607,9 @@ const updateInventoryForDO1 = async (item, doNumber) => {
       `DO1 dispatch - ${item.dispatchedQuantity} tons of ${item.type} ${item.size}`
     );
 
-    console.log(`✅ Inventory updated for DO1: ${item.type} ${item.size} - Stock reduced from ${result.oldQuantity} to ${result.newQuantity} tons`);
+    console.log(
+      `✅ Inventory updated for DO1: ${item.type} ${item.size} - Stock reduced from ${result.oldQuantity} to ${result.newQuantity} tons`
+    );
 
     return {
       itemId: inventory._id,
@@ -590,8 +622,13 @@ const updateInventoryForDO1 = async (item, doNumber) => {
       updatedAt: new Date(),
     };
   } catch (error) {
-    console.error(`❌ Error in updateInventoryForDO1 for ${item.type} ${item.size}:`, error.message);
-    throw new Error(`Failed to update inventory for ${item.type} ${item.size}: ${error.message}`);
+    console.error(
+      `❌ Error in updateInventoryForDO1 for ${item.type} ${item.size}:`,
+      error.message
+    );
+    throw new Error(
+      `Failed to update inventory for ${item.type} ${item.size}: ${error.message}`
+    );
   }
 };
 

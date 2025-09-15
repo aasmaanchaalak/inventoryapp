@@ -195,7 +195,12 @@ const do2Schema = new mongoose.Schema(
 
 // Generate DO2 number before validation (this runs before validation)
 do2Schema.pre('validate', async function (next) {
-  console.log('DO2 Pre-validate hook running, isNew:', this.isNew, 'current do2Number:', this.do2Number);
+  console.log(
+    'DO2 Pre-validate hook running, isNew:',
+    this.isNew,
+    'current do2Number:',
+    this.do2Number
+  );
   if (this.isNew && !this.do2Number) {
     const count = await this.constructor.countDocuments();
     const year = new Date().getFullYear();

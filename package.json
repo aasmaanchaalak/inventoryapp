@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@clerk/clerk-react": "^5.47.0",
+    "@clerk/clerk-sdk-node": "^4.13.23",
     "@hookform/resolvers": "^5.1.1",
     "@playwright/test": "^1.54.1",
     "@testing-library/dom": "^10.4.0",

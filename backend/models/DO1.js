@@ -158,7 +158,12 @@ const do1Schema = new mongoose.Schema(
 
 // Generate DO number before validation (this runs before validation)
 do1Schema.pre('validate', async function (next) {
-  console.log('Pre-validate hook running, isNew:', this.isNew, 'current doNumber:', this.doNumber);
+  console.log(
+    'Pre-validate hook running, isNew:',
+    this.isNew,
+    'current doNumber:',
+    this.doNumber
+  );
   if (this.isNew && !this.doNumber) {
     const count = await this.constructor.countDocuments();
     const year = new Date().getFullYear();
@@ -167,7 +172,6 @@ do1Schema.pre('validate', async function (next) {
   }
   next();
 });
-
 
 // Virtual for formatted dispatch date
 do1Schema.virtual('formattedDispatchDate').get(function () {

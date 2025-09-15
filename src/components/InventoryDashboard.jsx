@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
-import { useApi } from '../hooks/useApi';
+import { useAuthenticatedApi } from '../hooks/useAuthenticatedApi';
 import { STEEL_TUBE_CATEGORIES } from '../config/productCategories';
 
 const InventoryDashboard = () => {
@@ -8,7 +8,7 @@ const InventoryDashboard = () => {
   const [summary, setSummary] = useState({});
   const [stockByType, setStockByType] = useState([]);
 
-  // Use the new API hook for comprehensive error handling
+  // Use the authenticated API hook for comprehensive error handling
   const {
     get: fetchInventoryData,
     status,
@@ -16,7 +16,9 @@ const InventoryDashboard = () => {
     isError,
     isTimeout,
     error,
-  } = useApi({
+    isAuthenticated,
+    authLoading,
+  } = useAuthenticatedApi({
     timeout: 10000,
     retries: 3,
     showToast: true,
@@ -35,6 +37,11 @@ const InventoryDashboard = () => {
 
   // Fetch inventory data with proper error handling
   const fetchInventory = useCallback(async (filterParams = {}) => {
+    // Don't fetch if not authenticated
+    if (!isAuthenticated || authLoading) {
+      return;
+    }
+
     try {
       const queryParams = new URLSearchParams(filterParams).toString();
       const data = await fetchInventoryData(

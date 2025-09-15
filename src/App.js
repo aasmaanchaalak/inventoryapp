@@ -5,6 +5,13 @@ import {
   Route,
   useParams,
 } from 'react-router-dom';
+import {
+  ClerkProvider,
+  SignedIn,
+  SignedOut,
+  RedirectToSignIn,
+  UserButton,
+} from '@clerk/clerk-react';
 import './App.css';
 import LeadCreationForm from './components/LeadCreationForm';
 import QuotationForm from './components/QuotationForm';
@@ -23,6 +30,13 @@ import ReportsDashboard from './components/ReportsDashboard';
 import AuditTrailViewer from './components/AuditTrailViewer';
 import InvoiceAuditTrail from './components/InvoiceAuditTrail';
 import InventoryAddForm from './components/InventoryAddForm';
+
+// Get Clerk publishable key
+const clerkPubKey = process.env.REACT_APP_CLERK_PUBLISHABLE_KEY;
+
+if (!clerkPubKey) {
+  throw new Error('Missing Publishable Key');
+}
 
 // Main Dashboard Component
 function Dashboard() {
@@ -109,38 +123,47 @@ function Dashboard() {
                       'Dashboard'}
                   </p>
                 </div>
-                <button
-                  onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                  className="p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
-                  aria-label="Toggle navigation menu"
-                >
-                  <svg
-                    className="w-6 h-6"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+                <div className="flex items-center space-x-3">
+                  <UserButton afterSignOutUrl="/" />
+                  <button
+                    onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                    className="p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors"
+                    aria-label="Toggle navigation menu"
                   >
-                    {isMobileMenuOpen ? (
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    ) : (
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M4 6h16M4 12h16M4 18h16"
-                      />
-                    )}
-                  </svg>
-                </button>
+                    <svg
+                      className="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      {isMobileMenuOpen ? (
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      ) : (
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M4 6h16M4 12h16M4 18h16"
+                        />
+                      )}
+                    </svg>
+                  </button>
+                </div>
               </div>
 
               {/* Desktop Navigation - Horizontal Scrollable Groups */}
               <div className="hidden md:block p-4">
+                <div className="flex items-center justify-between mb-4">
+                  <h1 className="text-xl font-bold text-gray-900">
+                    Steel Tube ERP
+                  </h1>
+                  <UserButton afterSignOutUrl="/" />
+                </div>
                 <div className="relative">
                   <div className="flex overflow-x-auto space-x-6 pb-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
                     {navigationGroups.map((group) => (
@@ -357,16 +380,90 @@ function InvoiceDetailPage() {
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/leads/:id" element={<LeadDetailPage />} />
-        <Route path="/quotations/:id" element={<QuotationDetailPage />} />
-        <Route path="/pos/:id" element={<PODetailPage />} />
-        <Route path="/do1/:id" element={<DO1DetailPage />} />
-        <Route path="/invoice/:do2Id" element={<InvoiceDetailPage />} />
-      </Routes>
-    </Router>
+    <ClerkProvider publishableKey={clerkPubKey}>
+      <Router>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <>
+                <SignedIn>
+                  <Dashboard />
+                </SignedIn>
+                <SignedOut>
+                  <RedirectToSignIn />
+                </SignedOut>
+              </>
+            }
+          />
+          <Route
+            path="/leads/:id"
+            element={
+              <>
+                <SignedIn>
+                  <LeadDetailPage />
+                </SignedIn>
+                <SignedOut>
+                  <RedirectToSignIn />
+                </SignedOut>
+              </>
+            }
+          />
+          <Route
+            path="/quotations/:id"
+            element={
+              <>
+                <SignedIn>
+                  <QuotationDetailPage />
+                </SignedIn>
+                <SignedOut>
+                  <RedirectToSignIn />
+                </SignedOut>
+              </>
+            }
+          />
+          <Route
+            path="/pos/:id"
+            element={
+              <>
+                <SignedIn>
+                  <PODetailPage />
+                </SignedIn>
+                <SignedOut>
+                  <RedirectToSignIn />
+                </SignedOut>
+              </>
+            }
+          />
+          <Route
+            path="/do1/:id"
+            element={
+              <>
+                <SignedIn>
+                  <DO1DetailPage />
+                </SignedIn>
+                <SignedOut>
+                  <RedirectToSignIn />
+                </SignedOut>
+              </>
+            }
+          />
+          <Route
+            path="/invoice/:do2Id"
+            element={
+              <>
+                <SignedIn>
+                  <InvoiceDetailPage />
+                </SignedIn>
+                <SignedOut>
+                  <RedirectToSignIn />
+                </SignedOut>
+              </>
+            }
+          />
+        </Routes>
+      </Router>
+    </ClerkProvider>
   );
 }
 
