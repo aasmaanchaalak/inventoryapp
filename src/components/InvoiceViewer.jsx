@@ -337,8 +337,7 @@ const InvoiceViewer = () => {
               <div className="space-y-2">
                 <p>
                   <span className="font-medium">Name:</span>{' '}
-                  {invoiceData.companyInfo?.name ||
-                    'Steel Tube Industries Ltd.'}
+                  {invoiceData.companyInfo?.name || 'Vikash Steel Tubes.'}
                 </p>
                 <p>
                   <span className="font-medium">Address:</span>{' '}

@@ -127,7 +127,7 @@ const do1Schema = new mongoose.Schema(
     companyInfo: {
       name: {
         type: String,
-        default: 'Steel Tube Industries Ltd.',
+        default: 'Vikash Steel Tubes.',
       },
       address: {
         type: String,

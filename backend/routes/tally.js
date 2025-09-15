@@ -83,7 +83,7 @@ router.post('/push', async (req, res) => {
       <REQUESTDESC>
         <REPORTNAME>Vouchers</REPORTNAME>
         <STATICVARIABLES>
-          <SVCURRENTCOMPANY>Steel Tube Industries Ltd.</SVCURRENTCOMPANY>
+          <SVCURRENTCOMPANY>Vikash Steel Tubes.</SVCURRENTCOMPANY>
         </STATICVARIABLES>
       </REQUESTDESC>
       <REQUESTDATA>

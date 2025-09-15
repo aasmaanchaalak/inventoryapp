@@ -72,6 +72,7 @@ const schema = yup
 const QuotationForm = () => {
   const [leads, setLeads] = useState([]);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const [lastCreatedQuotationId, setLastCreatedQuotationId] = useState(null);
 
   // API hooks for different operations
   const {
@@ -204,6 +205,7 @@ const QuotationForm = () => {
       );
 
       if (result.success) {
+        setLastCreatedQuotationId(result.data.id);
         alert(result.message || 'Quotation created successfully!');
         reset();
       } else {
@@ -220,12 +222,24 @@ const QuotationForm = () => {
   };
 
   const handleGeneratePDF = async () => {
+    if (!lastCreatedQuotationId) {
+      alert('Please create a quotation first before generating PDF.');
+      return;
+    }
+
     setIsGeneratingPDF(true);
     try {
-      // This would typically call a PDF generation service
-      // For now, we'll simulate the process
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      alert('PDF generation feature will be implemented here');
+      // Open PDF in new window/tab for viewing
+      const pdfUrl = `http://localhost:5001/api/quotations/${lastCreatedQuotationId}/pdf`;
+      window.open(pdfUrl, '_blank');
+
+      // Optional: Also trigger download
+      const link = document.createElement('a');
+      link.href = pdfUrl;
+      link.download = `quotation-${lastCreatedQuotationId}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     } catch (error) {
       console.error('Error generating PDF:', error);
       alert('Failed to generate PDF. Please try again.');
@@ -554,8 +568,13 @@ const QuotationForm = () => {
             <button
               type="button"
               onClick={handleGeneratePDF}
-              disabled={isGeneratingPDF}
+              disabled={isGeneratingPDF || !lastCreatedQuotationId}
               className="px-6 py-2 text-sm font-medium text-white bg-purple-600 border border-transparent rounded-md shadow-sm hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              title={
+                !lastCreatedQuotationId
+                  ? 'Create a quotation first to generate PDF'
+                  : 'Generate and download quotation PDF'
+              }
             >
               {isGeneratingPDF ? 'Generating PDF...' : 'Generate Quotation PDF'}
             </button>

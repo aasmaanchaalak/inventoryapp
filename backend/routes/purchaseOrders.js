@@ -1,4 +1,5 @@
 const express = require('express');
+const PDFDocument = require('pdfkit');
 const router = express.Router();
 const PurchaseOrder = require('../models/PurchaseOrder');
 const Lead = require('../models/Lead');
@@ -563,6 +564,210 @@ router.get('/timeline/:poId', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error fetching timeline data',
+    });
+  }
+});
+
+// GET /api/pos/:id/pdf - Generate Purchase Order PDF
+router.get('/:id/pdf', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Validate Purchase Order ID
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: 'Purchase Order ID is required',
+      });
+    }
+
+    // Fetch PO with populated data
+    const po = await PurchaseOrder.findById(id)
+      .populate('leadId', 'name phone product source notes')
+      .populate('quotationId', 'quotationNumber validity deliveryTerms');
+
+    if (!po) {
+      return res.status(404).json({
+        success: false,
+        message: 'Purchase Order not found',
+      });
+    }
+
+    // Create PDF document
+    const doc = new PDFDocument({
+      size: 'A4',
+      margin: 50,
+    });
+
+    // Set response headers
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="purchase-order-${po.poNumber}.pdf"`
+    );
+
+    // Pipe PDF to response
+    doc.pipe(res);
+
+    // Add company header
+    doc
+      .fontSize(24)
+      .font('Helvetica-Bold')
+      .text('Vikash Steel Tubes.', 50, 50);
+
+    doc
+      .fontSize(10)
+      .font('Helvetica')
+      .text('Industrial Steel Tube Manufacturer', 50, 80)
+      .text('GST: 06XXXXX1234X1Z5', 50, 95)
+      .text('Email: orders@steeltubes.com | Phone: +91-XXXXX-XXXXX', 50, 110);
+
+    // Add document title
+    doc.fontSize(20).font('Helvetica-Bold').text('PURCHASE ORDER', 50, 150);
+
+    // Add PO details
+    doc
+      .fontSize(12)
+      .font('Helvetica')
+      .text(`PO Number: ${po.poNumber}`, 50, 190)
+      .text(
+        `PO Date: ${new Date(po.poDate).toLocaleDateString('en-IN')}`,
+        50,
+        210
+      )
+      .text(`Status: ${po.status.toUpperCase()}`, 50, 230);
+
+    // Add customer details
+    doc.fontSize(14).font('Helvetica-Bold').text('Customer Details:', 50, 270);
+
+    doc
+      .fontSize(12)
+      .font('Helvetica')
+      .text(`Name: ${po.leadId.name}`, 50, 295)
+      .text(`Phone: ${po.leadId.phone}`, 50, 315)
+      .text(`Product Interest: ${po.leadId.product}`, 50, 335)
+      .text(`Source: ${po.leadId.source}`, 50, 355);
+
+    // Add quotation reference
+    if (po.quotationId) {
+      doc
+        .fontSize(14)
+        .font('Helvetica-Bold')
+        .text('Quotation Reference:', 300, 270);
+
+      doc
+        .fontSize(12)
+        .font('Helvetica')
+        .text(`Quotation Number: ${po.quotationId.quotationNumber}`, 300, 295)
+        .text(`Validity: ${po.quotationId.validity} days`, 300, 315)
+        .text(`Delivery Terms: ${po.quotationId.deliveryTerms}`, 300, 335);
+    }
+
+    // Add items table
+    let yPosition = 400;
+
+    doc.fontSize(14).font('Helvetica-Bold').text('Items:', 50, yPosition);
+
+    yPosition += 30;
+
+    // Table headers and column positions
+    const tableHeaders = [
+      'Type',
+      'Size',
+      'Thickness',
+      'Quantity',
+      'Rate',
+      'HSN',
+      'Total',
+    ];
+    const columnPositions = [50, 130, 210, 280, 350, 430, 470];
+
+    // Draw table headers
+    doc.fontSize(10).font('Helvetica-Bold');
+    tableHeaders.forEach((header, index) => {
+      doc.text(header, columnPositions[index], yPosition);
+    });
+
+    // Draw header line
+    yPosition += 20;
+    doc.moveTo(50, yPosition).lineTo(550, yPosition).stroke();
+    yPosition += 10;
+
+    // Add items
+    doc.fontSize(9).font('Helvetica');
+    po.items.forEach((item) => {
+      const itemData = [
+        item.type,
+        item.size,
+        `${item.thickness}mm`,
+        `${item.quantity} tons`,
+        `₹${item.rate.toLocaleString('en-IN')}`,
+        item.hsnCode || '7306',
+        `₹${item.total.toLocaleString('en-IN')}`,
+      ];
+
+      itemData.forEach((data, index) => {
+        doc.text(data, columnPositions[index], yPosition);
+      });
+
+      yPosition += 20;
+    });
+
+    // Draw total line
+    doc.moveTo(50, yPosition).lineTo(520, yPosition).stroke();
+    yPosition += 15;
+
+    // Add totals
+    const subtotal = po.items.reduce((sum, item) => sum + item.subtotal, 0);
+    const totalTax = po.items.reduce((sum, item) => sum + item.taxAmount, 0);
+    const grandTotal = po.totalAmount;
+
+    doc
+      .fontSize(12)
+      .font('Helvetica-Bold')
+      .text(`Subtotal: ₹${subtotal.toLocaleString('en-IN')}`, 400, yPosition)
+      .text(
+        `Total Tax (12% GST): ₹${totalTax.toLocaleString('en-IN')}`,
+        400,
+        yPosition + 20
+      )
+      .text(
+        `Grand Total: ₹${grandTotal.toLocaleString('en-IN')}`,
+        400,
+        yPosition + 40
+      );
+
+    // Add remarks if any
+    if (po.remarks) {
+      yPosition += 80;
+      doc.fontSize(12).font('Helvetica-Bold').text('Remarks:', 50, yPosition);
+
+      doc
+        .fontSize(10)
+        .font('Helvetica')
+        .text(po.remarks, 50, yPosition + 20, { width: 500 });
+    }
+
+    // Add footer
+    const footerY = 750;
+    doc
+      .fontSize(10)
+      .font('Helvetica')
+      .text('Thank you for your business!', 50, footerY)
+      .text(
+        `Generated on: ${new Date().toLocaleDateString('en-IN')}`,
+        400,
+        footerY
+      );
+
+    // Finalize PDF
+    doc.end();
+  } catch (error) {
+    console.error('Error generating Purchase Order PDF:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error generating PDF',
+      error: error.message,
     });
   }
 });

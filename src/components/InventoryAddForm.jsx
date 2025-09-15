@@ -78,7 +78,7 @@ const InventoryAddForm = () => {
       maxStockLevel: 10000,
       warehouseName: 'Main Warehouse',
       warehouseSection: 'Steel Tubes',
-      supplierName: 'Steel Tube Industries Ltd.',
+      supplierName: 'Vikash Steel Tubes.',
       supplierContact: '+91-9876543210',
     },
   });
@@ -100,7 +100,7 @@ const InventoryAddForm = () => {
           section: data.warehouseSection || 'Steel Tubes',
         },
         supplier: {
-          name: data.supplierName || 'Steel Tube Industries Ltd.',
+          name: data.supplierName || 'Vikash Steel Tubes.',
           contact: data.supplierContact || '+91-9876543210',
         },
       };
@@ -374,7 +374,7 @@ const InventoryAddForm = () => {
                 className={`w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
                   errors.supplierName ? 'border-red-500' : 'border-gray-300'
                 }`}
-                placeholder="Steel Tube Industries Ltd."
+                placeholder="Vikash Steel Tubes."
               />
               {errors.supplierName && <FormError error={errors.supplierName} />}
             </div>

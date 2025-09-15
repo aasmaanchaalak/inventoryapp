@@ -226,88 +226,102 @@ router.get('/:id/pdf', async (req, res) => {
     doc.moveDown(2);
 
     // Items table
-    doc.fontSize(14).font('Helvetica-Bold').text('Items').moveDown(0.5);
+    doc.fontSize(14).font('Helvetica-Bold').text('Items');
 
-    // Table headers
+    let yPosition = doc.y + 20;
+
+    // Table headers and column positions
     const tableHeaders = [
       'S.No',
       'Type',
       'Size',
-      'Thickness (mm)',
-      'Quantity (tons)',
-      'Rate (₹)',
-      'Tax (%)',
-      'HSN Code',
-      'Subtotal (₹)',
-      'Tax (₹)',
-      'Total (₹)',
+      'Thick',
+      'Qty',
+      'Rate',
+      'Tax%',
+      'HSN',
+      'Subtotal',
+      'Tax Amt',
+      'Total',
     ];
-    const columnWidths = [40, 60, 60, 50, 50, 50, 40, 50, 60, 50, 60];
+    const columnPositions = [50, 80, 140, 190, 230, 270, 320, 360, 400, 450, 500];
 
-    let x = 50;
-    doc.fontSize(8).font('Helvetica-Bold');
-    tableHeaders.forEach((header, index) => {
-      doc.text(header, x, doc.y);
-      x += columnWidths[index];
-    });
+    // Draw table headers
+    doc.fontSize(9).font('Helvetica-Bold');
+    for (let index = 0; index < tableHeaders.length; index++) {
+      doc.text(tableHeaders[index], columnPositions[index], yPosition, {
+        width: 45,
+        ellipsis: true,
+        continued: false
+      });
+    }
 
-    doc.moveDown(0.5);
+    // Draw header line
+    yPosition += 15;
+    doc.moveTo(50, yPosition).lineTo(550, yPosition).stroke();
+    yPosition += 10;
 
     // Table data
     doc.fontSize(8).font('Helvetica');
     quotation.items.forEach((item, index) => {
-      x = 50;
       const rowData = [
         (index + 1).toString(),
         item.type,
         item.size,
-        item.thickness.toString(),
+        `${item.thickness}mm`,
         item.quantity.toString(),
-        item.rate.toLocaleString('en-IN'),
-        item.tax.toString(),
+        `₹${item.rate.toLocaleString('en-IN')}`,
+        `${item.tax}%`,
         item.hsnCode,
-        item.subtotal.toLocaleString('en-IN'),
-        item.taxAmount.toLocaleString('en-IN'),
-        item.total.toLocaleString('en-IN'),
+        `₹${item.subtotal.toLocaleString('en-IN')}`,
+        `₹${item.taxAmount.toLocaleString('en-IN')}`,
+        `₹${item.total.toLocaleString('en-IN')}`,
       ];
 
-      rowData.forEach((cell, cellIndex) => {
-        doc.text(cell, x, doc.y);
-        x += columnWidths[cellIndex];
-      });
-      doc.moveDown(0.5);
+      for (let cellIndex = 0; cellIndex < rowData.length; cellIndex++) {
+        doc.text(rowData[cellIndex], columnPositions[cellIndex], yPosition, {
+          width: 45,
+          ellipsis: true,
+          continued: false
+        });
+      }
+      yPosition += 15;
     });
 
-    doc.moveDown(1);
+    // Draw total line
+    doc.moveTo(50, yPosition).lineTo(550, yPosition).stroke();
+    yPosition += 20;
 
     // Total amount
     doc
       .fontSize(12)
       .font('Helvetica-Bold')
-      .text(`Total Amount: ₹${quotation.totalAmount.toLocaleString('en-IN')}`, {
-        align: 'right',
-      })
-      .moveDown(2);
+      .text(`Total Amount: ₹${quotation.totalAmount.toLocaleString('en-IN')}`, 400, yPosition);
+
+    yPosition += 40;
 
     // Delivery terms
     doc
       .fontSize(12)
       .font('Helvetica-Bold')
-      .text('Delivery Terms:')
-      .moveDown(0.5);
+      .text('Delivery Terms:', 50, yPosition);
+
+    yPosition += 20;
 
     doc
       .fontSize(10)
       .font('Helvetica')
-      .text(quotation.deliveryTerms)
-      .moveDown(2);
+      .text(quotation.deliveryTerms, 50, yPosition);
+
+    yPosition += 40;
 
     // Terms and conditions
     doc
       .fontSize(12)
       .font('Helvetica-Bold')
-      .text('Terms & Conditions:')
-      .moveDown(0.5);
+      .text('Terms & Conditions:', 50, yPosition);
+
+    yPosition += 20;
 
     const terms = [
       '1. Prices are subject to change without prior notice.',
@@ -321,15 +335,16 @@ router.get('/:id/pdf', async (req, res) => {
 
     doc.fontSize(10).font('Helvetica');
     terms.forEach((term) => {
-      doc.text(term).moveDown(0.3);
+      doc.text(term, 50, yPosition);
+      yPosition += 15;
     });
 
     // Footer
-    doc.moveDown(2);
+    yPosition += 30;
     doc
       .fontSize(10)
       .font('Helvetica')
-      .text('Thank you for your business!', { align: 'center' });
+      .text('Thank you for your business!', 50, yPosition, { width: 500, align: 'center' });
 
     // Finalize PDF
     doc.end();

@@ -20,6 +20,7 @@ const POGenerator = () => {
   const [quotations, setQuotations] = useState([]);
   const [selectedQuotation, setSelectedQuotation] = useState(null);
   const [poNumber, setPoNumber] = useState(null);
+  const [poId, setPoId] = useState(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
 
   // API hooks for different operations
@@ -132,6 +133,7 @@ const POGenerator = () => {
 
       if (result.success) {
         setPoNumber(result.data.poNumber);
+        setPoId(result.data._id);
         setShowConfirmation(true);
         reset();
         setSelectedQuotation(null);
@@ -149,6 +151,31 @@ const POGenerator = () => {
   const closeConfirmation = () => {
     setShowConfirmation(false);
     setPoNumber(null);
+    setPoId(null);
+  };
+
+  const handleDownloadPDF = () => {
+    if (!poId) {
+      alert('No Purchase Order available to download.');
+      return;
+    }
+
+    try {
+      // Open PDF in new window/tab for viewing
+      const pdfUrl = `http://localhost:5001/api/pos/${poId}/pdf`;
+      window.open(pdfUrl, '_blank');
+
+      // Also trigger download
+      const link = document.createElement('a');
+      link.href = pdfUrl;
+      link.download = `purchase-order-${poNumber}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error('Error downloading PO PDF:', error);
+      alert('Failed to download PDF. Please try again.');
+    }
   };
 
   const formatCurrency = (amount) => {
@@ -429,7 +456,13 @@ const POGenerator = () => {
                   {selectedQuotation?.quotationNumber}.
                 </p>
               </div>
-              <div className="mt-6">
+              <div className="mt-6 flex space-x-3 justify-center">
+                <button
+                  onClick={handleDownloadPDF}
+                  className="px-4 py-2 text-sm font-medium text-white bg-purple-600 border border-transparent rounded-md shadow-sm hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                >
+                  Download PDF
+                </button>
                 <button
                   onClick={closeConfirmation}
                   className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"

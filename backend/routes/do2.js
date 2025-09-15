@@ -1,4 +1,5 @@
 const express = require('express');
+const PDFDocument = require('pdfkit');
 const router = express.Router();
 const DO2 = require('../models/DO2');
 const DO1 = require('../models/DO1');
@@ -677,6 +678,282 @@ router.get('/calendar', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error fetching calendar data',
+      error: error.message,
+    });
+  }
+});
+
+// GET /api/do2/:id/pdf - Generate DO2 PDF
+router.get('/:id/pdf', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Validate DO2 ID
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: 'DO2 ID is required',
+      });
+    }
+
+    // Fetch DO2 with populated data
+    const do2 = await DO2.findById(id)
+      .populate({
+        path: 'poId',
+        populate: {
+          path: 'leadId',
+          select: 'name phone product source',
+        },
+      })
+      .populate('do1Id', 'doNumber dispatchDate');
+
+    if (!do2) {
+      return res.status(404).json({
+        success: false,
+        message: 'DO2 not found',
+      });
+    }
+
+    // Create PDF document
+    const doc = new PDFDocument({
+      size: 'A4',
+      margin: 50,
+    });
+
+    // Set response headers
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="delivery-order-2-${do2.do2Number}.pdf"`
+    );
+
+    // Pipe PDF to response
+    doc.pipe(res);
+
+    // Add company header
+    doc
+      .fontSize(24)
+      .font('Helvetica-Bold')
+      .text('Vikash Steel Tubes.', 50, 50);
+
+    doc
+      .fontSize(10)
+      .font('Helvetica')
+      .text('Industrial Steel Tube Manufacturer', 50, 80)
+      .text('GST: 06XXXXX1234X1Z5', 50, 95)
+      .text('Email: dispatch@steeltubes.com | Phone: +91-XXXXX-XXXXX', 50, 110);
+
+    // Add document title
+    doc
+      .fontSize(20)
+      .font('Helvetica-Bold')
+      .text('DELIVERY ORDER 2 (DO2)', 50, 150);
+
+    // Add DO2 details
+    doc
+      .fontSize(12)
+      .font('Helvetica')
+      .text(`DO2 Number: ${do2.do2Number}`, 50, 190)
+      .text(
+        `DO2 Date: ${new Date(do2.dispatchDate).toLocaleDateString('en-IN')}`,
+        50,
+        210
+      )
+      .text(`Status: ${do2.status.toUpperCase()}`, 50, 230)
+      .text(`PO Reference: ${do2.poId.poNumber}`, 50, 250)
+      .text(`DO1 Reference: ${do2.do1Id.doNumber}`, 50, 270);
+
+    // Add customer details
+    doc.fontSize(14).font('Helvetica-Bold').text('Customer Details:', 50, 310);
+
+    doc
+      .fontSize(12)
+      .font('Helvetica')
+      .text(`Name: ${do2.poId.leadId.name}`, 50, 335)
+      .text(`Phone: ${do2.poId.leadId.phone}`, 50, 355)
+      .text(`Product: ${do2.poId.leadId.product}`, 50, 375);
+
+    // Add dispatch summary
+    doc
+      .fontSize(14)
+      .font('Helvetica-Bold')
+      .text('Final Dispatch Summary:', 300, 310);
+
+    const totalDispatched = do2.items.reduce(
+      (sum, item) => sum + item.dispatchedQuantity,
+      0
+    );
+    const totalValue = do2.items.reduce(
+      (sum, item) => sum + item.dispatchedQuantity * item.rate,
+      0
+    );
+
+    doc
+      .fontSize(12)
+      .font('Helvetica')
+      .text(`Total Items: ${do2.items.length}`, 300, 335)
+      .text(`Total Quantity: ${totalDispatched.toFixed(2)} tons`, 300, 355)
+      .text(`Total Value: ₹${totalValue.toLocaleString('en-IN')}`, 300, 375);
+
+    // Add execution status if executed
+    if (do2.status === 'executed' && do2.executionDetails) {
+      const executedDate = new Date(
+        do2.executionDetails.executedAt
+      ).toLocaleDateString('en-IN');
+      doc
+        .fontSize(12)
+        .font('Helvetica-Bold')
+        .text(`✓ EXECUTED on ${executedDate}`, 300, 395);
+    }
+
+    // Add items table
+    let yPosition = 430;
+
+    doc
+      .fontSize(14)
+      .font('Helvetica-Bold')
+      .text('Final Dispatch Items:', 50, yPosition);
+
+    yPosition += 30;
+
+    // Table headers and column positions
+    const tableHeaders = [
+      'Type',
+      'Size',
+      'Thickness',
+      'Remaining',
+      'Dispatched',
+      'Rate',
+      'Value',
+    ];
+    const columnPositions = [50, 120, 190, 260, 320, 380, 450];
+
+    // Draw table headers
+    doc.fontSize(10).font('Helvetica-Bold');
+    tableHeaders.forEach((header, index) => {
+      doc.text(header, columnPositions[index], yPosition);
+    });
+
+    // Draw header line
+    yPosition += 20;
+    doc.moveTo(50, yPosition).lineTo(550, yPosition).stroke();
+    yPosition += 10;
+
+    // Add items
+    doc.fontSize(9).font('Helvetica');
+    do2.items.forEach((item) => {
+      const itemValue = item.dispatchedQuantity * item.rate;
+      const itemData = [
+        item.type,
+        item.size,
+        `${item.thickness}mm`,
+        `${item.remainingQuantity}`,
+        `${item.dispatchedQuantity}`,
+        `₹${item.rate.toLocaleString('en-IN')}`,
+        `₹${itemValue.toLocaleString('en-IN')}`,
+      ];
+
+      itemData.forEach((data, index) => {
+        doc.text(data, columnPositions[index], yPosition);
+      });
+
+      yPosition += 20;
+    });
+
+    // Draw total line
+    doc.moveTo(50, yPosition).lineTo(520, yPosition).stroke();
+    yPosition += 15;
+
+    // Add totals
+    doc
+      .fontSize(12)
+      .font('Helvetica-Bold')
+      .text(
+        `Total Dispatched: ${totalDispatched.toFixed(2)} tons`,
+        300,
+        yPosition
+      )
+      .text(
+        `Total Value: ₹${totalValue.toLocaleString('en-IN')}`,
+        300,
+        yPosition + 20
+      );
+
+    // Add remarks if any
+    if (do2.remarks) {
+      yPosition += 60;
+      doc.fontSize(12).font('Helvetica-Bold').text('Remarks:', 50, yPosition);
+
+      doc
+        .fontSize(10)
+        .font('Helvetica')
+        .text(do2.remarks, 50, yPosition + 20, { width: 500 });
+    }
+
+    // Add important notes
+    yPosition += 80;
+    doc
+      .fontSize(12)
+      .font('Helvetica-Bold')
+      .text('Important Notes:', 50, yPosition);
+
+    doc
+      .fontSize(10)
+      .font('Helvetica')
+      .text('• This is the final delivery order (DO2)', 50, yPosition + 20)
+      .text('• This completes the full order dispatch', 50, yPosition + 35)
+      .text(
+        '• Invoice will be generated after DO2 execution',
+        50,
+        yPosition + 50
+      )
+      .text('• Please check quantities upon receipt', 50, yPosition + 65);
+
+    // Add execution details if executed
+    if (do2.status === 'executed' && do2.executionDetails) {
+      yPosition += 100;
+      doc
+        .fontSize(12)
+        .font('Helvetica-Bold')
+        .text('Execution Details:', 50, yPosition);
+
+      doc
+        .fontSize(10)
+        .font('Helvetica')
+        .text(
+          `Executed At: ${new Date(do2.executionDetails.executedAt).toLocaleString('en-IN')}`,
+          50,
+          yPosition + 20
+        )
+        .text(
+          `Executed By: ${do2.executionDetails.executedBy || 'System'}`,
+          50,
+          yPosition + 35
+        )
+        .text('✓ Order completed successfully', 50, yPosition + 50)
+        .text('✓ SMS notification sent to customer', 50, yPosition + 65)
+        .text('✓ Invoice generated and ready for download', 50, yPosition + 80);
+    }
+
+    // Add footer
+    const footerY = 750;
+    doc
+      .fontSize(10)
+      .font('Helvetica')
+      .text('Vikash Steel Tubes. - Final Delivery Order', 50, footerY)
+      .text(
+        `Generated on: ${new Date().toLocaleDateString('en-IN')}`,
+        400,
+        footerY
+      );
+
+    // Finalize PDF
+    doc.end();
+  } catch (error) {
+    console.error('Error generating DO2 PDF:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error generating PDF',
       error: error.message,
     });
   }

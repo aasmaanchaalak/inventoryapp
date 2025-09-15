@@ -107,7 +107,7 @@ const inventorySchema = new mongoose.Schema(
     supplier: {
       name: {
         type: String,
-        default: 'Steel Tube Industries Ltd.',
+        default: 'Vikash Steel Tubes.',
       },
       contact: {
         type: String,

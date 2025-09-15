@@ -51,11 +51,11 @@ router.get('/:do2Id/pdf', async (req, res) => {
       });
     }
 
-    // Calculate tax details (GST 18%)
-    const gstRate = 18;
+    // Calculate tax details (GST 12% for steel tubes)
+    const gstRate = 12;
     const calculateTax = (amount) => {
-      const cgst = (amount * gstRate) / 200; // 9% CGST
-      const sgst = (amount * gstRate) / 200; // 9% SGST
+      const cgst = (amount * gstRate) / 200; // 6% CGST
+      const sgst = (amount * gstRate) / 200; // 6% SGST
       return { cgst, sgst, total: cgst + sgst };
     };
 
@@ -249,7 +249,7 @@ router.get('/:do2Id/pdf', async (req, res) => {
     };
 
     // Header
-    addText('STEEL TUBE INDUSTRIES LTD.', 50, 50, {
+    addText('Vikash Steel Tubes', 50, 50, {
       fontSize: 20,
       font: 'Helvetica-Bold',
     });
@@ -431,7 +431,7 @@ router.get('/:do2Id/pdf', async (req, res) => {
     const signatureY = totalsY + 220;
 
     // Company signature
-    addText('For Steel Tube Industries Ltd.', 50, signatureY, {
+    addText('For Vikash Steel Tubes.', 50, signatureY, {
       fontSize: 10,
       font: 'Helvetica-Bold',
     });

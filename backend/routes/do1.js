@@ -1,4 +1,5 @@
 const express = require('express');
+const PDFDocument = require('pdfkit');
 const router = express.Router();
 const DO1 = require('../models/DO1');
 const PurchaseOrder = require('../models/PurchaseOrder');
@@ -631,5 +632,242 @@ const updateInventoryForDO1 = async (item, doNumber) => {
     );
   }
 };
+
+// GET /api/do1/:id/pdf - Generate DO1 PDF
+router.get('/:id/pdf', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Validate DO1 ID
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: 'DO1 ID is required',
+      });
+    }
+
+    // Fetch DO1 with populated data
+    const do1 = await DO1.findById(id).populate({
+      path: 'poId',
+      populate: {
+        path: 'leadId',
+        select: 'name phone product source',
+      },
+    });
+
+    if (!do1) {
+      return res.status(404).json({
+        success: false,
+        message: 'DO1 not found',
+      });
+    }
+
+    // Create PDF document
+    const doc = new PDFDocument({
+      size: 'A4',
+      margin: 50,
+    });
+
+    // Set response headers
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename="delivery-order-${do1.doNumber}.pdf"`
+    );
+
+    // Pipe PDF to response
+    doc.pipe(res);
+
+    // Add company header
+    doc
+      .fontSize(24)
+      .font('Helvetica-Bold')
+      .text('Vikash Steel Tubes.', 50, 50);
+
+    doc
+      .fontSize(10)
+      .font('Helvetica')
+      .text('Industrial Steel Tube Manufacturer', 50, 80)
+      .text('GST: 06XXXXX1234X1Z5', 50, 95)
+      .text('Email: dispatch@steeltubes.com | Phone: +91-XXXXX-XXXXX', 50, 110);
+
+    // Add document title
+    doc
+      .fontSize(20)
+      .font('Helvetica-Bold')
+      .text('DELIVERY ORDER 1 (DO1)', 50, 150);
+
+    // Add DO1 details
+    doc
+      .fontSize(12)
+      .font('Helvetica')
+      .text(`DO Number: ${do1.doNumber}`, 50, 190)
+      .text(
+        `DO Date: ${new Date(do1.dispatchDate).toLocaleDateString('en-IN')}`,
+        50,
+        210
+      )
+      .text(`Status: ${do1.status.toUpperCase()}`, 50, 230)
+      .text(`PO Reference: ${do1.poId.poNumber}`, 50, 250);
+
+    // Add customer details
+    doc.fontSize(14).font('Helvetica-Bold').text('Customer Details:', 50, 290);
+
+    doc
+      .fontSize(12)
+      .font('Helvetica')
+      .text(`Name: ${do1.poId.leadId.name}`, 50, 315)
+      .text(`Phone: ${do1.poId.leadId.phone}`, 50, 335)
+      .text(`Product: ${do1.poId.leadId.product}`, 50, 355);
+
+    // Add dispatch summary
+    doc.fontSize(14).font('Helvetica-Bold').text('Dispatch Summary:', 300, 290);
+
+    const totalDispatched = do1.items.reduce(
+      (sum, item) => sum + item.dispatchedQuantity,
+      0
+    );
+    const totalValue = do1.items.reduce(
+      (sum, item) => sum + item.dispatchedQuantity * item.rate,
+      0
+    );
+
+    doc
+      .fontSize(12)
+      .font('Helvetica')
+      .text(`Total Items: ${do1.items.length}`, 300, 315)
+      .text(`Total Quantity: ${totalDispatched.toFixed(2)} tons`, 300, 335)
+      .text(`Total Value: ₹${totalValue.toLocaleString('en-IN')}`, 300, 355);
+
+    // Add items table
+    let yPosition = 400;
+
+    doc
+      .fontSize(14)
+      .font('Helvetica-Bold')
+      .text('Dispatched Items:', 50, yPosition);
+
+    yPosition += 30;
+
+    // Table headers and column positions
+    const tableHeaders = [
+      'Type',
+      'Size',
+      'Thickness',
+      'Ordered',
+      'Dispatched',
+      'Rate',
+      'Value',
+    ];
+    const columnPositions = [50, 120, 190, 260, 320, 380, 450];
+
+    // Draw table headers
+    doc.fontSize(10).font('Helvetica-Bold');
+    tableHeaders.forEach((header, index) => {
+      doc.text(header, columnPositions[index], yPosition);
+    });
+
+    // Draw header line
+    yPosition += 20;
+    doc.moveTo(50, yPosition).lineTo(550, yPosition).stroke();
+    yPosition += 10;
+
+    // Add items
+    doc.fontSize(9).font('Helvetica');
+    do1.items.forEach((item) => {
+      const itemValue = item.dispatchedQuantity * item.rate;
+      const itemData = [
+        item.type,
+        item.size,
+        `${item.thickness}mm`,
+        `${item.orderedQuantity || item.dispatchedQuantity}`,
+        `${item.dispatchedQuantity}`,
+        `₹${item.rate.toLocaleString('en-IN')}`,
+        `₹${itemValue.toLocaleString('en-IN')}`,
+      ];
+
+      itemData.forEach((data, index) => {
+        doc.text(data, columnPositions[index], yPosition);
+      });
+
+      yPosition += 20;
+    });
+
+    // Draw total line
+    doc.moveTo(50, yPosition).lineTo(520, yPosition).stroke();
+    yPosition += 15;
+
+    // Add totals
+    doc
+      .fontSize(12)
+      .font('Helvetica-Bold')
+      .text(
+        `Total Dispatched: ${totalDispatched.toFixed(2)} tons`,
+        300,
+        yPosition
+      )
+      .text(
+        `Total Value: ₹${totalValue.toLocaleString('en-IN')}`,
+        300,
+        yPosition + 20
+      );
+
+    // Add remarks if any
+    if (do1.remarks) {
+      yPosition += 60;
+      doc.fontSize(12).font('Helvetica-Bold').text('Remarks:', 50, yPosition);
+
+      doc
+        .fontSize(10)
+        .font('Helvetica')
+        .text(do1.remarks, 50, yPosition + 20, { width: 500 });
+    }
+
+    // Add important notes
+    yPosition += 80;
+    doc
+      .fontSize(12)
+      .font('Helvetica-Bold')
+      .text('Important Notes:', 50, yPosition);
+
+    doc
+      .fontSize(10)
+      .font('Helvetica')
+      .text('• This is the first delivery order (DO1)', 50, yPosition + 20)
+      .text(
+        '• Remaining quantities will be dispatched in DO2',
+        50,
+        yPosition + 35
+      )
+      .text('• Please check quantities upon receipt', 50, yPosition + 50)
+      .text(
+        '• Contact us immediately for any discrepancies',
+        50,
+        yPosition + 65
+      );
+
+    // Add footer
+    const footerY = 750;
+    doc
+      .fontSize(10)
+      .font('Helvetica')
+      .text('Vikash Steel Tubes. - Delivery Order 1', 50, footerY)
+      .text(
+        `Generated on: ${new Date().toLocaleDateString('en-IN')}`,
+        400,
+        footerY
+      );
+
+    // Finalize PDF
+    doc.end();
+  } catch (error) {
+    console.error('Error generating DO1 PDF:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error generating PDF',
+      error: error.message,
+    });
+  }
+});
 
 module.exports = router;

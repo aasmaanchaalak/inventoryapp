@@ -211,7 +211,7 @@ router.post('/', async (req, res) => {
         section: 'Steel Tubes',
       },
       supplier: supplier || {
-        name: 'Steel Tube Industries Ltd.',
+        name: 'Vikash Steel Tubes.',
         contact: '+91-9876543210',
       },
     });

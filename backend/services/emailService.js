@@ -18,7 +18,7 @@ class EmailService {
   constructor() {
     this.transporter = transporter;
     this.fromEmail = process.env.EMAIL_USER || 'your-email@gmail.com';
-    this.fromName = 'Steel Tube Industries Ltd.';
+    this.fromName = 'Vikash Steel Tubes.';
   }
 
   // Send invoice email
@@ -125,7 +125,7 @@ class EmailService {
       </head>
       <body>
         <div class="header">
-          <h1>Steel Tube Industries Ltd.</h1>
+          <h1>Vikash Steel Tubes.</h1>
           <p>Manufacturing Excellence in Steel Tubes</p>
         </div>
         
@@ -158,10 +158,10 @@ class EmailService {
             <li>Address: 123 Industrial Area, Manufacturing District, City - 123456</li>
           </ul>
           
-          <p>Thank you for choosing Steel Tube Industries Ltd. We appreciate your business!</p>
+          <p>Thank you for choosing Vikash Steel Tubes. We appreciate your business!</p>
           
           <p>Best regards,<br>
-          <strong>Steel Tube Industries Ltd.</strong></p>
+          <strong>Vikash Steel Tubes.</strong></p>
         </div>
         
         <div class="footer">

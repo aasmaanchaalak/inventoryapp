@@ -194,7 +194,7 @@ const EmailTester = () => {
             .env)
           </p>
           <p>
-            <strong>From Name:</strong> Steel Tube Industries Ltd.
+            <strong>From Name:</strong> Vikash Steel Tubes.
           </p>
           <p>
             <strong>Subject:</strong> Tax Invoice from Steel Tube Industries
