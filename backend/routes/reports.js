@@ -284,20 +284,20 @@ router.get('/low-stock', async (req, res) => {
     const lowStockItems = await Inventory.aggregate([
       {
         $match: {
-          availableQuantity: { $lt: parseFloat(threshold) },
+          availableQty: { $lt: parseFloat(threshold) },
         },
       },
       {
         $project: {
           productId: '$_id',
           productName: {
-            $concat: ['$productType', ' - ', '$size', ' (', '$thickness', ')'],
+            $concat: ['$productType', ' - ', '$size', ' (', { $toString: '$thickness' }, 'mm)'],
           },
           type: '$productType',
           size: '$size',
           thickness: '$thickness',
-          stockLevel: '$availableQuantity',
-          minThreshold: '$minThreshold',
+          stockLevel: '$availableQty',
+          minThreshold: '$minStockLevel',
           lastUpdated: '$lastUpdated',
         },
       },

@@ -14,17 +14,36 @@ import {
   Pie,
   Cell,
 } from 'recharts';
+import { useApi } from '../hooks/useApi';
 
 const ReportsDashboard = () => {
   const [activeTab, setActiveTab] = useState('weekly-do');
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
   const [reportsData, setReportsData] = useState({
     weeklyDO: [],
     topClients: [],
     topProducts: [],
     lowStock: [],
   });
+
+  // Initialize API hooks for each endpoint
+  const weeklyDOApi = useApi();
+  const topClientsApi = useApi();
+  const topProductsApi = useApi();
+  const lowStockApi = useApi();
+
+  // Combined loading state
+  const isLoading =
+    weeklyDOApi.isLoading ||
+    topClientsApi.isLoading ||
+    topProductsApi.isLoading ||
+    lowStockApi.isLoading;
+
+  // Combined error state
+  const error =
+    weeklyDOApi.error ||
+    topClientsApi.error ||
+    topProductsApi.error ||
+    lowStockApi.error;
 
   // Color palette for charts
   const COLORS = [
@@ -45,28 +64,24 @@ const ReportsDashboard = () => {
   }, []);
 
   const fetchReportsData = async () => {
-    setIsLoading(true);
-    setError(null);
-
     try {
-      // Fetch all reports data
+      // Fetch all reports data using useApi hooks
       const [weeklyDO, topClients, topProducts, lowStock] = await Promise.all([
-        fetch('/api/reports/weekly-do-summary').then((res) => res.json()),
-        fetch('/api/reports/top-clients').then((res) => res.json()),
-        fetch('/api/reports/top-products').then((res) => res.json()),
-        fetch('/api/reports/low-stock').then((res) => res.json()),
+        weeklyDOApi.get('/api/reports/weekly-do-summary'),
+        topClientsApi.get('/api/reports/top-clients'),
+        topProductsApi.get('/api/reports/top-products'),
+        lowStockApi.get('/api/reports/low-stock'),
       ]);
 
       setReportsData({
-        weeklyDO: weeklyDO.success ? weeklyDO.data : [],
-        topClients: topClients.success ? topClients.data : [],
-        topProducts: topProducts.success ? topProducts.data : [],
-        lowStock: lowStock.success ? lowStock.data : [],
+        weeklyDO: weeklyDO?.success ? weeklyDO.data : [],
+        topClients: topClients?.success ? topClients.data : [],
+        topProducts: topProducts?.success ? topProducts.data : [],
+        lowStock: lowStock?.success ? lowStock.data : [],
       });
     } catch (error) {
-      setError('Failed to fetch reports data: ' + error.message);
-    } finally {
-      setIsLoading(false);
+      // Error handling is now managed by useApi hooks
+      console.error('Error fetching reports data:', error);
     }
   };
 
@@ -179,7 +194,7 @@ const ReportsDashboard = () => {
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis type="number" />
             <YAxis dataKey="clientName" type="category" width={150} />
-            <Tooltip formatter={(value, name) => [`${value} tons`, 'Volume']} />
+            <Tooltip formatter={(value) => [`${value} tons`, 'Volume']} />
             <Bar dataKey="totalVolume" fill="#0088FE" name="Volume (tons)" />
           </BarChart>
         </ResponsiveContainer>
@@ -257,7 +272,7 @@ const ReportsDashboard = () => {
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis type="number" />
             <YAxis dataKey="productName" type="category" width={200} />
-            <Tooltip formatter={(value, name) => [`${value} tons`, 'Volume']} />
+            <Tooltip formatter={(value) => [`${value} tons`, 'Volume']} />
             <Bar dataKey="totalVolume" fill="#00C49F" name="Volume (tons)" />
           </BarChart>
         </ResponsiveContainer>
@@ -274,8 +289,8 @@ const ReportsDashboard = () => {
               cx="50%"
               cy="50%"
               labelLine={false}
-              label={({ name, percent }) =>
-                `${name} ${(percent * 100).toFixed(0)}%`
+              label={({ productName, percent }) =>
+                `${productName} ${(percent * 100).toFixed(0)}%`
               }
               outerRadius={80}
               fill="#8884d8"
@@ -567,13 +582,62 @@ const ReportsDashboard = () => {
                 </div>
                 <div className="ml-3">
                   <h3 className="text-sm font-medium text-red-800">Error</h3>
-                  <div className="mt-2 text-sm text-red-700">{error}</div>
-                  <button
-                    onClick={fetchReportsData}
-                    className="mt-2 text-sm text-red-600 hover:text-red-500 underline"
-                  >
-                    Try again
-                  </button>
+                  <div className="mt-2 text-sm text-red-700">
+                    {error.message || error || 'An unexpected error occurred'}
+                    {error.isTimeout && (
+                      <div className="mt-1 text-xs text-red-600">
+                        Request timed out. Please check your connection.
+                      </div>
+                    )}
+                  </div>
+                  <div className="mt-2 space-x-2">
+                    <button
+                      onClick={fetchReportsData}
+                      className="text-sm text-red-600 hover:text-red-500 underline"
+                    >
+                      Try again
+                    </button>
+                    {(weeklyDOApi.isError || weeklyDOApi.isTimeout) && (
+                      <button
+                        onClick={() =>
+                          weeklyDOApi.retry('/api/reports/weekly-do-summary')
+                        }
+                        className="text-sm text-red-600 hover:text-red-500 underline"
+                      >
+                        Retry Weekly DO
+                      </button>
+                    )}
+                    {(topClientsApi.isError || topClientsApi.isTimeout) && (
+                      <button
+                        onClick={() =>
+                          topClientsApi.retry('/api/reports/top-clients')
+                        }
+                        className="text-sm text-red-600 hover:text-red-500 underline"
+                      >
+                        Retry Top Clients
+                      </button>
+                    )}
+                    {(topProductsApi.isError || topProductsApi.isTimeout) && (
+                      <button
+                        onClick={() =>
+                          topProductsApi.retry('/api/reports/top-products')
+                        }
+                        className="text-sm text-red-600 hover:text-red-500 underline"
+                      >
+                        Retry Top Products
+                      </button>
+                    )}
+                    {(lowStockApi.isError || lowStockApi.isTimeout) && (
+                      <button
+                        onClick={() =>
+                          lowStockApi.retry('/api/reports/low-stock')
+                        }
+                        className="text-sm text-red-600 hover:text-red-500 underline"
+                      >
+                        Retry Low Stock
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
