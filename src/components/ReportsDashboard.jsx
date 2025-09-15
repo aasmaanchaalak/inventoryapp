@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   BarChart,
   Bar,
@@ -59,18 +59,14 @@ const ReportsDashboard = () => {
     '#45B7D1',
   ];
 
-  useEffect(() => {
-    fetchReportsData();
-  }, []);
-
-  const fetchReportsData = async () => {
+  const fetchReportsData = useCallback(async () => {
     try {
       // Fetch all reports data using useApi hooks
       const [weeklyDO, topClients, topProducts, lowStock] = await Promise.all([
-        weeklyDOApi.get('/api/reports/weekly-do-summary'),
-        topClientsApi.get('/api/reports/top-clients'),
-        topProductsApi.get('/api/reports/top-products'),
-        lowStockApi.get('/api/reports/low-stock'),
+        weeklyDOApi.get('http://localhost:5001/api/reports/weekly-do-summary'),
+        topClientsApi.get('http://localhost:5001/api/reports/top-clients'),
+        topProductsApi.get('http://localhost:5001/api/reports/top-products'),
+        lowStockApi.get('http://localhost:5001/api/reports/low-stock'),
       ]);
 
       setReportsData({
@@ -83,7 +79,11 @@ const ReportsDashboard = () => {
       // Error handling is now managed by useApi hooks
       console.error('Error fetching reports data:', error);
     }
-  };
+  }, []); // Remove unstable API dependencies to prevent infinite loops
+
+  useEffect(() => {
+    fetchReportsData();
+  }, []); // Remove unstable fetchReportsData dependency
 
   const renderWeeklyDOSummary = () => (
     <div className="space-y-6">
@@ -600,7 +600,9 @@ const ReportsDashboard = () => {
                     {(weeklyDOApi.isError || weeklyDOApi.isTimeout) && (
                       <button
                         onClick={() =>
-                          weeklyDOApi.retry('/api/reports/weekly-do-summary')
+                          weeklyDOApi.retry(
+                            'http://localhost:5001/api/reports/weekly-do-summary'
+                          )
                         }
                         className="text-sm text-red-600 hover:text-red-500 underline"
                       >
@@ -610,7 +612,9 @@ const ReportsDashboard = () => {
                     {(topClientsApi.isError || topClientsApi.isTimeout) && (
                       <button
                         onClick={() =>
-                          topClientsApi.retry('/api/reports/top-clients')
+                          topClientsApi.retry(
+                            'http://localhost:5001/api/reports/top-clients'
+                          )
                         }
                         className="text-sm text-red-600 hover:text-red-500 underline"
                       >
@@ -620,7 +624,9 @@ const ReportsDashboard = () => {
                     {(topProductsApi.isError || topProductsApi.isTimeout) && (
                       <button
                         onClick={() =>
-                          topProductsApi.retry('/api/reports/top-products')
+                          topProductsApi.retry(
+                            'http://localhost:5001/api/reports/top-products'
+                          )
                         }
                         className="text-sm text-red-600 hover:text-red-500 underline"
                       >
@@ -630,7 +636,9 @@ const ReportsDashboard = () => {
                     {(lowStockApi.isError || lowStockApi.isTimeout) && (
                       <button
                         onClick={() =>
-                          lowStockApi.retry('/api/reports/low-stock')
+                          lowStockApi.retry(
+                            'http://localhost:5001/api/reports/low-stock'
+                          )
                         }
                         className="text-sm text-red-600 hover:text-red-500 underline"
                       >

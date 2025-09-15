@@ -84,7 +84,7 @@ const POGenerator = () => {
     };
 
     fetchLeads();
-  }, []); // Remove fetchLeadsData dependency to prevent infinite re-renders
+  }, []); // Remove unstable fetchLeadsData dependency to prevent infinite loops
 
   // Fetch quotations when lead is selected
   useEffect(() => {
@@ -108,7 +108,7 @@ const POGenerator = () => {
     };
 
     fetchQuotations();
-  }, [watchedLeadId]); // Remove fetchQuotationsData dependency to prevent infinite re-renders
+  }, [watchedLeadId]); // Remove unstable fetchQuotationsData dependency to prevent infinite loops
 
   // Update selected quotation when quotation is selected
   useEffect(() => {

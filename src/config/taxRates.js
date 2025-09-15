@@ -101,7 +101,7 @@ export const getAllowedTaxRates = () => {
 };
 
 // Export default configuration
-export default {
+const taxConfig = {
   STEEL_TUBE_TAX_RATE,
   TAX_RATES_BY_CATEGORY,
   DEFAULT_TAX_RATE,
@@ -113,3 +113,5 @@ export default {
   isValidTaxRate,
   getAllowedTaxRates,
 };
+
+export default taxConfig;

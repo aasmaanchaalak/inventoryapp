@@ -19,7 +19,7 @@ const SMSTester = () => {
     setResult(null);
 
     try {
-      const response = await fetch('/api/sms/test', {
+      const response = await fetch('http://localhost:5001/api/sms/test', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -53,7 +53,7 @@ const SMSTester = () => {
     setResult(null);
 
     try {
-      const response = await fetch('/api/sms/test-do2', {
+      const response = await fetch('http://localhost:5001/api/sms/test-do2', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

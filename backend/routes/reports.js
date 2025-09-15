@@ -291,7 +291,14 @@ router.get('/low-stock', async (req, res) => {
         $project: {
           productId: '$_id',
           productName: {
-            $concat: ['$productType', ' - ', '$size', ' (', { $toString: '$thickness' }, 'mm)'],
+            $concat: [
+              '$productType',
+              ' - ',
+              '$size',
+              ' (',
+              { $toString: '$thickness' },
+              'mm)',
+            ],
           },
           type: '$productType',
           size: '$size',

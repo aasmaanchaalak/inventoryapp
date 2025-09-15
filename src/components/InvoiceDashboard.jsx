@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 
 const InvoiceDashboard = () => {
@@ -8,11 +8,7 @@ const InvoiceDashboard = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  const {
-    register,
-    watch,
-    formState: { errors },
-  } = useForm({
+  const { register, watch } = useForm({
     defaultValues: {
       status: '',
       pushedToTally: '',
@@ -25,38 +21,41 @@ const InvoiceDashboard = () => {
   const watchedFilters = watch();
 
   // Fetch invoices data
-  const fetchInvoices = async (filterParams = {}) => {
-    setIsLoading(true);
-    try {
-      const queryParams = new URLSearchParams({
-        page: currentPage,
-        limit: 20,
-        ...filterParams,
-      }).toString();
+  const fetchInvoices = useCallback(
+    async (filterParams = {}) => {
+      setIsLoading(true);
+      try {
+        const queryParams = new URLSearchParams({
+          page: currentPage,
+          limit: 20,
+          ...filterParams,
+        }).toString();
 
-      const response = await fetch(
-        `http://localhost:5001/api/invoices?${queryParams}`
-      );
+        const response = await fetch(
+          `http://localhost:5001/api/invoices?${queryParams}`
+        );
 
-      if (response.ok) {
-        const data = await response.json();
-        setInvoices(data.data.invoices || []);
-        setSummary(data.data.summary || {});
-        setTotalPages(data.data.pagination?.pages || 1);
-      } else {
-        console.error('Failed to fetch invoices data');
+        if (response.ok) {
+          const data = await response.json();
+          setInvoices(data.data.invoices || []);
+          setSummary(data.data.summary || {});
+          setTotalPages(data.data.pagination?.pages || 1);
+        } else {
+          console.error('Failed to fetch invoices data');
+        }
+      } catch (error) {
+        console.error('Error fetching invoices:', error);
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.error('Error fetching invoices:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    },
+    [currentPage]
+  );
 
   // Fetch invoices on component mount
   useEffect(() => {
     fetchInvoices();
-  }, [currentPage]);
+  }, [currentPage]); // Remove unstable fetchInvoices dependency
 
   // Apply filters when they change
   useEffect(() => {
@@ -68,7 +67,7 @@ const InvoiceDashboard = () => {
     });
     setCurrentPage(1); // Reset to first page when filters change
     fetchInvoices(filterParams);
-  }, [watchedFilters]);
+  }, [watchedFilters]); // Remove unstable fetchInvoices dependency
 
   // Format currency
   const formatCurrency = (amount) => {

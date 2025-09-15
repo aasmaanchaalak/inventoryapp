@@ -17,7 +17,7 @@ const DO1Generator = () => {
     handleSubmit,
     watch,
     setValue,
-    formState: { errors, isSubmitting: formIsSubmitting },
+    formState: { isSubmitting: formIsSubmitting },
     reset,
   } = useForm({
     defaultValues: {

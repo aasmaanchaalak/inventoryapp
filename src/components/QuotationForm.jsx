@@ -149,7 +149,7 @@ const QuotationForm = () => {
     };
 
     fetchLeads();
-  }, []); // Remove fetchLeadsData dependency to prevent infinite re-renders
+  }, []); // Remove unstable fetchLeadsData dependency to prevent infinite loops
 
   // Calculate totals for each row and overall
   const calculateRowTotal = (item) => {

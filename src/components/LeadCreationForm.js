@@ -18,7 +18,7 @@ const schema = yup
       .string()
       .required('Phone number is required')
       .max(20, 'Phone number cannot be more than 20 characters')
-      .matches(/^[\+]?[1-9][\d]{0,15}$/, 'Please enter a valid phone number'),
+      .matches(/^[+]?[1-9][\d]{0,15}$/, 'Please enter a valid phone number'),
     email: yup
       .string()
       .email('Please enter a valid email address')

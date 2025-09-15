@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 
 // API states enum
 export const API_STATES = {
@@ -11,9 +11,9 @@ export const API_STATES = {
 
 // Default configuration
 const DEFAULT_CONFIG = {
-  timeout: 10000, // 10 seconds
-  retries: 3,
-  retryDelay: 1000, // 1 second initial delay
+  timeout: 8000, // 8 seconds - shorter for faster feedback
+  retries: 2, // Fewer retries but faster feedback
+  retryDelay: 500, // 500ms initial delay - faster retry
   retryDelayMultiplier: 2, // Exponential backoff
   showToast: true,
 };
@@ -23,6 +23,7 @@ const RETRY_ERROR_TYPES = [
   'Failed to fetch', // Network errors
   'NetworkError',
   'TypeError: Failed to fetch',
+  'Request timeout', // Our custom timeout errors
 ];
 
 // HTTP status codes that should trigger retries (5xx server errors)
@@ -36,6 +37,9 @@ const RETRY_STATUS_CODES = [500, 502, 503, 504];
 export const useApi = (config = {}) => {
   const finalConfig = { ...DEFAULT_CONFIG, ...config };
 
+  // Use ref to track active controllers for cleanup
+  const activeControllers = useRef(new Set());
+
   const [state, setState] = useState({
     status: API_STATES.IDLE,
     data: null,
@@ -44,99 +48,116 @@ export const useApi = (config = {}) => {
     retryCount: 0,
   });
 
-  /**
-   * Sleep function for retry delays
-   */
-  const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+  // Stable helper functions using useCallback with proper dependencies
+  const sleep = useCallback(
+    (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
+    []
+  );
 
-  /**
-   * Calculate retry delay with exponential backoff
-   */
-  const getRetryDelay = (attempt) => {
-    return (
-      finalConfig.retryDelay *
-      Math.pow(finalConfig.retryDelayMultiplier, attempt)
-    );
-  };
+  const getRetryDelay = useCallback(
+    (attempt) => {
+      return (
+        finalConfig.retryDelay *
+        Math.pow(finalConfig.retryDelayMultiplier, attempt)
+      );
+    },
+    [finalConfig.retryDelay, finalConfig.retryDelayMultiplier]
+  );
 
-  /**
-   * Check if error should trigger a retry
-   */
-  const shouldRetry = (error, response, attempt) => {
-    if (attempt >= finalConfig.retries) return false;
+  const shouldRetry = useCallback(
+    (error, response, attempt) => {
+      if (attempt >= finalConfig.retries) return false;
 
-    // Check for network errors
-    if (
-      error &&
-      RETRY_ERROR_TYPES.some((type) => error.message.includes(type))
-    ) {
-      return true;
-    }
+      // Check for timeout errors (always retry timeouts if we have attempts left)
+      if (error && (error.isTimeout || error.name === 'AbortError')) {
+        return true;
+      }
 
-    // Check for server errors (5xx status codes)
-    if (response && RETRY_STATUS_CODES.includes(response.status)) {
-      return true;
-    }
+      // Check for network errors
+      if (
+        error &&
+        RETRY_ERROR_TYPES.some((type) => error.message.includes(type))
+      ) {
+        return true;
+      }
 
-    return false;
-  };
+      // Check for server errors (5xx status codes)
+      if (response && RETRY_STATUS_CODES.includes(response.status)) {
+        return true;
+      }
 
-  /**
-   * Show user-friendly error notification
-   */
-  const showErrorNotification = (error, isTimeout = false) => {
-    if (!finalConfig.showToast) return;
+      return false;
+    },
+    [finalConfig.retries]
+  );
 
-    let message = 'An unexpected error occurred. Please try again.';
+  const showErrorNotification = useCallback(
+    (error, isTimeout = false) => {
+      if (!finalConfig.showToast) return;
 
-    if (isTimeout) {
-      message =
-        'Request timed out. Please check your connection and try again.';
-    } else if (error.message.includes('Failed to fetch')) {
-      message = 'Network error. Please check your internet connection.';
-    } else if (error.status >= 500) {
-      message = 'Server error. Please try again in a moment.';
-    } else if (error.status === 404) {
-      message = 'Requested resource not found.';
-    } else if (error.status === 401) {
-      message = 'Authentication required. Please log in again.';
-    } else if (error.status === 403) {
-      message = 'You do not have permission to perform this action.';
-    }
+      let message = 'An unexpected error occurred. Please try again.';
 
-    // For now, use console.error. This will be replaced with toast notifications
-    console.error('API Error:', message, error);
+      if (isTimeout) {
+        message =
+          'Request timed out. Please check your connection and try again.';
+      } else if (error.message.includes('Failed to fetch')) {
+        message = 'Network error. Please check your internet connection.';
+      } else if (error.status >= 500) {
+        message = 'Server error. Please try again in a moment.';
+      } else if (error.status === 404) {
+        message = 'Requested resource not found.';
+      } else if (error.status === 401) {
+        message = 'Authentication required. Please log in again.';
+      } else if (error.status === 403) {
+        message = 'You do not have permission to perform this action.';
+      }
 
-    // In a real application, you would show a toast notification here
-    // toast.error(message);
-  };
+      // For now, use console.error. This will be replaced with toast notifications
+      console.error('API Error:', message, error);
 
-  /**
-   * Create AbortController for timeout handling
-   */
-  const createTimeoutController = () => {
+      // In a real application, you would show a toast notification here
+      // toast.error(message);
+    },
+    [finalConfig.showToast]
+  );
+
+  const createTimeoutController = useCallback(() => {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => {
       controller.abort();
+      activeControllers.current.delete(controller);
     }, finalConfig.timeout);
 
-    return { controller, timeoutId };
-  };
+    // Track this controller for cleanup
+    activeControllers.current.add(controller);
+
+    return {
+      controller,
+      timeoutId,
+      cleanup: () => {
+        clearTimeout(timeoutId);
+        activeControllers.current.delete(controller);
+      },
+    };
+  }, [finalConfig.timeout]);
 
   /**
    * Main API call function with retry logic
    */
   const makeRequest = useCallback(
     async (url, options = {}, attempt = 0) => {
-      const { controller, timeoutId } = createTimeoutController();
+      const { controller, cleanup } = createTimeoutController();
 
       try {
+        setState((prev) => ({ ...prev, retryCount: attempt }));
+
         const response = await fetch(url, {
           ...options,
           signal: controller.signal,
         });
 
-        clearTimeout(timeoutId);
+        // Clean up timeout immediately on response
+        cleanup();
 
         // Check if we should retry on server errors
         if (shouldRetry(null, response, attempt)) {
@@ -149,27 +170,41 @@ export const useApi = (config = {}) => {
         let data;
         const contentType = response.headers.get('content-type');
         if (contentType && contentType.includes('application/json')) {
-          data = await response.json();
+          try {
+            data = await response.json();
+          } catch (parseError) {
+            console.warn('Failed to parse JSON response:', parseError);
+            data = await response.text();
+          }
         } else {
           data = await response.text();
         }
 
         if (!response.ok) {
-          throw new Error(
-            data.message || `HTTP error! status: ${response.status}`,
-            {
-              cause: { status: response.status, data },
-            }
-          );
+          const errorMessage =
+            typeof data === 'object' && data.message
+              ? data.message
+              : typeof data === 'string' && data.length > 0
+                ? data
+                : `HTTP error! status: ${response.status}`;
+
+          const error = new Error(errorMessage);
+          error.status = response.status;
+          error.data = data;
+          throw error;
         }
 
         return { data, response };
       } catch (error) {
-        clearTimeout(timeoutId);
+        // Ensure cleanup happens even on error
+        cleanup();
 
-        // Handle timeout errors
+        // Handle timeout errors specifically
         if (error.name === 'AbortError') {
-          throw new Error('Request timeout', { cause: { isTimeout: true } });
+          const timeoutError = new Error('Request timeout');
+          timeoutError.isTimeout = true;
+          timeoutError.status = 408; // Request Timeout
+          throw timeoutError;
         }
 
         // Check if we should retry on network errors
@@ -182,8 +217,20 @@ export const useApi = (config = {}) => {
         throw error;
       }
     },
-    [finalConfig]
+    [createTimeoutController, getRetryDelay, shouldRetry, sleep]
   );
+
+  // Cleanup all active controllers on unmount
+  useEffect(() => {
+    return () => {
+      // Cancel all active requests on unmount
+      const controllers = activeControllers.current;
+      controllers.forEach((controller) => {
+        controller.abort();
+      });
+      controllers.clear();
+    };
+  }, []);
 
   /**
    * Execute API call with full error handling
@@ -211,7 +258,7 @@ export const useApi = (config = {}) => {
 
         return result.data;
       } catch (error) {
-        const isTimeout = error.cause?.isTimeout;
+        const isTimeout = error.isTimeout || error.name === 'AbortError';
         const status = isTimeout ? API_STATES.TIMEOUT : API_STATES.ERROR;
 
         setState({
@@ -219,8 +266,9 @@ export const useApi = (config = {}) => {
           data: null,
           error: {
             message: error.message,
-            status: error.cause?.status,
+            status: error.status,
             isTimeout,
+            originalError: error,
           },
           isLoading: false,
           retryCount: 0,
@@ -230,7 +278,7 @@ export const useApi = (config = {}) => {
         throw error;
       }
     },
-    [makeRequest, finalConfig]
+    [makeRequest, showErrorNotification]
   );
 
   /**

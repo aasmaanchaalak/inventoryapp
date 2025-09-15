@@ -36,36 +36,39 @@ const InventoryDashboard = () => {
   const watchedFilters = watch();
 
   // Fetch inventory data with proper error handling
-  const fetchInventory = useCallback(async (filterParams = {}) => {
-    // Don't fetch if not authenticated
-    if (!isAuthenticated || authLoading) {
-      return;
-    }
+  const fetchInventory = useCallback(
+    async (filterParams = {}) => {
+      // Don't fetch if not authenticated
+      if (!isAuthenticated || authLoading) {
+        return;
+      }
 
-    try {
-      const queryParams = new URLSearchParams(filterParams).toString();
-      const data = await fetchInventoryData(
-        `http://localhost:5001/api/inventory/summary?${queryParams}`
-      );
+      try {
+        const queryParams = new URLSearchParams(filterParams).toString();
+        const data = await fetchInventoryData(
+          `http://localhost:5001/api/inventory/summary?${queryParams}`
+        );
 
-      if (data && data.success) {
-        setInventory(data.data.inventory || []);
-        setSummary(data.data.summary || {});
-        setStockByType(data.data.stockByType || []);
-      } else {
-        // Handle API-level errors
+        if (data && data.success) {
+          setInventory(data.data.inventory || []);
+          setSummary(data.data.summary || {});
+          setStockByType(data.data.stockByType || []);
+        } else {
+          // Handle API-level errors
+          setInventory([]);
+          setSummary({});
+          setStockByType([]);
+        }
+      } catch (error) {
+        // Error is already handled by useApi hook
+        // Reset to empty state
         setInventory([]);
         setSummary({});
         setStockByType([]);
       }
-    } catch (error) {
-      // Error is already handled by useApi hook
-      // Reset to empty state
-      setInventory([]);
-      setSummary({});
-      setStockByType([]);
-    }
-  }, []); // Remove fetchInventoryData dependency to prevent infinite re-renders
+    },
+    [authLoading, isAuthenticated] // Remove unstable fetchInventoryData dependency
+  );
 
   // Retry handler that refetches current filters
   const handleRetry = useCallback(() => {
@@ -75,16 +78,24 @@ const InventoryDashboard = () => {
         filterParams[key] = value;
       }
     });
+    // Call fetchInventory directly without dependency to avoid infinite loops
     fetchInventory(filterParams);
-  }, [watchedFilters]); // Remove fetchInventory dependency
+  }, [watchedFilters]); // Remove unstable fetchInventory dependency
 
-  // Fetch inventory on component mount
+  // Fetch inventory on component mount and when auth state changes
   useEffect(() => {
-    fetchInventory();
-  }, [fetchInventory]);
+    if (isAuthenticated && !authLoading) {
+      fetchInventory();
+    }
+  }, [isAuthenticated, authLoading]); // Depend on stable auth state instead of fetchInventory
 
   // Apply filters when they change (debounced to avoid infinite requests)
   useEffect(() => {
+    // Don't apply filters if not authenticated
+    if (!isAuthenticated || authLoading) {
+      return;
+    }
+
     const timeoutId = setTimeout(() => {
       const filterParams = {};
       Object.entries(watchedFilters).forEach(([key, value]) => {
@@ -93,7 +104,7 @@ const InventoryDashboard = () => {
         }
       });
 
-      // Only fetch if there are actual filter values
+      // Only fetch if there are actual filter values and we're authenticated
       const hasActualFilters = Object.keys(filterParams).length > 0;
       if (hasActualFilters) {
         fetchInventory(filterParams);
@@ -102,7 +113,7 @@ const InventoryDashboard = () => {
 
     return () => clearTimeout(timeoutId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [watchedFilters]); // Only depend on watchedFilters
+  }, [watchedFilters, isAuthenticated, authLoading]); // Add auth dependencies for safety
 
   // Get stock status badge
   const getStockStatusBadge = (item) => {

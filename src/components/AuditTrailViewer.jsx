@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 const AuditTrailViewer = () => {
-  const [invoiceId, setInvoiceId] = useState('');
   const [auditTrail, setAuditTrail] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
