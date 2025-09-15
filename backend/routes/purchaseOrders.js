@@ -11,7 +11,7 @@ const Invoice = require('../models/Invoice');
 // POST /api/pos - Create a new Purchase Order
 router.post('/', async (req, res) => {
   try {
-    const { quotationId, leadId, remarks } = req.body;
+    const { quotationId, leadId, remarks, customItems, customTotalAmount } = req.body;
 
     // Validate required fields
     if (!quotationId || !leadId) {
@@ -39,8 +39,19 @@ router.post('/', async (req, res) => {
       });
     }
 
-    // Copy product details from quotation
-    const items = quotation.items.map((item) => ({
+    // Use custom items if provided, otherwise copy from quotation
+    const items = customItems ? customItems.map((item) => ({
+      type: item.type,
+      size: item.size,
+      thickness: item.thickness,
+      quantity: item.quantity,
+      rate: item.rate,
+      tax: item.tax,
+      hsnCode: item.hsnCode || '7306',
+      subtotal: item.subtotal,
+      taxAmount: item.taxAmount,
+      total: item.total,
+    })) : quotation.items.map((item) => ({
       type: item.type,
       size: item.size,
       thickness: item.thickness,
@@ -53,6 +64,9 @@ router.post('/', async (req, res) => {
       total: item.total,
     }));
 
+    // Use custom total amount if provided, otherwise use quotation total
+    const totalAmount = customTotalAmount !== undefined ? customTotalAmount : quotation.totalAmount;
+
     // Create the purchase order with copied data
     const purchaseOrder = new PurchaseOrder({
       leadId,
@@ -60,7 +74,7 @@ router.post('/', async (req, res) => {
       poDate: new Date(),
       remarks: remarks || '',
       items: items,
-      totalAmount: quotation.totalAmount,
+      totalAmount: totalAmount,
       quotationNumber: quotation.quotationNumber,
       approvalStatus: 'pending',
     });

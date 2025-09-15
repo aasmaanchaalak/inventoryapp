@@ -69,7 +69,7 @@ const schema = yup
   })
   .required();
 
-const QuotationForm = () => {
+const QuotationForm = ({ onSuccess }) => {
   const [leads, setLeads] = useState([]);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [lastCreatedQuotationId, setLastCreatedQuotationId] = useState(null);
@@ -208,6 +208,10 @@ const QuotationForm = () => {
         setLastCreatedQuotationId(result.data.id);
         alert(result.message || 'Quotation created successfully!');
         reset();
+        // Call onSuccess callback if provided
+        if (onSuccess) {
+          onSuccess(result.data);
+        }
       } else {
         // Handle API-level errors
         alert(

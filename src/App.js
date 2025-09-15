@@ -13,8 +13,6 @@ import {
   UserButton,
 } from '@clerk/clerk-react';
 import './App.css';
-import LeadCreationForm from './components/LeadCreationForm';
-import QuotationForm from './components/QuotationForm';
 import POGenerator from './components/POGenerator';
 import DO1Generator from './components/DO1Generator';
 import InventoryDashboard from './components/InventoryDashboard';
@@ -32,6 +30,7 @@ import InvoiceAuditTrail from './components/InvoiceAuditTrail';
 import InventoryAddForm from './components/InventoryAddForm';
 import LeadsDashboard from './components/LeadsDashboard';
 import QuotationsDashboard from './components/QuotationsDashboard';
+import OrdersPage from './components/OrdersPage';
 
 // Get Clerk publishable key
 const clerkPubKey = process.env.REACT_APP_CLERK_PUBLISHABLE_KEY;
@@ -50,13 +49,13 @@ function Dashboard() {
     {
       title: 'Core Workflow',
       items: [
-        { key: 'leadsDashboard', label: 'Leads Dashboard', icon: '📊' },
+        { key: 'leadsDashboard', label: 'Leads', icon: '👥' },
         {
           key: 'quotationsDashboard',
-          label: 'Quotations Dashboard',
+          label: 'Quotations',
           icon: '📋',
         },
-        { key: 'quotations', label: 'Quotation Form', icon: '📝' },
+        { key: 'orders', label: 'Orders', icon: '📦' },
         { key: 'pos', label: 'PO Generator', icon: '📄' },
         { key: 'do1', label: 'DO1 Generator', icon: '📦' },
       ],
@@ -240,7 +239,7 @@ function Dashboard() {
           {/* Form Content */}
           {activeForm === 'leadsDashboard' && <LeadsDashboard />}
           {activeForm === 'quotationsDashboard' && <QuotationsDashboard />}
-          {activeForm === 'quotations' && <QuotationForm />}
+          {activeForm === 'orders' && <OrdersPage />}
           {activeForm === 'pos' && <POGenerator />}
           {activeForm === 'do1' && <DO1Generator />}
           {activeForm === 'inventory' && <InventoryDashboard />}

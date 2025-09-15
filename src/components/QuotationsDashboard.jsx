@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useAuthenticatedApi } from '../hooks/useAuthenticatedApi';
+import QuotationForm from './QuotationForm';
+import SimplePOReviewModal from './SimplePOReviewModal';
+
 
 const QuotationsDashboard = () => {
   const [quotations, setQuotations] = useState([]);
@@ -12,6 +15,10 @@ const QuotationsDashboard = () => {
     totalPages: 0,
     total: 0,
   });
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showPOReviewModal, setShowPOReviewModal] = useState(false);
+  const [selectedQuotation, setSelectedQuotation] = useState(null);
+  const [isConverting, setIsConverting] = useState(false);
 
   // Use the authenticated API hook for comprehensive error handling
   const {
@@ -25,6 +32,13 @@ const QuotationsDashboard = () => {
   } = useAuthenticatedApi({
     timeout: 10000,
     retries: 3,
+    showToast: true,
+  });
+
+  // API hook for PO creation
+  const { post: createPO, isLoading: isCreatingPO } = useAuthenticatedApi({
+    timeout: 15000,
+    retries: 2,
     showToast: true,
   });
 
@@ -119,6 +133,48 @@ const QuotationsDashboard = () => {
     });
   };
 
+  // Handle Convert to PO button click
+  const handleConvertToPO = (quotation) => {
+    setSelectedQuotation(quotation);
+    setShowPOReviewModal(true);
+  };
+
+  // Handle PO conversion
+  const handlePOConversion = async (quotationData, remarks = '') => {
+    setIsConverting(true);
+    try {
+      const poData = {
+        quotationId: quotationData._id,
+        leadId: quotationData.leadId._id || quotationData.leadId,
+        remarks: remarks,
+      };
+
+      const result = await createPO('http://localhost:5001/api/pos', poData);
+
+      if (result && result.success) {
+        alert('Purchase Order created successfully!');
+        setShowPOReviewModal(false);
+        setSelectedQuotation(null);
+        // Refresh quotations list
+        loadQuotations({ page: filters.page, status: filters.status });
+      } else {
+        alert(result?.message || 'Failed to create Purchase Order');
+      }
+    } catch (error) {
+      console.error('Error creating PO:', error);
+      alert('Error creating Purchase Order. Please try again.');
+    } finally {
+      setIsConverting(false);
+    }
+  };
+
+  // Close modals
+  const closeModals = () => {
+    setShowCreateModal(false);
+    setShowPOReviewModal(false);
+    setSelectedQuotation(null);
+  };
+
   // Show authentication loading state
   if (authLoading) {
     return (
@@ -152,6 +208,25 @@ const QuotationsDashboard = () => {
         <h2 className="text-3xl font-bold text-gray-900">
           Quotations Dashboard
         </h2>
+        <button
+          onClick={() => setShowCreateModal(true)}
+          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 flex items-center space-x-2"
+        >
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="2"
+              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+            />
+          </svg>
+          <span>Create Quotation</span>
+        </button>
       </div>
 
       {/* Filters */}
@@ -312,6 +387,12 @@ const QuotationsDashboard = () => {
                         <button className="text-purple-600 hover:text-purple-900">
                           PDF
                         </button>
+                        <button
+                          onClick={() => handleConvertToPO(quotation)}
+                          className="text-orange-600 hover:text-orange-900"
+                        >
+                          Convert to PO
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -352,6 +433,58 @@ const QuotationsDashboard = () => {
             </button>
           </div>
         </div>
+      )}
+
+      {/* Create Quotation Modal */}
+      {showCreateModal && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+          <div className="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-2/3 xl:w-1/2 shadow-lg rounded-md bg-white">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-bold text-gray-900">
+                Create New Quotation
+              </h3>
+              <button
+                onClick={() => setShowCreateModal(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+            <div className="max-h-96 overflow-y-auto">
+              <QuotationForm
+                onSuccess={() => {
+                  setShowCreateModal(false);
+                  loadQuotations({
+                    page: filters.page,
+                    status: filters.status,
+                  });
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* PO Review Modal */}
+      {showPOReviewModal && selectedQuotation && (
+        <SimplePOReviewModal
+          quotation={selectedQuotation}
+          isConverting={isConverting}
+          onConvert={handlePOConversion}
+          onClose={closeModals}
+        />
       )}
     </div>
   );
