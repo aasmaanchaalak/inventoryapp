@@ -116,6 +116,152 @@ router.get('/', async (req, res) => {
   }
 });
 
+// GET /api/leads/dashboard - Get leads dashboard data with filters and summary
+router.get('/dashboard', async (req, res) => {
+  try {
+    const {
+      leadSource,
+      status,
+      dateRange,
+      limit = 50,
+      offset = 0
+    } = req.query;
+
+    console.log('Dashboard request - Query params:', req.query);
+    console.log('Status filter:', status);
+
+    // Build filter query for database fields only
+    const filter = {};
+    
+    if (leadSource) {
+      filter.source = leadSource;
+    }
+    
+    // Note: status filtering will be done after calculating dynamic status
+    
+    // Handle date range filtering
+    if (dateRange) {
+      const now = new Date();
+      let startDate;
+      
+      switch (dateRange) {
+        case 'today':
+          startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+          break;
+        case 'week':
+          startDate = new Date(now.getTime() - (7 * 24 * 60 * 60 * 1000));
+          break;
+        case 'month':
+          startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+          break;
+        case 'quarter':
+          const quarterStart = Math.floor(now.getMonth() / 3) * 3;
+          startDate = new Date(now.getFullYear(), quarterStart, 1);
+          break;
+      }
+      
+      if (startDate) {
+        filter.createdAt = { $gte: startDate };
+      }
+    }
+
+    // Get leads with filters (get more than needed for status filtering)
+    const leads = await Lead.find(filter)
+      .sort({ createdAt: -1 });
+
+    // Format leads data with dynamic status based on workflow stage
+    const allFormattedLeads = await Promise.all(leads.map(async (lead) => {
+      let dynamicStatus = 'new';
+      
+      // Check for quotation
+      const quotation = await Quotation.findOne({ leadId: lead._id }).sort({ createdAt: -1 });
+      if (quotation) {
+        dynamicStatus = 'quotation';
+        
+        // Check for PO
+        const po = await PurchaseOrder.findOne({ quotationId: quotation._id }).sort({ createdAt: -1 });
+        if (po) {
+          dynamicStatus = 'po received';
+          
+          // Check for DO1
+          const do1 = await DO1.findOne({ poId: po._id }).sort({ createdAt: -1 });
+          if (do1) {
+            dynamicStatus = 'do1 generated';
+            
+            // Check for DO2
+            const do2 = await DO2.findOne({ do1Id: do1._id }).sort({ createdAt: -1 });
+            if (do2) {
+              dynamicStatus = 'do sent';
+              
+              // Check for Invoice
+              const invoice = await Invoice.findOne({ do2Id: do2._id }).sort({ createdAt: -1 });
+              if (invoice) {
+                dynamicStatus = 'invoiced';
+              }
+            }
+          }
+        }
+      }
+      
+      return {
+        _id: lead._id,
+        customerName: lead.name,
+        phone: lead.phone,
+        email: lead.email,
+        address: lead.address,
+        gstin: lead.gstin,
+        pan: lead.pan,
+        productInterest: lead.product,
+        leadSource: lead.source,
+        status: dynamicStatus,
+        notes: lead.notes,
+        createdAt: lead.createdAt,
+        updatedAt: lead.updatedAt
+      };
+    }));
+
+    // Filter by status after calculating dynamic status
+    let filteredLeads = allFormattedLeads;
+    
+    if (status) {
+      console.log('Filtering by status:', status);
+      console.log('Available statuses:', [...new Set(allFormattedLeads.map(l => l.status))]);
+      filteredLeads = allFormattedLeads.filter(lead => {
+        console.log(`Comparing lead status "${lead.status}" with filter "${status}"`);
+        return lead.status === status;
+      });
+      console.log('Leads after status filter:', filteredLeads.length);
+    }
+
+    // Apply pagination to filtered results
+    const totalLeads = filteredLeads.length;
+    const paginatedLeads = filteredLeads.slice(
+      parseInt(offset), 
+      parseInt(offset) + parseInt(limit)
+    );
+
+    res.json({
+      success: true,
+      data: {
+        leads: paginatedLeads,
+        pagination: {
+          total: totalLeads,
+          limit: parseInt(limit),
+          offset: parseInt(offset),
+          hasMore: (parseInt(offset) + parseInt(limit)) < totalLeads
+        }
+      }
+    });
+
+  } catch (error) {
+    console.error('Error fetching leads dashboard:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching leads dashboard data',
+    });
+  }
+});
+
 // GET /api/leads/:id - Get a specific lead (optional endpoint for future use)
 router.get('/:id', async (req, res) => {
   try {
