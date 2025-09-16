@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { STEEL_TUBE_TAX_RATE, calculateTaxAmount } from '../config/taxRates';
+import { showError } from '../utils/toast';
 
 const DO1Generator = () => {
   const [pendingPOs, setPendingPOs] = useState([]);
@@ -236,7 +237,7 @@ const DO1Generator = () => {
       }
     } catch (error) {
       console.error('Error creating DO1:', error);
-      alert(error.message || 'Failed to create DO1. Please try again.');
+      showError(error.message || 'Failed to create DO1. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -250,7 +251,7 @@ const DO1Generator = () => {
 
   const handleDownloadDO1PDF = () => {
     if (!do1Id) {
-      alert('No DO1 available to download.');
+      showError('No DO1 available to download.');
       return;
     }
 
@@ -268,7 +269,7 @@ const DO1Generator = () => {
       document.body.removeChild(link);
     } catch (error) {
       console.error('Error downloading DO1 PDF:', error);
-      alert('Failed to download PDF. Please try again.');
+      showError('Failed to download PDF. Please try again.');
     }
   };
 

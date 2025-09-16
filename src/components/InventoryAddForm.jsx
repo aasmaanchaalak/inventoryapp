@@ -5,6 +5,7 @@ import * as yup from 'yup';
 import { useApi } from '../hooks/useApi';
 import { STEEL_TUBE_CATEGORIES } from '../config/productCategories';
 import { FormError } from './common';
+import { showSuccess, showError } from '../utils/toast';
 
 // Validation schema
 const schema = yup
@@ -111,10 +112,10 @@ const InventoryAddForm = () => {
       );
 
       if (result.success) {
-        alert(result.message || 'Inventory item created successfully!');
+        showSuccess(result.message || 'Inventory item created successfully!');
         reset();
       } else {
-        alert(
+        showError(
           result.message || 'Failed to create inventory item. Please try again.'
         );
       }

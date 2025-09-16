@@ -11,6 +11,7 @@ import {
   getAllowedTaxRates,
 } from '../config/taxRates';
 import { FormError } from './common';
+import { showSuccess, showError } from '../utils/toast';
 
 // Validation schema
 const schema = yup
@@ -206,7 +207,7 @@ const QuotationForm = ({ onSuccess }) => {
 
       if (result.success) {
         setLastCreatedQuotationId(result.data.id);
-        alert(result.message || 'Quotation created successfully!');
+        showSuccess(result.message || 'Quotation created successfully!');
         reset();
         // Call onSuccess callback if provided
         if (onSuccess) {
@@ -214,7 +215,7 @@ const QuotationForm = ({ onSuccess }) => {
         }
       } else {
         // Handle API-level errors
-        alert(
+        showError(
           result.message || 'Failed to create quotation. Please try again.'
         );
       }
@@ -227,7 +228,7 @@ const QuotationForm = ({ onSuccess }) => {
 
   const handleGeneratePDF = async () => {
     if (!lastCreatedQuotationId) {
-      alert('Please create a quotation first before generating PDF.');
+      showError('Please create a quotation first before generating PDF.');
       return;
     }
 
@@ -246,7 +247,7 @@ const QuotationForm = ({ onSuccess }) => {
       document.body.removeChild(link);
     } catch (error) {
       console.error('Error generating PDF:', error);
-      alert('Failed to generate PDF. Please try again.');
+      showError('Failed to generate PDF. Please try again.');
     } finally {
       setIsGeneratingPDF(false);
     }

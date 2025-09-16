@@ -7,6 +7,7 @@ import { getApiUrl } from '../utils/api';
 import { STEEL_TUBE_CATEGORIES } from '../config/productCategories';
 import { LEAD_SOURCES } from '../config/leadSources';
 import { FormError } from './common';
+import { showSuccess, showError } from '../utils/toast';
 
 // Validation schema
 const schema = yup
@@ -65,11 +66,11 @@ const LeadCreationForm = () => {
       const result = await createLead(getApiUrl('/api/leads'), data);
 
       if (result.success) {
-        alert(result.message || 'Lead created successfully!');
+        showSuccess(result.message || 'Lead created successfully!');
         reset();
       } else {
         // Handle API-level errors
-        alert(result.message || 'Failed to create lead. Please try again.');
+        showError(result.message || 'Failed to create lead. Please try again.');
       }
     } catch (error) {
       // Error already handled by useApi hook with toast notification

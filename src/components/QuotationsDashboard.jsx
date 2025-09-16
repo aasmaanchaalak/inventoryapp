@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuthenticatedApi } from '../hooks/useAuthenticatedApi';
 import QuotationForm from './QuotationForm';
 import SimplePOReviewModal from './SimplePOReviewModal';
+import { showSuccess, showError } from '../utils/toast';
 
 const QuotationsDashboard = () => {
   const [quotations, setQuotations] = useState([]);
@@ -152,17 +153,17 @@ const QuotationsDashboard = () => {
       const result = await createPO('http://localhost:5001/api/pos', poData);
 
       if (result && result.success) {
-        alert('Purchase Order created successfully!');
+        showSuccess('Purchase Order created successfully!');
         setShowPOReviewModal(false);
         setSelectedQuotation(null);
         // Refresh quotations list
         loadQuotations({ page: filters.page, status: filters.status });
       } else {
-        alert(result?.message || 'Failed to create Purchase Order');
+        showError(result?.message || 'Failed to create Purchase Order');
       }
     } catch (error) {
       console.error('Error creating PO:', error);
-      alert('Error creating Purchase Order. Please try again.');
+      showError('Error creating Purchase Order. Please try again.');
     } finally {
       setIsConverting(false);
     }

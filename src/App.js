@@ -12,6 +12,8 @@ import {
   RedirectToSignIn,
   UserButton,
 } from '@clerk/clerk-react';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
 import POGenerator from './components/POGenerator';
 import DO1Generator from './components/DO1Generator';
@@ -464,6 +466,22 @@ function App() {
           />
         </Routes>
       </Router>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+        toastStyle={{
+          fontSize: '14px',
+          borderRadius: '8px',
+        }}
+      />
     </ClerkProvider>
   );
 }

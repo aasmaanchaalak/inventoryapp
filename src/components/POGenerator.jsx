@@ -4,6 +4,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useApi } from '../hooks/useApi';
 import { FormError } from './common';
+import { showError } from '../utils/toast';
 
 // Validation schema
 const schema = yup
@@ -139,7 +140,7 @@ const POGenerator = () => {
         setSelectedQuotation(null);
       } else {
         // Handle API-level errors
-        alert(result.message || 'Failed to create PO. Please try again.');
+        showError(result.message || 'Failed to create PO. Please try again.');
       }
     } catch (error) {
       // Error already handled by useApi hook with toast notification
@@ -156,7 +157,7 @@ const POGenerator = () => {
 
   const handleDownloadPDF = () => {
     if (!poId) {
-      alert('No Purchase Order available to download.');
+      showError('No Purchase Order available to download.');
       return;
     }
 
@@ -174,7 +175,7 @@ const POGenerator = () => {
       document.body.removeChild(link);
     } catch (error) {
       console.error('Error downloading PO PDF:', error);
-      alert('Failed to download PDF. Please try again.');
+      showError('Failed to download PDF. Please try again.');
     }
   };
 

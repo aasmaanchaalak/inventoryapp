@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Calendar, dateFnsLocalizer } from 'react-big-calendar';
 import { format, parse, startOfWeek, getDay } from 'date-fns';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
+import { showInfo } from '../utils/toast';
 
 const locales = {
   'en-US': require('date-fns/locale/en-US'),
@@ -339,7 +340,7 @@ const DispatchCalendar = () => {
               <button
                 onClick={() => {
                   // TODO: Implement approval action
-                  alert('Approval functionality to be implemented');
+                  showInfo('Approval functionality to be implemented');
                 }}
                 className="flex-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
               >
