@@ -147,9 +147,23 @@ const quotationSchema = new mongoose.Schema(
 // Generate quotation number and validUntil before saving
 quotationSchema.pre('save', async function (next) {
   if (this.isNew && !this.quotationNumber) {
-    const count = await this.constructor.countDocuments();
     const year = new Date().getFullYear();
-    this.quotationNumber = `QT-${year}-${String(count + 1).padStart(4, '0')}`;
+    const yearPrefix = `QT-${year}-`;
+
+    // Find the highest quotation number for the current year
+    const lastQuotation = await this.constructor
+      .findOne({
+        quotationNumber: { $regex: `^${yearPrefix}` }
+      })
+      .sort({ quotationNumber: -1 });
+
+    let nextNumber = 1;
+    if (lastQuotation) {
+      const lastNumber = parseInt(lastQuotation.quotationNumber.split('-')[2]);
+      nextNumber = lastNumber + 1;
+    }
+
+    this.quotationNumber = `${yearPrefix}${String(nextNumber).padStart(4, '0')}`;
   }
 
   // Calculate valid until date if not set

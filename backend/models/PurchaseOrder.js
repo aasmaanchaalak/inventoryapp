@@ -164,9 +164,23 @@ const purchaseOrderSchema = new mongoose.Schema(
 purchaseOrderSchema.pre('save', async function (next) {
   if (this.isNew && !this.poNumber) {
     try {
-      const count = await this.constructor.countDocuments();
       const year = new Date().getFullYear();
-      this.poNumber = `PO-${year}-${String(count + 1).padStart(4, '0')}`;
+      const yearPrefix = `PO-${year}-`;
+
+      // Find the highest PO number for the current year
+      const lastPO = await this.constructor
+        .findOne({
+          poNumber: { $regex: `^${yearPrefix}` }
+        })
+        .sort({ poNumber: -1 });
+
+      let nextNumber = 1;
+      if (lastPO) {
+        const lastNumber = parseInt(lastPO.poNumber.split('-')[2]);
+        nextNumber = lastNumber + 1;
+      }
+
+      this.poNumber = `${yearPrefix}${String(nextNumber).padStart(4, '0')}`;
     } catch (error) {
       return next(error);
     }
