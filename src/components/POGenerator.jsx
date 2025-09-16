@@ -10,7 +10,7 @@ import { showError } from '../utils/toast';
 const schema = yup
   .object({
     leadId: yup.string().required('Please select a lead'),
-    quotationId: yup.string().required('Please select a quotation'),
+    quotationId: yup.string().optional(),
     poDate: yup.date().required('PO date is required'),
     remarks: yup.string().optional(),
   })
@@ -242,7 +242,7 @@ const POGenerator = () => {
             htmlFor="quotationId"
             className="block text-sm font-medium text-gray-700 mb-2"
           >
-            Select Quotation *
+            Select Quotation (Optional)
           </label>
           <select
             id="quotationId"
@@ -448,7 +448,7 @@ const POGenerator = () => {
 
           <button
             type="submit"
-            disabled={isCreatingPO || isSubmitting || !selectedQuotation}
+            disabled={isCreatingPO || isSubmitting}
             className="w-full sm:w-auto px-6 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isCreatingPO ? 'Generating PO...' : 'Generate Purchase Order'}

@@ -7,6 +7,316 @@ const Quotation = require('../models/Quotation');
 const DO1 = require('../models/DO1');
 const DO2 = require('../models/DO2');
 const Invoice = require('../models/Invoice');
+const Inventory = require('../models/Inventory');
+
+// GET /api/pos/debug-inventory - Debug inventory data (must be first)
+router.get('/debug-inventory', async (req, res) => {
+  try {
+    const inventoryCount = await Inventory.countDocuments({ isActive: true });
+    const poCount = await PurchaseOrder.countDocuments();
+    
+    // Get a sample of inventory items
+    const sampleInventory = await Inventory.find({ isActive: true }).limit(5);
+    const samplePO = await PurchaseOrder.findOne().populate('leadId quotationId');
+    
+    res.json({
+      success: true,
+      data: {
+        inventoryCount,
+        poCount,
+        sampleInventory,
+        samplePO: samplePO ? {
+          id: samplePO._id,
+          poNumber: samplePO.poNumber,
+          inventoryStatus: samplePO.inventoryStatus,
+          itemsCount: samplePO.items?.length || 0,
+          firstItem: samplePO.items?.[0] || null,
+        } : null,
+      },
+    });
+  } catch (error) {
+    console.error('Debug inventory error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error getting debug data',
+      error: error.message,
+    });
+  }
+});
+
+// POST /api/pos/dispatch/:id - Dispatch a purchase order (must be before /:id route)
+router.post('/dispatch/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { isPartial = false } = req.body;
+
+    console.log(`Dispatch request received for PO ${id}, isPartial: ${isPartial}`);
+
+    // Validate Purchase Order ID
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: 'Purchase Order ID is required',
+      });
+    }
+
+    // Get the purchase order
+    const purchaseOrder = await PurchaseOrder.findById(id)
+      .populate('leadId', 'name phone product')
+      .populate('quotationId', 'quotationNumber');
+
+    if (!purchaseOrder) {
+      return res.status(404).json({
+        success: false,
+        message: 'Purchase Order not found',
+      });
+    }
+
+    // Check if order is already dispatched
+    if (purchaseOrder.status === 'dispatched' || purchaseOrder.status === 'partial dispatch') {
+      return res.status(400).json({
+        success: false,
+        message: 'Purchase Order is already dispatched',
+      });
+    }
+
+    // Create DO1 (Delivery Order 1)
+    const DO1 = require('../models/DO1');
+    
+    // Check inventory availability and calculate actual dispatched quantities
+    const dispatchedItems = [];
+    let totalDispatchedValue = 0;
+    let hasAnyDispatch = false;
+    
+    for (const [index, item] of purchaseOrder.items.entries()) {
+      try {
+        const inventoryItem = await Inventory.findOne({
+          productType: item.type,
+          size: item.size,
+          thickness: item.thickness,
+          isActive: true,
+        });
+
+        const availableQty = inventoryItem ? inventoryItem.availableQty : 0;
+        const dispatchedQty = Math.min(item.quantity, availableQty);
+        
+        // Only include items that have sufficient quantity to dispatch (>= 0.1 tons)
+        if (dispatchedQty >= 0.1) {
+          const dispatchedItemValue = dispatchedQty * item.rate;
+          const dispatchedItemTax = dispatchedItemValue * (item.tax / 100);
+          const dispatchedItemTotal = dispatchedItemValue + dispatchedItemTax;
+
+          dispatchedItems.push({
+            itemId: `${purchaseOrder._id}-${index}`,
+            type: item.type,
+            size: item.size,
+            thickness: item.thickness,
+            dispatchedQuantity: dispatchedQty,
+            rate: item.rate,
+            total: dispatchedItemTotal,
+            hsnCode: item.hsnCode || '7306',
+            originalQuantity: item.quantity,
+          });
+
+          totalDispatchedValue += dispatchedItemTotal;
+          hasAnyDispatch = true;
+        } else {
+          console.log(`Skipping item ${item.type} ${item.size} - insufficient inventory (${availableQty} tons available, ${item.quantity} tons requested)`);
+        }
+      } catch (error) {
+        console.error('Error checking inventory for item:', item, error);
+        // Skip items that fail inventory check
+      }
+    }
+
+    // Check if we have any items to dispatch
+    if (!hasAnyDispatch) {
+      return res.status(400).json({
+        success: false,
+        message: 'No items can be dispatched due to insufficient inventory',
+      });
+    }
+
+    // Calculate totals based on actual dispatched quantities
+    const subtotal = dispatchedItems.reduce((sum, item) => sum + (item.dispatchedQuantity * item.rate), 0);
+    const totalTax = subtotal * 0.18; // Assuming 18% GST
+    const grandTotal = subtotal + totalTax;
+    
+    const do1Data = {
+      poId: purchaseOrder._id,
+      dispatchDate: new Date(),
+      remarks: isPartial ? 'Partial dispatch based on available inventory' : 'Full dispatch',
+      items: dispatchedItems,
+      totals: {
+        subtotal: Math.round(subtotal * 100) / 100,
+        totalTax: Math.round(totalTax * 100) / 100,
+        grandTotal: Math.round(grandTotal * 100) / 100,
+      },
+      status: 'pending',
+    };
+
+    const newDO1 = new DO1(do1Data);
+    await newDO1.save();
+
+    // Determine if this is actually a full or partial dispatch
+    const totalDispatchedQty = dispatchedItems.reduce((sum, item) => sum + item.dispatchedQuantity, 0);
+    const totalOrderedQty = purchaseOrder.items.reduce((sum, item) => sum + item.quantity, 0);
+    const actualIsPartial = totalDispatchedQty < totalOrderedQty;
+
+    // Update purchase order status
+    const newStatus = actualIsPartial ? 'partial dispatch' : 'dispatched';
+    await PurchaseOrder.findByIdAndUpdate(id, { 
+      status: newStatus,
+      approvalStatus: 'approved', // Auto-approve when dispatched
+      dispatchDate: new Date() // Set dispatch date
+    });
+
+    // Update inventory quantities (deduct actual dispatched amounts)
+    for (const item of dispatchedItems) {
+      if (item.dispatchedQuantity > 0) {
+        try {
+          const inventoryItem = await Inventory.findOne({
+            productType: item.type,
+            size: item.size,
+            thickness: item.thickness,
+            isActive: true,
+          });
+
+          if (inventoryItem) {
+            await inventoryItem.updateStock(
+              item.dispatchedQuantity,
+              'out',
+              `DO1-${newDO1.do1Number}`,
+              `DO1 dispatch - ${item.dispatchedQuantity} tons of ${item.type} ${item.size}`
+            );
+          }
+        } catch (error) {
+          console.error('Error updating inventory for item:', item, error);
+          // Continue with other items even if one fails
+        }
+      }
+    }
+
+    console.log(`Successfully dispatched PO ${purchaseOrder.poNumber} with status: ${newStatus}`);
+
+    res.status(201).json({
+      success: true,
+      message: `Purchase Order ${isPartial ? 'partially ' : ''}dispatched successfully`,
+      data: {
+        do1Id: newDO1._id,
+        do1Number: newDO1.do1Number,
+        poStatus: newStatus,
+        dispatchDate: newDO1.dispatchDate,
+      },
+    });
+
+  } catch (error) {
+    console.error('Error dispatching Purchase Order:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error dispatching Purchase Order',
+      error: error.message,
+    });
+  }
+});
+
+// PUT /api/pos/refresh-inventory-status - Refresh inventory status for all POs (must be before /:id route)
+router.put('/refresh-inventory-status', async (req, res) => {
+  try {
+    console.log('Starting inventory status refresh for all Purchase Orders...');
+    
+    // Get all purchase orders
+    const purchaseOrders = await PurchaseOrder.find({});
+    
+    let updatedCount = 0;
+    let errorCount = 0;
+    
+    for (const po of purchaseOrders) {
+      try {
+        const inventoryStatus = await checkInventoryAvailability(po.items);
+        await PurchaseOrder.findByIdAndUpdate(po._id, { inventoryStatus });
+        updatedCount++;
+        console.log(`Updated PO ${po.poNumber}: ${inventoryStatus}`);
+      } catch (error) {
+        console.error(`Error updating PO ${po.poNumber}:`, error);
+        errorCount++;
+      }
+    }
+
+    res.json({
+      success: true,
+      message: `Inventory status refresh completed. Updated: ${updatedCount}, Errors: ${errorCount}`,
+      stats: {
+        total: purchaseOrders.length,
+        updated: updatedCount,
+        errors: errorCount,
+      },
+    });
+  } catch (error) {
+    console.error('Error refreshing inventory status:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error refreshing inventory status',
+      error: error.message,
+    });
+  }
+});
+
+// Utility function to check inventory availability for PO items
+const checkInventoryAvailability = async (items) => {
+  let totalItemsWithAvailableInventory = 0;
+  let totalItemsWithPartialInventory = 0;
+  let totalItems = items.length;
+
+  console.log(`Checking inventory for ${totalItems} items...`);
+
+  for (const item of items) {
+    try {
+      console.log(`Looking for inventory: ${item.type}, ${item.size}, ${item.thickness}mm, quantity: ${item.quantity}`);
+      
+      // Find matching inventory item
+      const inventoryItem = await Inventory.findOne({
+        productType: item.type,
+        size: item.size,
+        thickness: item.thickness,
+        isActive: true,
+      });
+
+      if (inventoryItem) {
+        console.log(`Found inventory: ${inventoryItem.availableQty} available`);
+        if (inventoryItem.availableQty >= item.quantity) {
+          // Full inventory available
+          totalItemsWithAvailableInventory++;
+          console.log('✓ Full inventory available for this item');
+        } else if (inventoryItem.availableQty > 0) {
+          // Partial inventory available
+          totalItemsWithPartialInventory++;
+          console.log('⚠ Partial inventory available for this item');
+        } else {
+          console.log('✗ No inventory available for this item (qty = 0)');
+        }
+      } else {
+        console.log('✗ No inventory record found for this item');
+      }
+    } catch (error) {
+      console.error('Error checking inventory for item:', item, error);
+      // Continue with other items even if one fails
+    }
+  }
+
+  // Determine overall inventory status
+  let finalStatus;
+  if (totalItemsWithAvailableInventory === totalItems) {
+    finalStatus = 'Inventory Available';
+  } else if (totalItemsWithAvailableInventory + totalItemsWithPartialInventory > 0) {
+    finalStatus = 'Partial Inventory';
+  } else {
+    finalStatus = 'No Inventory';
+  }
+
+  console.log(`Final inventory status: ${finalStatus} (Full: ${totalItemsWithAvailableInventory}/${totalItems}, Partial: ${totalItemsWithPartialInventory})`);
+  return finalStatus;
+};
 
 // POST /api/pos - Create a new Purchase Order
 router.post('/', async (req, res) => {
@@ -15,10 +325,10 @@ router.post('/', async (req, res) => {
       req.body;
 
     // Validate required fields
-    if (!quotationId || !leadId) {
+    if (!leadId) {
       return res.status(400).json({
         success: false,
-        message: 'Missing required fields: quotationId and leadId',
+        message: 'Missing required field: leadId',
       });
     }
 
@@ -31,16 +341,19 @@ router.post('/', async (req, res) => {
       });
     }
 
-    // Validate that quotation exists and fetch with details
-    const quotation = await Quotation.findById(quotationId);
-    if (!quotation) {
-      return res.status(404).json({
-        success: false,
-        message: 'Quotation not found',
-      });
+    // Validate that quotation exists and fetch with details (if quotationId is provided)
+    let quotation = null;
+    if (quotationId) {
+      quotation = await Quotation.findById(quotationId);
+      if (!quotation) {
+        return res.status(404).json({
+          success: false,
+          message: 'Quotation not found',
+        });
+      }
     }
 
-    // Use custom items if provided, otherwise copy from quotation
+    // Use custom items if provided, otherwise copy from quotation (if available)
     const items = customItems
       ? customItems.map((item) => ({
           type: item.type,
@@ -54,38 +367,61 @@ router.post('/', async (req, res) => {
           taxAmount: item.taxAmount,
           total: item.total,
         }))
-      : quotation.items.map((item) => ({
-          type: item.type,
-          size: item.size,
-          thickness: item.thickness,
-          quantity: item.quantity,
-          rate: item.rate,
-          tax: item.tax,
-          hsnCode: item.hsnCode || '7306',
-          subtotal: item.subtotal,
-          taxAmount: item.taxAmount,
-          total: item.total,
-        }));
+      : quotation
+        ? quotation.items.map((item) => ({
+            type: item.type,
+            size: item.size,
+            thickness: item.thickness,
+            quantity: item.quantity,
+            rate: item.rate,
+            tax: item.tax,
+            hsnCode: item.hsnCode || '7306',
+            subtotal: item.subtotal,
+            taxAmount: item.taxAmount,
+            total: item.total,
+          }))
+        : [];
 
-    // Use custom total amount if provided, otherwise use quotation total
+    // Validate that we have items
+    if (!items || items.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Items are required. Either provide custom items or select a quotation with items.',
+      });
+    }
+
+    // Use custom total amount if provided, otherwise use quotation total or calculate from items
     const totalAmount =
       customTotalAmount !== undefined
         ? customTotalAmount
-        : quotation.totalAmount;
+        : quotation
+          ? quotation.totalAmount
+          : items.reduce((sum, item) => sum + item.total, 0);
+
+    // Check inventory availability for the PO items
+    const inventoryStatus = await checkInventoryAvailability(items);
 
     // Create the purchase order with copied data
     const purchaseOrder = new PurchaseOrder({
       leadId,
-      quotationId,
+      quotationId: quotationId || null,
       poDate: new Date(),
       remarks: remarks || '',
       items: items,
       totalAmount: totalAmount,
-      quotationNumber: quotation.quotationNumber,
+      quotationNumber: quotation ? quotation.quotationNumber : null,
       approvalStatus: 'pending',
+      inventoryStatus: inventoryStatus,
     });
 
     await purchaseOrder.save();
+
+    // Update quotation status to "converted to po" if quotation exists
+    if (quotation) {
+      await Quotation.findByIdAndUpdate(quotationId, {
+        status: 'converted to po'
+      });
+    }
 
     res.status(201).json({
       success: true,
@@ -125,6 +461,41 @@ router.post('/', async (req, res) => {
   }
 });
 
+// GET /api/pos/debug-inventory - Debug inventory data (must be before /:id route)
+router.get('/debug-inventory', async (req, res) => {
+  try {
+    const inventoryCount = await Inventory.countDocuments({ isActive: true });
+    const poCount = await PurchaseOrder.countDocuments();
+    
+    // Get a sample of inventory items
+    const sampleInventory = await Inventory.find({ isActive: true }).limit(5);
+    const samplePO = await PurchaseOrder.findOne().populate('leadId quotationId');
+    
+    res.json({
+      success: true,
+      data: {
+        inventoryCount,
+        poCount,
+        sampleInventory,
+        samplePO: samplePO ? {
+          id: samplePO._id,
+          poNumber: samplePO.poNumber,
+          inventoryStatus: samplePO.inventoryStatus,
+          itemsCount: samplePO.items?.length || 0,
+          firstItem: samplePO.items?.[0] || null,
+        } : null,
+      },
+    });
+  } catch (error) {
+    console.error('Debug inventory error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error getting debug data',
+      error: error.message,
+    });
+  }
+});
+
 // GET /api/pos - Get all Purchase Orders with optional filters
 router.get('/', async (req, res) => {
   try {
@@ -132,6 +503,7 @@ router.get('/', async (req, res) => {
       leadId,
       quotationId,
       status,
+      inventoryStatus,
       startDate,
       endDate,
       page = 1,
@@ -146,6 +518,7 @@ router.get('/', async (req, res) => {
     if (leadId) filter.leadId = leadId;
     if (quotationId) filter.quotationId = quotationId;
     if (status) filter.status = status;
+    if (inventoryStatus) filter.inventoryStatus = inventoryStatus;
 
     if (startDate || endDate) {
       filter.poDate = {};
@@ -161,19 +534,35 @@ router.get('/', async (req, res) => {
     const skip = (parseInt(page) - 1) * parseInt(limit);
 
     // Execute query with pagination
-    const purchaseOrders = await PurchaseOrder.find(filter)
+    let purchaseOrders = await PurchaseOrder.find(filter)
       .populate('leadId', 'name phone product')
       .populate('quotationId', 'quotationNumber totalAmount')
       .sort(sort)
       .skip(skip)
       .limit(parseInt(limit));
 
+    // Update inventory status for orders that haven't been checked yet
+    const updatedOrders = await Promise.all(
+      purchaseOrders.map(async (order) => {
+        if (order.inventoryStatus === 'Not Checked') {
+          try {
+            const inventoryStatus = await checkInventoryAvailability(order.items);
+            await PurchaseOrder.findByIdAndUpdate(order._id, { inventoryStatus });
+            order.inventoryStatus = inventoryStatus;
+          } catch (error) {
+            console.error('Error updating inventory status for PO:', order._id, error);
+          }
+        }
+        return order;
+      })
+    );
+
     // Get total count for pagination
     const total = await PurchaseOrder.countDocuments(filter);
 
     res.json({
       success: true,
-      data: purchaseOrders,
+      data: updatedOrders,
       pagination: {
         page: parseInt(page),
         limit: parseInt(limit),
@@ -784,6 +1173,48 @@ router.get('/:id/pdf', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error generating PDF',
+      error: error.message,
+    });
+  }
+});
+
+// PUT /api/pos/refresh-inventory-status - Refresh inventory status for all POs
+router.put('/refresh-inventory-status', async (req, res) => {
+  try {
+    console.log('Starting inventory status refresh for all Purchase Orders...');
+    
+    // Get all purchase orders
+    const purchaseOrders = await PurchaseOrder.find({});
+    
+    let updatedCount = 0;
+    let errorCount = 0;
+    
+    for (const po of purchaseOrders) {
+      try {
+        const inventoryStatus = await checkInventoryAvailability(po.items);
+        await PurchaseOrder.findByIdAndUpdate(po._id, { inventoryStatus });
+        updatedCount++;
+        console.log(`Updated PO ${po.poNumber}: ${inventoryStatus}`);
+      } catch (error) {
+        console.error(`Error updating PO ${po.poNumber}:`, error);
+        errorCount++;
+      }
+    }
+
+    res.json({
+      success: true,
+      message: `Inventory status refresh completed. Updated: ${updatedCount}, Errors: ${errorCount}`,
+      stats: {
+        total: purchaseOrders.length,
+        updated: updatedCount,
+        errors: errorCount,
+      },
+    });
+  } catch (error) {
+    console.error('Error refreshing inventory status:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error refreshing inventory status',
       error: error.message,
     });
   }

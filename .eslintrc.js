@@ -7,8 +7,7 @@ module.exports = {
   },
   extends: [
     'react-app',
-    'react-app/jest',
-    'prettier'
+    'react-app/jest'
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -21,11 +20,9 @@ module.exports = {
   plugins: [
     'react',
     'react-hooks',
-    '@typescript-eslint',
-    'prettier'
+    '@typescript-eslint'
   ],
   rules: {
-    'prettier/prettier': 'error',
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'warn',
     'no-unused-vars': 'warn',

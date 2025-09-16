@@ -1,0 +1,502 @@
+
+> inventoryapp@0.1.0 server
+> node backend/server.js
+
+[dotenv@17.2.2] injecting env (3) from .env -- tip: 📡 auto-backup env with Radar: https://dotenvx.com/radar
+🚀 Server running on port 5001
+📊 Health check: http://localhost:5001/api/health
+📝 Leads API: http://localhost:5001/api/leads
+📋 Quotations API: http://localhost:5001/api/quotations
+📄 Purchase Orders API: http://localhost:5001/api/pos
+🚚 DO1 API: http://localhost:5001/api/do1
+📋 DO2 API: http://localhost:5001/api/do2
+📦 Inventory API: http://localhost:5001/api/inventory
+🧾 Tally API: http://localhost:5001/api/tally
+📄 Invoice API: http://localhost:5001/api/invoice
+📋 Invoices API: http://localhost:5001/api/invoices
+📱 SMS API: http://localhost:5001/api/sms
+📊 Reports API: http://localhost:5001/api/reports
+✅ Connected to MongoDB successfully
+Dispatch request received for PO 68c92fa06d1e8b7b22140fff, isPartial: false
+Skipping item oval-tubes 20x20 - insufficient inventory (0 tons available, 1 tons requested)
+Pre-validate hook running, isNew: true current doNumber: undefined
+Generated doNumber: DO-2025-0020
+Successfully dispatched PO PO-2025-0014 with status: partial dispatch
+Error fetching weekly DO summary: MongoServerError: PlanExecutor error during aggregation :: caused by :: $multiply only supports numeric types, not array
+    at Connection.sendCommand (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/cmap/connection.js:305:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Connection.command (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/cmap/connection.js:333:26)
+    at async Server.command (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/sdam/server.js:171:29)
+    at async AggregateOperation.executeCommand (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/operations/command.js:76:16)
+    at async AggregateOperation.execute (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/operations/aggregate.js:86:16)
+    at async tryOperation (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/operations/execute_operation.js:207:20)
+    at async executeOperation (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/operations/execute_operation.js:75:16)
+    at async AggregationCursor._initialize (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/cursor/aggregation_cursor.js:56:26)
+    at async AggregationCursor.cursorInit (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/cursor/abstract_cursor.js:632:27) {
+  errorLabelSet: Set(0) {},
+  errorResponse: {
+    ok: 0,
+    errmsg: 'PlanExecutor error during aggregation :: caused by :: $multiply only supports numeric types, not array',
+    code: 14,
+    codeName: 'TypeMismatch',
+    '$clusterTime': {
+      clusterTime: new Timestamp({ t: 1758016104, i: 15 }),
+      signature: [Object]
+    },
+    operationTime: new Timestamp({ t: 1758016104, i: 15 })
+  },
+  ok: 0,
+  code: 14,
+  codeName: 'TypeMismatch',
+  '$clusterTime': {
+    clusterTime: new Timestamp({ t: 1758016104, i: 15 }),
+    signature: {
+      hash: Binary.createFromBase64('cLX9ahn8FeXLJCQkH77OczAn9m4=', 0),
+      keyId: new Long('7493785614379122704')
+    }
+  },
+  operationTime: new Timestamp({ t: 1758016104, i: 15 })
+}
+Error fetching weekly DO summary: MongoServerError: PlanExecutor error during aggregation :: caused by :: $multiply only supports numeric types, not array
+    at Connection.sendCommand (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/cmap/connection.js:305:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Connection.command (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/cmap/connection.js:333:26)
+    at async Server.command (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/sdam/server.js:171:29)
+    at async AggregateOperation.executeCommand (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/operations/command.js:76:16)
+    at async AggregateOperation.execute (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/operations/aggregate.js:86:16)
+    at async tryOperation (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/operations/execute_operation.js:207:20)
+    at async executeOperation (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/operations/execute_operation.js:75:16)
+    at async AggregationCursor._initialize (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/cursor/aggregation_cursor.js:56:26)
+    at async AggregationCursor.cursorInit (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/cursor/abstract_cursor.js:632:27) {
+  errorLabelSet: Set(0) {},
+  errorResponse: {
+    ok: 0,
+    errmsg: 'PlanExecutor error during aggregation :: caused by :: $multiply only supports numeric types, not array',
+    code: 14,
+    codeName: 'TypeMismatch',
+    '$clusterTime': {
+      clusterTime: new Timestamp({ t: 1758016104, i: 16 }),
+      signature: [Object]
+    },
+    operationTime: new Timestamp({ t: 1758016104, i: 16 })
+  },
+  ok: 0,
+  code: 14,
+  codeName: 'TypeMismatch',
+  '$clusterTime': {
+    clusterTime: new Timestamp({ t: 1758016104, i: 16 }),
+    signature: {
+      hash: Binary.createFromBase64('cLX9ahn8FeXLJCQkH77OczAn9m4=', 0),
+      keyId: new Long('7493785614379122704')
+    }
+  },
+  operationTime: new Timestamp({ t: 1758016104, i: 16 })
+}
+Error fetching top products: MongoServerError: PlanExecutor error during aggregation :: caused by :: $concat only supports strings, not int
+    at Connection.sendCommand (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/cmap/connection.js:305:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Connection.command (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/cmap/connection.js:333:26)
+    at async Server.command (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/sdam/server.js:171:29)
+    at async AggregateOperation.executeCommand (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/operations/command.js:76:16)
+    at async AggregateOperation.execute (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/operations/aggregate.js:86:16)
+    at async tryOperation (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/operations/execute_operation.js:207:20)
+    at async executeOperation (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/operations/execute_operation.js:75:16)
+    at async AggregationCursor._initialize (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/cursor/aggregation_cursor.js:56:26)
+    at async AggregationCursor.cursorInit (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/cursor/abstract_cursor.js:632:27) {
+  errorLabelSet: Set(0) {},
+  errorResponse: {
+    ok: 0,
+    errmsg: 'PlanExecutor error during aggregation :: caused by :: $concat only supports strings, not int',
+    code: 16702,
+    codeName: 'Location16702',
+    '$clusterTime': {
+      clusterTime: new Timestamp({ t: 1758016104, i: 16 }),
+      signature: [Object]
+    },
+    operationTime: new Timestamp({ t: 1758016104, i: 16 })
+  },
+  ok: 0,
+  code: 16702,
+  codeName: 'Location16702',
+  '$clusterTime': {
+    clusterTime: new Timestamp({ t: 1758016104, i: 16 }),
+    signature: {
+      hash: Binary.createFromBase64('cLX9ahn8FeXLJCQkH77OczAn9m4=', 0),
+      keyId: new Long('7493785614379122704')
+    }
+  },
+  operationTime: new Timestamp({ t: 1758016104, i: 16 })
+}
+Error fetching top clients: MongoServerError: PlanExecutor error during aggregation :: caused by :: $multiply only supports numeric types, not array
+    at Connection.sendCommand (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/cmap/connection.js:305:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Connection.command (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/cmap/connection.js:333:26)
+    at async Server.command (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/sdam/server.js:171:29)
+    at async AggregateOperation.executeCommand (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/operations/command.js:76:16)
+    at async AggregateOperation.execute (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/operations/aggregate.js:86:16)
+    at async tryOperation (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/operations/execute_operation.js:207:20)
+    at async executeOperation (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/operations/execute_operation.js:75:16)
+    at async AggregationCursor._initialize (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/cursor/aggregation_cursor.js:56:26)
+    at async AggregationCursor.cursorInit (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/cursor/abstract_cursor.js:632:27) {
+  errorLabelSet: Set(0) {},
+  errorResponse: {
+    ok: 0,
+    errmsg: 'PlanExecutor error during aggregation :: caused by :: $multiply only supports numeric types, not array',
+    code: 14,
+    codeName: 'TypeMismatch',
+    '$clusterTime': {
+      clusterTime: new Timestamp({ t: 1758016104, i: 16 }),
+      signature: [Object]
+    },
+    operationTime: new Timestamp({ t: 1758016104, i: 16 })
+  },
+  ok: 0,
+  code: 14,
+  codeName: 'TypeMismatch',
+  '$clusterTime': {
+    clusterTime: new Timestamp({ t: 1758016104, i: 16 }),
+    signature: {
+      hash: Binary.createFromBase64('cLX9ahn8FeXLJCQkH77OczAn9m4=', 0),
+      keyId: new Long('7493785614379122704')
+    }
+  },
+  operationTime: new Timestamp({ t: 1758016104, i: 16 })
+}
+Error fetching weekly DO summary: MongoServerError: PlanExecutor error during aggregation :: caused by :: $multiply only supports numeric types, not array
+    at Connection.sendCommand (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/cmap/connection.js:305:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Connection.command (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/cmap/connection.js:333:26)
+    at async Server.command (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/sdam/server.js:171:29)
+    at async AggregateOperation.executeCommand (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/operations/command.js:76:16)
+    at async AggregateOperation.execute (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/operations/aggregate.js:86:16)
+    at async tryOperation (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/operations/execute_operation.js:207:20)
+    at async executeOperation (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/operations/execute_operation.js:75:16)
+    at async AggregationCursor._initialize (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/cursor/aggregation_cursor.js:56:26)
+    at async AggregationCursor.cursorInit (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/cursor/abstract_cursor.js:632:27) {
+  errorLabelSet: Set(0) {},
+  errorResponse: {
+    ok: 0,
+    errmsg: 'PlanExecutor error during aggregation :: caused by :: $multiply only supports numeric types, not array',
+    code: 14,
+    codeName: 'TypeMismatch',
+    '$clusterTime': {
+      clusterTime: new Timestamp({ t: 1758016105, i: 3 }),
+      signature: [Object]
+    },
+    operationTime: new Timestamp({ t: 1758016105, i: 3 })
+  },
+  ok: 0,
+  code: 14,
+  codeName: 'TypeMismatch',
+  '$clusterTime': {
+    clusterTime: new Timestamp({ t: 1758016105, i: 3 }),
+    signature: {
+      hash: Binary.createFromBase64('+bW0Hp999qJOv9brd0mleALLAko=', 0),
+      keyId: new Long('7493785614379122704')
+    }
+  },
+  operationTime: new Timestamp({ t: 1758016105, i: 3 })
+}
+Error fetching top products: MongoServerError: PlanExecutor error during aggregation :: caused by :: $concat only supports strings, not int
+    at Connection.sendCommand (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/cmap/connection.js:305:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Connection.command (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/cmap/connection.js:333:26)
+    at async Server.command (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/sdam/server.js:171:29)
+    at async AggregateOperation.executeCommand (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/operations/command.js:76:16)
+    at async AggregateOperation.execute (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/operations/aggregate.js:86:16)
+    at async tryOperation (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/operations/execute_operation.js:207:20)
+    at async executeOperation (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/operations/execute_operation.js:75:16)
+    at async AggregationCursor._initialize (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/cursor/aggregation_cursor.js:56:26)
+    at async AggregationCursor.cursorInit (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/cursor/abstract_cursor.js:632:27) {
+  errorLabelSet: Set(0) {},
+  errorResponse: {
+    ok: 0,
+    errmsg: 'PlanExecutor error during aggregation :: caused by :: $concat only supports strings, not int',
+    code: 16702,
+    codeName: 'Location16702',
+    '$clusterTime': {
+      clusterTime: new Timestamp({ t: 1758016105, i: 5 }),
+      signature: [Object]
+    },
+    operationTime: new Timestamp({ t: 1758016105, i: 5 })
+  },
+  ok: 0,
+  code: 16702,
+  codeName: 'Location16702',
+  '$clusterTime': {
+    clusterTime: new Timestamp({ t: 1758016105, i: 5 }),
+    signature: {
+      hash: Binary.createFromBase64('+bW0Hp999qJOv9brd0mleALLAko=', 0),
+      keyId: new Long('7493785614379122704')
+    }
+  },
+  operationTime: new Timestamp({ t: 1758016105, i: 5 })
+}
+Error fetching top clients: MongoServerError: PlanExecutor error during aggregation :: caused by :: $multiply only supports numeric types, not array
+    at Connection.sendCommand (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/cmap/connection.js:305:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Connection.command (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/cmap/connection.js:333:26)
+    at async Server.command (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/sdam/server.js:171:29)
+    at async AggregateOperation.executeCommand (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/operations/command.js:76:16)
+    at async AggregateOperation.execute (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/operations/aggregate.js:86:16)
+    at async tryOperation (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/operations/execute_operation.js:207:20)
+    at async executeOperation (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/operations/execute_operation.js:75:16)
+    at async AggregationCursor._initialize (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/cursor/aggregation_cursor.js:56:26)
+    at async AggregationCursor.cursorInit (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/cursor/abstract_cursor.js:632:27) {
+  errorLabelSet: Set(0) {},
+  errorResponse: {
+    ok: 0,
+    errmsg: 'PlanExecutor error during aggregation :: caused by :: $multiply only supports numeric types, not array',
+    code: 14,
+    codeName: 'TypeMismatch',
+    '$clusterTime': {
+      clusterTime: new Timestamp({ t: 1758016105, i: 6 }),
+      signature: [Object]
+    },
+    operationTime: new Timestamp({ t: 1758016105, i: 6 })
+  },
+  ok: 0,
+  code: 14,
+  codeName: 'TypeMismatch',
+  '$clusterTime': {
+    clusterTime: new Timestamp({ t: 1758016105, i: 6 }),
+    signature: {
+      hash: Binary.createFromBase64('+bW0Hp999qJOv9brd0mleALLAko=', 0),
+      keyId: new Long('7493785614379122704')
+    }
+  },
+  operationTime: new Timestamp({ t: 1758016105, i: 6 })
+}
+Error fetching top products: MongoServerError: PlanExecutor error during aggregation :: caused by :: $concat only supports strings, not int
+    at Connection.sendCommand (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/cmap/connection.js:305:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Connection.command (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/cmap/connection.js:333:26)
+    at async Server.command (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/sdam/server.js:171:29)
+    at async AggregateOperation.executeCommand (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/operations/command.js:76:16)
+    at async AggregateOperation.execute (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/operations/aggregate.js:86:16)
+    at async tryOperation (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/operations/execute_operation.js:207:20)
+    at async executeOperation (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/operations/execute_operation.js:75:16)
+    at async AggregationCursor._initialize (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/cursor/aggregation_cursor.js:56:26)
+    at async AggregationCursor.cursorInit (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/cursor/abstract_cursor.js:632:27) {
+  errorLabelSet: Set(0) {},
+  errorResponse: {
+    ok: 0,
+    errmsg: 'PlanExecutor error during aggregation :: caused by :: $concat only supports strings, not int',
+    code: 16702,
+    codeName: 'Location16702',
+    '$clusterTime': {
+      clusterTime: new Timestamp({ t: 1758016106, i: 2 }),
+      signature: [Object]
+    },
+    operationTime: new Timestamp({ t: 1758016106, i: 2 })
+  },
+  ok: 0,
+  code: 16702,
+  codeName: 'Location16702',
+  '$clusterTime': {
+    clusterTime: new Timestamp({ t: 1758016106, i: 2 }),
+    signature: {
+      hash: Binary.createFromBase64('HHOHxre+YBFOlDgmLGOvoWPB2L0=', 0),
+      keyId: new Long('7493785614379122704')
+    }
+  },
+  operationTime: new Timestamp({ t: 1758016106, i: 2 })
+}
+Error fetching top clients: MongoServerError: PlanExecutor error during aggregation :: caused by :: $multiply only supports numeric types, not array
+    at Connection.sendCommand (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/cmap/connection.js:305:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Connection.command (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/cmap/connection.js:333:26)
+    at async Server.command (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/sdam/server.js:171:29)
+    at async AggregateOperation.executeCommand (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/operations/command.js:76:16)
+    at async AggregateOperation.execute (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/operations/aggregate.js:86:16)
+    at async tryOperation (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/operations/execute_operation.js:207:20)
+    at async executeOperation (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/operations/execute_operation.js:75:16)
+    at async AggregationCursor._initialize (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/cursor/aggregation_cursor.js:56:26)
+    at async AggregationCursor.cursorInit (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/cursor/abstract_cursor.js:632:27) {
+  errorLabelSet: Set(0) {},
+  errorResponse: {
+    ok: 0,
+    errmsg: 'PlanExecutor error during aggregation :: caused by :: $multiply only supports numeric types, not array',
+    code: 14,
+    codeName: 'TypeMismatch',
+    '$clusterTime': {
+      clusterTime: new Timestamp({ t: 1758016106, i: 2 }),
+      signature: [Object]
+    },
+    operationTime: new Timestamp({ t: 1758016106, i: 2 })
+  },
+  ok: 0,
+  code: 14,
+  codeName: 'TypeMismatch',
+  '$clusterTime': {
+    clusterTime: new Timestamp({ t: 1758016106, i: 2 }),
+    signature: {
+      hash: Binary.createFromBase64('HHOHxre+YBFOlDgmLGOvoWPB2L0=', 0),
+      keyId: new Long('7493785614379122704')
+    }
+  },
+  operationTime: new Timestamp({ t: 1758016106, i: 2 })
+}
+Error fetching weekly DO summary: MongoServerError: PlanExecutor error during aggregation :: caused by :: $multiply only supports numeric types, not array
+    at Connection.sendCommand (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/cmap/connection.js:305:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Connection.command (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/cmap/connection.js:333:26)
+    at async Server.command (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/sdam/server.js:171:29)
+    at async AggregateOperation.executeCommand (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/operations/command.js:76:16)
+    at async AggregateOperation.execute (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/operations/aggregate.js:86:16)
+    at async tryOperation (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/operations/execute_operation.js:207:20)
+    at async executeOperation (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/operations/execute_operation.js:75:16)
+    at async AggregationCursor._initialize (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/cursor/aggregation_cursor.js:56:26)
+    at async AggregationCursor.cursorInit (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/cursor/abstract_cursor.js:632:27) {
+  errorLabelSet: Set(0) {},
+  errorResponse: {
+    ok: 0,
+    errmsg: 'PlanExecutor error during aggregation :: caused by :: $multiply only supports numeric types, not array',
+    code: 14,
+    codeName: 'TypeMismatch',
+    '$clusterTime': {
+      clusterTime: new Timestamp({ t: 1758016106, i: 2 }),
+      signature: [Object]
+    },
+    operationTime: new Timestamp({ t: 1758016106, i: 2 })
+  },
+  ok: 0,
+  code: 14,
+  codeName: 'TypeMismatch',
+  '$clusterTime': {
+    clusterTime: new Timestamp({ t: 1758016106, i: 2 }),
+    signature: {
+      hash: Binary.createFromBase64('HHOHxre+YBFOlDgmLGOvoWPB2L0=', 0),
+      keyId: new Long('7493785614379122704')
+    }
+  },
+  operationTime: new Timestamp({ t: 1758016106, i: 2 })
+}
+Error fetching top products: MongoServerError: PlanExecutor error during aggregation :: caused by :: $concat only supports strings, not int
+    at Connection.sendCommand (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/cmap/connection.js:305:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Connection.command (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/cmap/connection.js:333:26)
+    at async Server.command (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/sdam/server.js:171:29)
+    at async AggregateOperation.executeCommand (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/operations/command.js:76:16)
+    at async AggregateOperation.execute (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/operations/aggregate.js:86:16)
+    at async tryOperation (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/operations/execute_operation.js:207:20)
+    at async executeOperation (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/operations/execute_operation.js:75:16)
+    at async AggregationCursor._initialize (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/cursor/aggregation_cursor.js:56:26)
+    at async AggregationCursor.cursorInit (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/cursor/abstract_cursor.js:632:27) {
+  errorLabelSet: Set(0) {},
+  errorResponse: {
+    ok: 0,
+    errmsg: 'PlanExecutor error during aggregation :: caused by :: $concat only supports strings, not int',
+    code: 16702,
+    codeName: 'Location16702',
+    '$clusterTime': {
+      clusterTime: new Timestamp({ t: 1758016107, i: 3 }),
+      signature: [Object]
+    },
+    operationTime: new Timestamp({ t: 1758016107, i: 3 })
+  },
+  ok: 0,
+  code: 16702,
+  codeName: 'Location16702',
+  '$clusterTime': {
+    clusterTime: new Timestamp({ t: 1758016107, i: 3 }),
+    signature: {
+      hash: Binary.createFromBase64('PgvqbRp/tpq7kLhj5deUhykzIHc=', 0),
+      keyId: new Long('7493785614379122704')
+    }
+  },
+  operationTime: new Timestamp({ t: 1758016107, i: 3 })
+}
+Error fetching top clients: MongoServerError: PlanExecutor error during aggregation :: caused by :: $multiply only supports numeric types, not array
+    at Connection.sendCommand (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/cmap/connection.js:305:27)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async Connection.command (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/cmap/connection.js:333:26)
+    at async Server.command (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/sdam/server.js:171:29)
+    at async AggregateOperation.executeCommand (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/operations/command.js:76:16)
+    at async AggregateOperation.execute (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/operations/aggregate.js:86:16)
+    at async tryOperation (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/operations/execute_operation.js:207:20)
+    at async executeOperation (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/operations/execute_operation.js:75:16)
+    at async AggregationCursor._initialize (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/cursor/aggregation_cursor.js:56:26)
+    at async AggregationCursor.cursorInit (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongodb/lib/cursor/abstract_cursor.js:632:27) {
+  errorLabelSet: Set(0) {},
+  errorResponse: {
+    ok: 0,
+    errmsg: 'PlanExecutor error during aggregation :: caused by :: $multiply only supports numeric types, not array',
+    code: 14,
+    codeName: 'TypeMismatch',
+    '$clusterTime': {
+      clusterTime: new Timestamp({ t: 1758016107, i: 3 }),
+      signature: [Object]
+    },
+    operationTime: new Timestamp({ t: 1758016107, i: 3 })
+  },
+  ok: 0,
+  code: 14,
+  codeName: 'TypeMismatch',
+  '$clusterTime': {
+    clusterTime: new Timestamp({ t: 1758016107, i: 3 }),
+    signature: {
+      hash: Binary.createFromBase64('PgvqbRp/tpq7kLhj5deUhykzIHc=', 0),
+      keyId: new Long('7493785614379122704')
+    }
+  },
+  operationTime: new Timestamp({ t: 1758016107, i: 3 })
+}
+Error fetching DO2 status: CastError: Cast to ObjectId failed for value "invoice-eligible" (type string) at path "_id" for model "PurchaseOrder"
+    at SchemaObjectId.cast (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongoose/lib/schema/objectId.js:251:11)
+    at SchemaType.applySetters (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongoose/lib/schemaType.js:1258:12)
+    at SchemaType.castForQuery (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongoose/lib/schemaType.js:1694:17)
+    at cast (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongoose/lib/cast.js:390:32)
+    at Query.cast (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongoose/lib/query.js:5060:12)
+    at Query._castConditions (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongoose/lib/query.js:2374:10)
+    at model.Query._findOne (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongoose/lib/query.js:2697:8)
+    at model.Query.exec (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongoose/lib/query.js:4627:80)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/backend/routes/do2.js:141:27 {
+  stringValue: '"invoice-eligible"',
+  messageFormat: undefined,
+  kind: 'ObjectId',
+  value: 'invoice-eligible',
+  path: '_id',
+  reason: BSONError: input must be a 24 character hex string, 12 byte Uint8Array, or an integer
+      at new ObjectId (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/bson/lib/bson.cjs:2538:23)
+      at castObjectId (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongoose/lib/cast/objectid.js:25:12)
+      at SchemaObjectId.cast (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongoose/lib/schema/objectId.js:249:12)
+      at SchemaType.applySetters (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongoose/lib/schemaType.js:1258:12)
+      at SchemaType.castForQuery (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongoose/lib/schemaType.js:1694:17)
+      at cast (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongoose/lib/cast.js:390:32)
+      at Query.cast (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongoose/lib/query.js:5060:12)
+      at Query._castConditions (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongoose/lib/query.js:2374:10)
+      at model.Query._findOne (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongoose/lib/query.js:2697:8)
+      at model.Query.exec (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongoose/lib/query.js:4627:80),
+  valueType: 'string'
+}
+Error fetching DO2 status: CastError: Cast to ObjectId failed for value "invoice-eligible" (type string) at path "_id" for model "PurchaseOrder"
+    at SchemaObjectId.cast (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongoose/lib/schema/objectId.js:251:11)
+    at SchemaType.applySetters (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongoose/lib/schemaType.js:1258:12)
+    at SchemaType.castForQuery (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongoose/lib/schemaType.js:1694:17)
+    at cast (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongoose/lib/cast.js:390:32)
+    at Query.cast (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongoose/lib/query.js:5060:12)
+    at Query._castConditions (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongoose/lib/query.js:2374:10)
+    at model.Query._findOne (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongoose/lib/query.js:2697:8)
+    at model.Query.exec (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongoose/lib/query.js:4627:80)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async /Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/backend/routes/do2.js:141:27 {
+  stringValue: '"invoice-eligible"',
+  messageFormat: undefined,
+  kind: 'ObjectId',
+  value: 'invoice-eligible',
+  path: '_id',
+  reason: BSONError: input must be a 24 character hex string, 12 byte Uint8Array, or an integer
+      at new ObjectId (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/bson/lib/bson.cjs:2538:23)
+      at castObjectId (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongoose/lib/cast/objectid.js:25:12)
+      at SchemaObjectId.cast (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongoose/lib/schema/objectId.js:249:12)
+      at SchemaType.applySetters (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongoose/lib/schemaType.js:1258:12)
+      at SchemaType.castForQuery (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongoose/lib/schemaType.js:1694:17)
+      at cast (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongoose/lib/cast.js:390:32)
+      at Query.cast (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongoose/lib/query.js:5060:12)
+      at Query._castConditions (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongoose/lib/query.js:2374:10)
+      at model.Query._findOne (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongoose/lib/query.js:2697:8)
+      at model.Query.exec (/Users/adityaagarwal/Documents/InventoryApp-Main/inventoryapp/node_modules/mongoose/lib/query.js:4627:80),
+  valueType: 'string'
+}

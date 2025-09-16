@@ -111,13 +111,22 @@ const purchaseOrderSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ['pending', 'approved', 'rejected', 'completed', 'cancelled'],
+      enum: ['pending', 'approved', 'rejected', 'completed', 'cancelled', 'dispatched', 'partial dispatch'],
       default: 'pending',
     },
     approvalStatus: {
       type: String,
       enum: ['pending', 'approved', 'rejected'],
       default: 'pending',
+    },
+    inventoryStatus: {
+      type: String,
+      enum: ['Inventory Available', 'Partial Inventory', 'No Inventory', 'Not Checked'],
+      default: 'Not Checked',
+    },
+    dispatchDate: {
+      type: Date,
+      required: false,
     },
     companyInfo: {
       name: {

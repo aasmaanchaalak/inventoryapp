@@ -1,0 +1,6 @@
+{
+  "apiUrl": "https://api.z.ai/api/anthropic",
+  "apiKey": "21c107f37e4d4638867fea4ddb09604b.OhQfqdgGcbwRKSGy",
+  "yolo": false,
+  "model": "glm-4.5"
+}

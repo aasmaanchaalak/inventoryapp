@@ -17,6 +17,7 @@ const QuotationsDashboard = () => {
   });
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showPOReviewModal, setShowPOReviewModal] = useState(false);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [selectedQuotation, setSelectedQuotation] = useState(null);
   const [isConverting, setIsConverting] = useState(false);
 
@@ -134,6 +135,12 @@ const QuotationsDashboard = () => {
     });
   };
 
+  // Handle View quotation button click
+  const handleViewQuotation = (quotation) => {
+    setSelectedQuotation(quotation);
+    setShowDetailsModal(true);
+  };
+
   // Handle Convert to PO button click
   const handleConvertToPO = (quotation) => {
     setSelectedQuotation(quotation);
@@ -173,6 +180,7 @@ const QuotationsDashboard = () => {
   const closeModals = () => {
     setShowCreateModal(false);
     setShowPOReviewModal(false);
+    setShowDetailsModal(false);
     setSelectedQuotation(null);
   };
 
@@ -339,7 +347,7 @@ const QuotationsDashboard = () => {
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {quotations.map((quotation) => (
-                    <tr key={quotation._id} className="hover:bg-gray-50">
+                    <tr key={quotation._id} className="hover:bg-gray-50 cursor-pointer" onClick={() => handleViewQuotation(quotation)}>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm font-medium text-gray-900">
                           {quotation.quotationNumber ||
@@ -381,7 +389,13 @@ const QuotationsDashboard = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <div className="flex space-x-2">
-                          <button className="text-blue-600 hover:text-blue-900">
+                          <button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleViewQuotation(quotation);
+                            }}
+                            className="text-blue-600 hover:text-blue-900"
+                          >
                             View
                           </button>
                           <button className="text-green-600 hover:text-green-900">
@@ -409,7 +423,8 @@ const QuotationsDashboard = () => {
               {quotations.map((quotation) => (
                 <div
                   key={quotation._id}
-                  className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm"
+                  className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm cursor-pointer hover:shadow-md transition-shadow"
+                  onClick={() => handleViewQuotation(quotation)}
                 >
                   {/* Header */}
                   <div className="flex items-center justify-between mb-3">
@@ -461,7 +476,13 @@ const QuotationsDashboard = () => {
 
                   {/* Actions */}
                   <div className="flex flex-wrap gap-2 pt-3 border-t border-gray-100">
-                    <button className="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200">
+                    <button 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleViewQuotation(quotation);
+                      }}
+                      className="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200"
+                    >
                       View
                     </button>
                     <button className="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-md hover:bg-green-200">
@@ -558,6 +579,116 @@ const QuotationsDashboard = () => {
                   });
                 }}
               />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Quotation Details Modal */}
+      {showDetailsModal && selectedQuotation && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+          <div className="relative top-4 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-2/3 max-w-4xl shadow-lg rounded-md bg-white">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-bold text-gray-900">
+                Quotation Details - {selectedQuotation.quotationNumber || `QT-${selectedQuotation._id.slice(-6)}`}
+              </h3>
+              <button
+                onClick={closeModals}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+            
+            <div className="space-y-6">
+              {/* Basic Details */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Customer Name</label>
+                  <p className="mt-1 text-sm text-gray-900">{selectedQuotation.leadId?.name || 'N/A'}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Phone</label>
+                  <p className="mt-1 text-sm text-gray-900">{selectedQuotation.leadId?.phone || 'N/A'}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Status</label>
+                  <div className="mt-1">{getQuotationStatusBadge(selectedQuotation.status)}</div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Total Amount</label>
+                  <p className="mt-1 text-sm font-medium text-gray-900">{formatCurrency(selectedQuotation.totalAmount)}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Validity</label>
+                  <p className="mt-1 text-sm text-gray-900">{selectedQuotation.validity} days</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Created Date</label>
+                  <p className="mt-1 text-sm text-gray-900">{formatDate(selectedQuotation.createdAt)}</p>
+                </div>
+              </div>
+
+              {/* Items */}
+              <div>
+                <h4 className="text-md font-semibold text-gray-900 mb-3">Items</h4>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Size</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Thickness</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Quantity</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Rate</th>
+                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-gray-200">
+                      {selectedQuotation.items?.map((item, index) => (
+                        <tr key={index}>
+                          <td className="px-4 py-3 text-sm text-gray-900">{item.type}</td>
+                          <td className="px-4 py-3 text-sm text-gray-900">{item.size}</td>
+                          <td className="px-4 py-3 text-sm text-gray-900">{item.thickness}mm</td>
+                          <td className="px-4 py-3 text-sm text-gray-900">{item.quantity} tons</td>
+                          <td className="px-4 py-3 text-sm text-gray-900">{formatCurrency(item.rate)}</td>
+                          <td className="px-4 py-3 text-sm font-medium text-gray-900">{formatCurrency(item.total)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Delivery Terms */}
+              {selectedQuotation.deliveryTerms && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Delivery Terms</label>
+                  <p className="mt-1 text-sm text-gray-900">{selectedQuotation.deliveryTerms}</p>
+                </div>
+              )}
+
+              {/* Action Buttons */}
+              <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t border-gray-200">
+                <button
+                  onClick={() => handleConvertToPO(selectedQuotation)}
+                  className="flex-1 px-4 py-2 text-sm font-medium text-white bg-orange-600 border border-transparent rounded-md shadow-sm hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition duration-150"
+                >
+                  Convert to PO
+                </button>
+              </div>
             </div>
           </div>
         </div>

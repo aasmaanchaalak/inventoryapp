@@ -15,8 +15,6 @@ import {
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
-import POGenerator from './components/POGenerator';
-import DO1Generator from './components/DO1Generator';
 import InventoryDashboard from './components/InventoryDashboard';
 import TallyPush from './components/TallyPush';
 import InvoiceGenerator from './components/InvoiceGenerator';
@@ -56,8 +54,6 @@ function Dashboard() {
           icon: '📋',
         },
         { key: 'orders', label: 'Orders', icon: '📦' },
-        { key: 'pos', label: 'PO Generator', icon: '📄' },
-        { key: 'do1', label: 'DO1 Generator', icon: '📦' },
       ],
     },
     {
@@ -238,8 +234,6 @@ function Dashboard() {
           {activeForm === 'leadsDashboard' && <LeadsDashboard />}
           {activeForm === 'quotationsDashboard' && <QuotationsDashboard />}
           {activeForm === 'orders' && <OrdersPage />}
-          {activeForm === 'pos' && <POGenerator />}
-          {activeForm === 'do1' && <DO1Generator />}
           {activeForm === 'inventory' && <InventoryDashboard />}
           {activeForm === 'inventoryAdd' && <InventoryAddForm />}
           {activeForm === 'tally' && <TallyPush />}

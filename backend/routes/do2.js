@@ -381,33 +381,83 @@ router.put('/:id/execute', async (req, res) => {
       });
     }
 
-    // Update inventory for each item
+    // Check inventory availability and determine actual dispatch quantities
     const inventoryUpdates = [];
+    const successfullyDispatchedItems = [];
+    
     for (const item of do2.items) {
       try {
-        // Mock inventory update - replace with actual inventory API
-        const inventoryUpdate = await updateInventory(item);
-        inventoryUpdates.push(inventoryUpdate);
+        // Check inventory availability first
+        const Inventory = require('../models/Inventory');
+        const inventory = await Inventory.findOne({
+          productType: item.type,
+          size: item.size,
+          thickness: item.thickness,
+        });
+        
+        let actualDispatchQuantity = item.remainingQuantity;
+        
+        if (!inventory || inventory.availableQty < item.remainingQuantity) {
+          // Insufficient inventory - dispatch what's available or skip if none available
+          actualDispatchQuantity = inventory ? inventory.availableQty : 0;
+          console.log(`Insufficient inventory for ${item.type} ${item.size}. Available: ${inventory ? inventory.availableQty : 0}, Requested: ${item.remainingQuantity}`);
+        }
+        
+        if (actualDispatchQuantity > 0) {
+          // Update inventory for the actual dispatch quantity
+          const inventoryUpdate = await updateInventory({
+            ...item,
+            remainingQuantity: actualDispatchQuantity
+          });
+          inventoryUpdates.push(inventoryUpdate);
+          
+          // Track successfully dispatched items
+          successfullyDispatchedItems.push({
+            itemId: item.itemId,
+            type: item.type,
+            size: item.size,
+            thickness: item.thickness,
+            dispatchedQuantity: actualDispatchQuantity,
+            originalQuantity: item.originalQuantity,
+            remainingQuantity: item.remainingQuantity - actualDispatchQuantity
+          });
+        }
       } catch (inventoryError) {
         console.error(
-          `Error updating inventory for item ${item.itemId}:`,
+          `Error checking/updating inventory for item ${item.itemId}:`,
           inventoryError
         );
-        return res.status(500).json({
-          success: false,
-          message: `Failed to update inventory for ${item.type} ${item.size}`,
-          error: inventoryError.message,
-        });
+        // Continue with other items instead of failing the entire execution
       }
     }
+    
+    if (successfullyDispatchedItems.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'No items could be dispatched due to insufficient inventory',
+      });
+    }
+
+    // Update DO2 items with actual dispatched quantities
+    do2.items.forEach(item => {
+      const dispatchedItem = successfullyDispatchedItems.find(
+        di => di.itemId === item.itemId && di.type === item.type && di.size === item.size && di.thickness === item.thickness
+      );
+      if (dispatchedItem) {
+        item.dispatchedQuantity = dispatchedItem.dispatchedQuantity;
+        item.remainingQuantity = dispatchedItem.remainingQuantity;
+      }
+    });
 
     // Update DO2 status to executed
     do2.status = 'executed';
     do2.executionDetails = {
       executedBy: executedBy || 'System',
       executedAt: new Date(),
-      remarks: remarks || 'DO2 executed successfully',
+      remarks: remarks || `DO2 executed successfully. ${successfullyDispatchedItems.length} of ${do2.items.length} items dispatched.`,
       inventoryUpdates: inventoryUpdates,
+      partialExecution: successfullyDispatchedItems.length < do2.items.length,
+      dispatchedItems: successfullyDispatchedItems
     };
 
     await do2.save();
@@ -443,6 +493,11 @@ router.put('/:id/execute', async (req, res) => {
       // Don't fail the execution if SMS fails
     }
 
+    const totalQuantityExecuted = do2.items.reduce(
+      (sum, item) => sum + item.dispatchedQuantity,
+      0
+    );
+
     res.json({
       success: true,
       message: 'DO2 executed successfully',
@@ -450,11 +505,16 @@ router.put('/:id/execute', async (req, res) => {
         do2Number: do2.do2Number,
         status: do2.status,
         executionDetails: do2.executionDetails,
-        totalItemsExecuted: do2.items.length,
-        totalQuantityExecuted: do2.items.reduce(
-          (sum, item) => sum + item.remainingQuantity,
+        totalItemsExecuted: successfullyDispatchedItems.length,
+        totalItemsRequested: do2.items.length,
+        totalQuantityExecuted: totalQuantityExecuted,
+        totalQuantityRequested: do2.items.reduce(
+          (sum, item) => sum + (item.remainingQuantity + item.dispatchedQuantity),
           0
         ),
+        partialExecution: successfullyDispatchedItems.length < do2.items.length,
+        dispatchedItems: successfullyDispatchedItems,
+        remainingItems: do2.items.filter(item => item.remainingQuantity > 0),
       },
     });
   } catch (error) {
@@ -513,6 +573,93 @@ const updateInventory = async (item) => {
     throw error;
   }
 };
+
+// GET /api/do2/invoice-eligible - Get DO2s eligible for invoice generation (must be before /:id)
+router.get('/invoice-eligible', async (req, res) => {
+  try {
+    // Find DO2s that are executed (completed delivery) and don't have invoices yet
+    const do2s = await DO2.find({ 
+      status: 'executed'
+    })
+      .populate({
+        path: 'poId',
+        select: 'poNumber leadId totalAmount approvalStatus',
+        populate: {
+          path: 'leadId',
+          select: 'name phone product source gstin pan address',
+        },
+      })
+      .populate('do1Id', 'doNumber dispatchDate status')
+      .sort({ createdAt: -1 });
+
+    // Check which DO2s already have invoices
+    const Invoice = require('../models/Invoice');
+    const do2Ids = do2s.map(do2 => do2._id);
+    const existingInvoices = await Invoice.find({ 
+      do2Id: { $in: do2Ids },
+      status: { $ne: 'cancelled' }
+    }).select('do2Id invoiceNumber status');
+    
+    const invoicedDo2Ids = new Set(
+      existingInvoices.map(invoice => invoice.do2Id.toString())
+    );
+
+    // Filter and format eligible DO2s
+    const eligibleDo2s = do2s
+      .filter(do2 => !invoicedDo2Ids.has(do2._id.toString()))
+      .map(do2 => {
+        const totalDispatched = do2.items.reduce(
+          (sum, item) => sum + item.dispatchedQuantity,
+          0
+        );
+        const totalValue = do2.items.reduce(
+          (sum, item) => sum + (item.dispatchedQuantity * item.rate),
+          0
+        );
+
+        return {
+          id: do2._id,
+          do2Number: do2.do2Number,
+          status: do2.status,
+          createdAt: do2.createdAt,
+          executedAt: do2.executionDetails?.executedAt,
+          customerName: do2.poId?.leadId?.name || 'Unknown Customer',
+          customerPhone: do2.poId?.leadId?.phone || '',
+          customerGstin: do2.poId?.leadId?.gstin || '',
+          customerAddress: do2.poId?.leadId?.address || '',
+          productType: do2.poId?.leadId?.product || 'Steel Tubes',
+          poNumber: do2.poId?.poNumber || '',
+          do1Number: do2.do1Id?.doNumber || '',
+          totalDispatchedQuantity: totalDispatched,
+          totalValue: totalValue,
+          itemsCount: do2.items.length,
+          hasPartialExecution: do2.executionDetails?.partialExecution || false,
+          executionRemarks: do2.executionDetails?.remarks || '',
+        };
+      });
+
+    res.json({
+      success: true,
+      message: 'Eligible DO2s retrieved successfully',
+      data: {
+        do2s: eligibleDo2s,
+        total: eligibleDo2s.length,
+        summary: {
+          totalExecuted: do2s.length,
+          alreadyInvoiced: invoicedDo2Ids.size,
+          availableForInvoice: eligibleDo2s.length,
+        },
+      },
+    });
+  } catch (error) {
+    console.error('Error fetching eligible DO2s:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error fetching eligible DO2s',
+      error: error.message,
+    });
+  }
+});
 
 // GET /api/do2/:id - Get a specific DO2
 router.get('/:id', async (req, res) => {
@@ -782,7 +929,6 @@ router.get('/:id/pdf', async (req, res) => {
     );
     const totalValue = do2.items.reduce(
       (sum, item) => sum + item.dispatchedQuantity * item.rate,
-      0
     );
 
     doc

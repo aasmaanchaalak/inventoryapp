@@ -215,7 +215,7 @@ const InventoryDashboard = () => {
         ) : (
           <>
             <div className="bg-blue-50 p-6 rounded-lg">
-              <div className="flex items-center">
+              <div className="flex items-center min-w-0">
                 <div className="p-3 bg-blue-100 rounded-full">
                   <svg
                     className="w-6 h-6 text-blue-600"
@@ -231,11 +231,11 @@ const InventoryDashboard = () => {
                     ></path>
                   </svg>
                 </div>
-                <div className="ml-4">
+                <div className="ml-4 min-w-0 flex-1">
                   <p className="text-sm font-medium text-blue-600">
                     Total Items
                   </p>
-                  <p className="text-2xl font-bold text-blue-900">
+                  <p className="text-xl sm:text-2xl font-bold text-blue-900">
                     {summary.totalItems || 0}
                   </p>
                 </div>
@@ -243,7 +243,7 @@ const InventoryDashboard = () => {
             </div>
 
             <div className="bg-green-50 p-6 rounded-lg">
-              <div className="flex items-center">
+              <div className="flex items-center min-w-0">
                 <div className="p-3 bg-green-100 rounded-full">
                   <svg
                     className="w-6 h-6 text-green-600"
@@ -259,11 +259,11 @@ const InventoryDashboard = () => {
                     ></path>
                   </svg>
                 </div>
-                <div className="ml-4">
+                <div className="ml-4 min-w-0 flex-1">
                   <p className="text-sm font-medium text-green-600">
                     Total Stock
                   </p>
-                  <p className="text-2xl font-bold text-green-900">
+                  <p className="text-xl sm:text-2xl font-bold text-green-900">
                     {(summary.totalStock || 0).toFixed(1)} tons
                   </p>
                 </div>
@@ -271,7 +271,7 @@ const InventoryDashboard = () => {
             </div>
 
             <div className="bg-yellow-50 p-6 rounded-lg">
-              <div className="flex items-center">
+              <div className="flex items-center min-w-0">
                 <div className="p-3 bg-yellow-100 rounded-full">
                   <svg
                     className="w-6 h-6 text-yellow-600"
@@ -287,11 +287,11 @@ const InventoryDashboard = () => {
                     ></path>
                   </svg>
                 </div>
-                <div className="ml-4">
+                <div className="ml-4 min-w-0 flex-1">
                   <p className="text-sm font-medium text-yellow-600">
                     Total Value
                   </p>
-                  <p className="text-2xl font-bold text-yellow-900">
+                  <p className="text-xl sm:text-2xl font-bold text-yellow-900 break-words">
                     {formatCurrency(summary.totalValue || 0)}
                   </p>
                 </div>
@@ -299,7 +299,7 @@ const InventoryDashboard = () => {
             </div>
 
             <div className="bg-red-50 p-6 rounded-lg">
-              <div className="flex items-center">
+              <div className="flex items-center min-w-0">
                 <div className="p-3 bg-red-100 rounded-full">
                   <svg
                     className="w-6 h-6 text-red-600"
@@ -315,11 +315,11 @@ const InventoryDashboard = () => {
                     ></path>
                   </svg>
                 </div>
-                <div className="ml-4">
+                <div className="ml-4 min-w-0 flex-1">
                   <p className="text-sm font-medium text-red-600">
                     Low Stock Items
                   </p>
-                  <p className="text-2xl font-bold text-red-900">
+                  <p className="text-xl sm:text-2xl font-bold text-red-900">
                     {summary.lowStockItems || 0}
                   </p>
                 </div>

@@ -37,6 +37,7 @@ const do2ItemSchema = new mongoose.Schema({
     type: Number,
     required: true,
     min: [0, 'Dispatched quantity cannot be negative'],
+    default: 0,
   },
   remainingQuantity: {
     type: Number,

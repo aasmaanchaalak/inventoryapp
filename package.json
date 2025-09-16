@@ -44,8 +44,6 @@
     "test:e2e:debug": "playwright test --debug",
     "lint": "eslint src/ backend/ --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "eslint src/ backend/ --ext .js,.jsx,.ts,.tsx --fix",
-    "format": "prettier --write src/ backend/",
-    "format:check": "prettier --check src/ backend/",
     "type-check": "tsc --noEmit"
   },
   "browserslist": {
@@ -71,10 +69,7 @@
     "@types/react-dom": "^19.1.6",
     "autoprefixer": "^10.4.21",
     "concurrently": "^9.2.0",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-prettier": "^5.5.3",
     "postcss": "^8.5.6",
-    "prettier": "^3.6.2",
     "tailwindcss": "^3.4.17",
     "ts-migrate": "^0.1.35",
     "typescript": "^4.9.5"
