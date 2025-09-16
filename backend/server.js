@@ -21,9 +21,9 @@ const corsOptions = {
       'https://localhost:3001', // HTTPS alternative local port
     ];
 
-    // Add Railway domains dynamically
+    // Add Railway domains dynamically - this allows any Railway.app domain
     if (origin.includes('.railway.app')) {
-      allowedOrigins.push(origin);
+      return callback(null, true);
     }
 
     // Add any custom domains (production)
@@ -31,12 +31,16 @@ const corsOptions = {
       allowedOrigins.push(process.env.FRONTEND_URL);
     }
 
-    // Check if origin is allowed
+    // For production environments, be more permissive to avoid issues
+    if (process.env.NODE_ENV === 'production') {
+      return callback(null, true);
+    }
+
+    // Check if origin is allowed for development
     if (allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
       console.log(`CORS blocked origin: ${origin}`);
-      console.log(`Allowed origins: ${allowedOrigins.join(', ')}`);
       callback(new Error('Not allowed by CORS'));
     }
   },
