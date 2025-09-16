@@ -29,28 +29,28 @@ export const STEEL_TUBE_CATEGORIES = [
   },
 ];
 
-// Legacy categories that need to be migrated
+// Legacy steel tube categories that need to be migrated
 export const LEGACY_CATEGORIES = [
-  'electronics',
-  'clothing',
-  'home-garden',
-  'sports',
-  'books',
-  'automotive',
-  'health-beauty',
-  'toys-games',
+  'galvanized-tubes',
+  'stainless-steel-tubes',
+  'carbon-steel-tubes',
+  'alloy-steel-tubes',
+  'seamless-tubes',
+  'welded-tubes',
+  'precision-tubes',
+  'structural-tubes',
 ];
 
-// Category mapping for data migration
+// Category mapping for data migration - mapping legacy steel tube types to current categories
 export const CATEGORY_MAPPING = {
-  electronics: 'custom-steel-products',
-  clothing: 'custom-steel-products',
-  'home-garden': 'custom-steel-products',
-  sports: 'custom-steel-products',
-  books: 'custom-steel-products',
-  automotive: 'custom-steel-products',
-  'health-beauty': 'custom-steel-products',
-  'toys-games': 'custom-steel-products',
+  'galvanized-tubes': 'square-tubes',
+  'stainless-steel-tubes': 'round-tubes',
+  'carbon-steel-tubes': 'rectangular-tubes',
+  'alloy-steel-tubes': 'custom-steel-products',
+  'seamless-tubes': 'round-tubes',
+  'welded-tubes': 'square-tubes',
+  'precision-tubes': 'custom-steel-products',
+  'structural-tubes': 'rectangular-tubes',
 };
 
 // Helper functions

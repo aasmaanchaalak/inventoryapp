@@ -404,7 +404,7 @@ const QuotationForm = ({ onSuccess }) => {
                       <td className="px-3 py-4 whitespace-nowrap">
                         <select
                           {...register(`items.${index}.type`)}
-                          className={`w-full px-2 py-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                          className={`w-full min-w-[120px] px-3 py-2 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
                             errors.items?.[index]?.type
                               ? 'border-red-500'
                               : 'border-gray-300'
@@ -422,7 +422,7 @@ const QuotationForm = ({ onSuccess }) => {
                         <input
                           type="text"
                           {...register(`items.${index}.size`)}
-                          className={`w-full px-2 py-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                          className={`w-full min-w-[100px] px-3 py-2 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
                             errors.items?.[index]?.size
                               ? 'border-red-500'
                               : 'border-gray-300'
@@ -435,7 +435,7 @@ const QuotationForm = ({ onSuccess }) => {
                           type="number"
                           step="0.1"
                           {...register(`items.${index}.thickness`)}
-                          className={`w-full px-2 py-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                          className={`w-full min-w-[80px] px-3 py-2 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
                             errors.items?.[index]?.thickness
                               ? 'border-red-500'
                               : 'border-gray-300'
@@ -448,7 +448,7 @@ const QuotationForm = ({ onSuccess }) => {
                           type="number"
                           step="0.1"
                           {...register(`items.${index}.quantity`)}
-                          className={`w-full px-2 py-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                          className={`w-full min-w-[90px] px-3 py-2 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
                             errors.items?.[index]?.quantity
                               ? 'border-red-500'
                               : 'border-gray-300'
@@ -461,7 +461,7 @@ const QuotationForm = ({ onSuccess }) => {
                           type="number"
                           step="0.01"
                           {...register(`items.${index}.rate`)}
-                          className={`w-full px-2 py-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                          className={`w-full min-w-[100px] px-3 py-2 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
                             errors.items?.[index]?.rate
                               ? 'border-red-500'
                               : 'border-gray-300'
@@ -474,7 +474,7 @@ const QuotationForm = ({ onSuccess }) => {
                           type="number"
                           step="0.01"
                           {...register(`items.${index}.tax`)}
-                          className={`w-full px-2 py-1 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                          className={`w-full min-w-[70px] px-3 py-2 border rounded text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
                             errors.items?.[index]?.tax
                               ? 'border-red-500'
                               : 'border-gray-300'
