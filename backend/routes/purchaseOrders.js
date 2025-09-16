@@ -11,7 +11,8 @@ const Invoice = require('../models/Invoice');
 // POST /api/pos - Create a new Purchase Order
 router.post('/', async (req, res) => {
   try {
-    const { quotationId, leadId, remarks, customItems, customTotalAmount } = req.body;
+    const { quotationId, leadId, remarks, customItems, customTotalAmount } =
+      req.body;
 
     // Validate required fields
     if (!quotationId || !leadId) {
@@ -40,32 +41,37 @@ router.post('/', async (req, res) => {
     }
 
     // Use custom items if provided, otherwise copy from quotation
-    const items = customItems ? customItems.map((item) => ({
-      type: item.type,
-      size: item.size,
-      thickness: item.thickness,
-      quantity: item.quantity,
-      rate: item.rate,
-      tax: item.tax,
-      hsnCode: item.hsnCode || '7306',
-      subtotal: item.subtotal,
-      taxAmount: item.taxAmount,
-      total: item.total,
-    })) : quotation.items.map((item) => ({
-      type: item.type,
-      size: item.size,
-      thickness: item.thickness,
-      quantity: item.quantity,
-      rate: item.rate,
-      tax: item.tax,
-      hsnCode: item.hsnCode || '7306',
-      subtotal: item.subtotal,
-      taxAmount: item.taxAmount,
-      total: item.total,
-    }));
+    const items = customItems
+      ? customItems.map((item) => ({
+          type: item.type,
+          size: item.size,
+          thickness: item.thickness,
+          quantity: item.quantity,
+          rate: item.rate,
+          tax: item.tax,
+          hsnCode: item.hsnCode || '7306',
+          subtotal: item.subtotal,
+          taxAmount: item.taxAmount,
+          total: item.total,
+        }))
+      : quotation.items.map((item) => ({
+          type: item.type,
+          size: item.size,
+          thickness: item.thickness,
+          quantity: item.quantity,
+          rate: item.rate,
+          tax: item.tax,
+          hsnCode: item.hsnCode || '7306',
+          subtotal: item.subtotal,
+          taxAmount: item.taxAmount,
+          total: item.total,
+        }));
 
     // Use custom total amount if provided, otherwise use quotation total
-    const totalAmount = customTotalAmount !== undefined ? customTotalAmount : quotation.totalAmount;
+    const totalAmount =
+      customTotalAmount !== undefined
+        ? customTotalAmount
+        : quotation.totalAmount;
 
     // Create the purchase order with copied data
     const purchaseOrder = new PurchaseOrder({
@@ -624,10 +630,7 @@ router.get('/:id/pdf', async (req, res) => {
     doc.pipe(res);
 
     // Add company header
-    doc
-      .fontSize(24)
-      .font('Helvetica-Bold')
-      .text('Vikash Steel Tubes.', 50, 50);
+    doc.fontSize(24).font('Helvetica-Bold').text('Vikash Steel Tubes.', 50, 50);
 
     doc
       .fontSize(10)

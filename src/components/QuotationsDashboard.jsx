@@ -3,7 +3,6 @@ import { useAuthenticatedApi } from '../hooks/useAuthenticatedApi';
 import QuotationForm from './QuotationForm';
 import SimplePOReviewModal from './SimplePOReviewModal';
 
-
 const QuotationsDashboard = () => {
   const [quotations, setQuotations] = useState([]);
   const [filters, setFilters] = useState({
@@ -36,7 +35,7 @@ const QuotationsDashboard = () => {
   });
 
   // API hook for PO creation
-  const { post: createPO, isLoading: isCreatingPO } = useAuthenticatedApi({
+  const { post: createPO } = useAuthenticatedApi({
     timeout: 15000,
     retries: 2,
     showToast: true,
@@ -64,10 +63,11 @@ const QuotationsDashboard = () => {
   };
 
   // Load quotations when component mounts or auth changes
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (isAuthenticated && !authLoading) {
       loadQuotations({ page: filters.page, status: filters.status });
-    }
+    } // eslint-disable-next-line
   }, [isAuthenticated, authLoading]);
 
   // Handle filter changes

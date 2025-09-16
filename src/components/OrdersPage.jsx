@@ -67,6 +67,7 @@ const OrdersPage = () => {
     if (isAuthenticated && !authLoading) {
       loadOrders(filters, pagination.page);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated, authLoading]);
 
   // Handle filter changes

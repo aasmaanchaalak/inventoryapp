@@ -679,10 +679,7 @@ router.get('/:id/pdf', async (req, res) => {
     doc.pipe(res);
 
     // Add company header
-    doc
-      .fontSize(24)
-      .font('Helvetica-Bold')
-      .text('Vikash Steel Tubes.', 50, 50);
+    doc.fontSize(24).font('Helvetica-Bold').text('Vikash Steel Tubes.', 50, 50);
 
     doc
       .fontSize(10)

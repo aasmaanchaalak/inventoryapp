@@ -244,7 +244,9 @@ router.get('/:id/pdf', async (req, res) => {
       'Tax Amt',
       'Total',
     ];
-    const columnPositions = [50, 80, 140, 190, 230, 270, 320, 360, 400, 450, 500];
+    const columnPositions = [
+      50, 80, 140, 190, 230, 270, 320, 360, 400, 450, 500,
+    ];
 
     // Draw table headers
     doc.fontSize(9).font('Helvetica-Bold');
@@ -252,7 +254,7 @@ router.get('/:id/pdf', async (req, res) => {
       doc.text(tableHeaders[index], columnPositions[index], yPosition, {
         width: 45,
         ellipsis: true,
-        continued: false
+        continued: false,
       });
     }
 
@@ -282,7 +284,7 @@ router.get('/:id/pdf', async (req, res) => {
         doc.text(rowData[cellIndex], columnPositions[cellIndex], yPosition, {
           width: 45,
           ellipsis: true,
-          continued: false
+          continued: false,
         });
       }
       yPosition += 15;
@@ -296,7 +298,11 @@ router.get('/:id/pdf', async (req, res) => {
     doc
       .fontSize(12)
       .font('Helvetica-Bold')
-      .text(`Total Amount: ₹${quotation.totalAmount.toLocaleString('en-IN')}`, 400, yPosition);
+      .text(
+        `Total Amount: ₹${quotation.totalAmount.toLocaleString('en-IN')}`,
+        400,
+        yPosition
+      );
 
     yPosition += 40;
 
@@ -344,7 +350,10 @@ router.get('/:id/pdf', async (req, res) => {
     doc
       .fontSize(10)
       .font('Helvetica')
-      .text('Thank you for your business!', 50, yPosition, { width: 500, align: 'center' });
+      .text('Thank you for your business!', 50, yPosition, {
+        width: 500,
+        align: 'center',
+      });
 
     // Finalize PDF
     doc.end();

@@ -20,8 +20,6 @@ import TallyPush from './components/TallyPush';
 import InvoiceGenerator from './components/InvoiceGenerator';
 import InvoiceViewer from './components/InvoiceViewer';
 import InvoiceDashboard from './components/InvoiceDashboard';
-import DOTimeline from './components/DOTimeline';
-import DispatchCalendar from './components/DispatchCalendar';
 import EmailTester from './components/EmailTester';
 import SMSTester from './components/SMSTester';
 import ReportsDashboard from './components/ReportsDashboard';
@@ -79,8 +77,6 @@ function Dashboard() {
     {
       title: 'Tracking & Audit',
       items: [
-        { key: 'timeline', label: 'DO Timeline', icon: '📅' },
-        { key: 'calendar', label: 'Dispatch Calendar', icon: '🗓️' },
         { key: 'auditTrail', label: 'Audit Trail Viewer', icon: '🔍' },
         { key: 'invoiceAuditTrail', label: 'Invoice Audit Trail', icon: '📝' },
       ],
@@ -248,8 +244,6 @@ function Dashboard() {
           {activeForm === 'invoice' && <InvoiceGenerator />}
           {activeForm === 'invoiceViewer' && <InvoiceViewer />}
           {activeForm === 'invoiceDashboard' && <InvoiceDashboard />}
-          {activeForm === 'timeline' && <DOTimeline />}
-          {activeForm === 'calendar' && <DispatchCalendar />}
           {activeForm === 'emailTester' && <EmailTester />}
           {activeForm === 'smsTester' && <SMSTester />}
           {activeForm === 'reports' && <ReportsDashboard />}

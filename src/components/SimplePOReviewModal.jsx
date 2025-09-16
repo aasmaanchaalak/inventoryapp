@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 
-const SimplePOReviewModal = ({ quotation, isConverting, onConvert, onClose }) => {
+const SimplePOReviewModal = ({
+  quotation,
+  isConverting,
+  onConvert,
+  onClose,
+}) => {
   const [remarks, setRemarks] = useState('');
 
   const formatCurrency = (amount) => {
@@ -26,8 +31,18 @@ const SimplePOReviewModal = ({ quotation, isConverting, onConvert, onClose }) =>
             className="text-gray-400 hover:text-gray-600"
             disabled={isConverting}
           >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+            <svg
+              className="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>
@@ -40,30 +55,44 @@ const SimplePOReviewModal = ({ quotation, isConverting, onConvert, onClose }) =>
             </h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <span className="text-sm font-medium text-gray-700">Customer:</span>
-                <p className="text-sm text-gray-900">{quotation.leadId?.name || 'N/A'}</p>
+                <span className="text-sm font-medium text-gray-700">
+                  Customer:
+                </span>
+                <p className="text-sm text-gray-900">
+                  {quotation.leadId?.name || 'N/A'}
+                </p>
               </div>
               <div>
-                <span className="text-sm font-medium text-gray-700">Total Amount:</span>
+                <span className="text-sm font-medium text-gray-700">
+                  Total Amount:
+                </span>
                 <p className="text-sm font-medium text-gray-900">
                   {formatCurrency(quotation.totalAmount)}
                 </p>
               </div>
               <div>
-                <span className="text-sm font-medium text-gray-700">Items:</span>
-                <p className="text-sm text-gray-900">{quotation.items?.length || 0} items</p>
+                <span className="text-sm font-medium text-gray-700">
+                  Items:
+                </span>
+                <p className="text-sm text-gray-900">
+                  {quotation.items?.length || 0} items
+                </p>
               </div>
               <div>
-                <span className="text-sm font-medium text-gray-700">Validity:</span>
-                <p className="text-sm text-gray-900">{quotation.validity} days</p>
+                <span className="text-sm font-medium text-gray-700">
+                  Validity:
+                </span>
+                <p className="text-sm text-gray-900">
+                  {quotation.validity} days
+                </p>
               </div>
             </div>
           </div>
 
           {/* Remarks */}
           <div>
-            <label 
-              htmlFor="remarks" 
+            <label
+              htmlFor="remarks"
               className="block text-sm font-medium text-gray-700 mb-2"
             >
               Remarks for Purchase Order (Optional)
@@ -96,7 +125,9 @@ const SimplePOReviewModal = ({ quotation, isConverting, onConvert, onClose }) =>
             {isConverting && (
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
             )}
-            <span>{isConverting ? 'Converting...' : 'Convert to Purchase Order'}</span>
+            <span>
+              {isConverting ? 'Converting...' : 'Convert to Purchase Order'}
+            </span>
           </button>
         </div>
       </div>

@@ -63,6 +63,7 @@ const LeadsDashboard = () => {
     if (isAuthenticated && !authLoading) {
       loadLeads();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated, authLoading]);
 
   // Handle filter changes

@@ -141,3 +141,19 @@ When you complete a task during development:
 - Environment variables used for sensitive credentials
 - API endpoints are currently open (suitable for internal systems)
 - Input validation using Yup schemas on frontend and backend
+
+## Development Best Practices
+
+### ESLint and React Hooks
+- **CRITICAL RULE**: Never cause infinite loops. Always prefer disabling ESLint warnings over creating infinite loops
+- **useEffect Dependencies**: Be cautious when adding dependencies to useEffect hooks, especially functions from custom hooks like `useAuthenticatedApi`
+- **Infinite Loop Prevention**: Functions from hooks are often recreated on every render. Adding them to useEffect dependencies can cause infinite loops
+- **ESLint Disable Pattern**: When ESLint suggests adding dependencies that would cause infinite loops, ALWAYS disable the specific warning instead:
+  ```javascript
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    // Effect that intentionally omits some dependencies to prevent infinite loops
+  }, [safeDependencies]);
+  ```
+- **Never Do This**: Don't add unstable functions (from hooks) to useCallback dependencies or useEffect dependencies
+- **Priority**: App functionality > ESLint warnings. Disable warnings when following them would break the app
