@@ -198,7 +198,7 @@ const InventoryDashboard = () => {
 
   return (
     <div className="max-w-7xl mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-3xl font-bold text-gray-900 mb-6">
+      <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">
         Inventory Dashboard
       </h2>
 
@@ -557,104 +557,196 @@ const InventoryDashboard = () => {
             </div>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Product Details
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Available Stock
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Stock Status
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Rate
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Total Value
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Last Updated
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Location
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {inventory.map((item) => (
-                  <tr key={item._id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className="flex-shrink-0 h-10 w-10">
-                          <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                            <span className="text-sm font-medium text-blue-600">
-                              {item.productType.charAt(0).toUpperCase()}
-                            </span>
+          <>
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Product Details
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Available Stock
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Stock Status
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Rate
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Total Value
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Last Updated
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Location
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {inventory.map((item) => (
+                    <tr key={item._id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <div className="flex-shrink-0 h-10 w-10">
+                            <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                              <span className="text-sm font-medium text-blue-600">
+                                {item.productType.charAt(0).toUpperCase()}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="ml-4">
+                            <div className="text-sm font-medium text-gray-900 capitalize">
+                              {item.productType} Tube
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              {item.size} × {item.thickness}mm
+                            </div>
+                            <div className="text-xs text-gray-400">
+                              HSN: {item.hsnCode}
+                            </div>
                           </div>
                         </div>
-                        <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900 capitalize">
-                            {item.productType} Tube
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm font-medium text-gray-900">
+                          {item.availableQty.toFixed(1)} tons
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {item.stockPercentage}% of max
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {getStockStatusBadge(item)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm font-medium text-gray-900">
+                          {formatCurrency(item.rate)}
+                        </div>
+                        <div className="text-xs text-gray-500">per ton</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm font-medium text-gray-900">
+                          {formatCurrency(calculateTotalValue(item))}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">
+                          {item.formattedLastUpdated}
+                        </div>
+                        {item.lastTransaction && (
+                          <div className="text-xs text-gray-500">
+                            Last: {item.lastTransaction.type}{' '}
+                            {item.lastTransaction.quantity} tons
                           </div>
-                          <div className="text-sm text-gray-500">
-                            {item.size} × {item.thickness}mm
-                          </div>
-                          <div className="text-xs text-gray-400">
-                            HSN: {item.hsnCode}
-                          </div>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-900">
+                          {item.location.warehouse}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {item.location.section}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Card View */}
+            <div className="md:hidden space-y-4 p-4">
+              {inventory.map((item) => (
+                <div
+                  key={item._id}
+                  className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm"
+                >
+                  {/* Header */}
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center">
+                      <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                        <span className="text-sm font-medium text-blue-600">
+                          {item.productType.charAt(0).toUpperCase()}
+                        </span>
+                      </div>
+                      <div className="ml-3">
+                        <div className="text-sm font-medium text-gray-900 capitalize">
+                          {item.productType} Tube
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {item.size} × {item.thickness}mm
                         </div>
                       </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    </div>
+                    {getStockStatusBadge(item)}
+                  </div>
+
+                  {/* HSN Code */}
+                  <div className="text-xs text-gray-400 mb-3">
+                    HSN: {item.hsnCode}
+                  </div>
+
+                  {/* Stock Information */}
+                  <div className="grid grid-cols-2 gap-4 mb-3">
+                    <div>
+                      <div className="text-xs text-gray-500">
+                        Available Stock
+                      </div>
                       <div className="text-sm font-medium text-gray-900">
                         {item.availableQty.toFixed(1)} tons
                       </div>
                       <div className="text-xs text-gray-500">
                         {item.stockPercentage}% of max
                       </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {getStockStatusBadge(item)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    </div>
+                    <div>
+                      <div className="text-xs text-gray-500">Rate per ton</div>
                       <div className="text-sm font-medium text-gray-900">
                         {formatCurrency(item.rate)}
                       </div>
-                      <div className="text-xs text-gray-500">per ton</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    </div>
+                  </div>
+
+                  {/* Value and Location */}
+                  <div className="grid grid-cols-2 gap-4 mb-3">
+                    <div>
+                      <div className="text-xs text-gray-500">Total Value</div>
                       <div className="text-sm font-medium text-gray-900">
                         {formatCurrency(calculateTotalValue(item))}
                       </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
-                        {item.formattedLastUpdated}
-                      </div>
-                      {item.lastTransaction && (
-                        <div className="text-xs text-gray-500">
-                          Last: {item.lastTransaction.type}{' '}
-                          {item.lastTransaction.quantity} tons
-                        </div>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">
+                    </div>
+                    <div>
+                      <div className="text-xs text-gray-500">Location</div>
+                      <div className="text-sm font-medium text-gray-900">
                         {item.location.warehouse}
                       </div>
                       <div className="text-xs text-gray-500">
                         {item.location.section}
                       </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                    </div>
+                  </div>
+
+                  {/* Last Updated */}
+                  <div className="pt-3 border-t border-gray-100">
+                    <div className="text-xs text-gray-500">Last Updated</div>
+                    <div className="text-sm text-gray-900">
+                      {item.formattedLastUpdated}
+                    </div>
+                    {item.lastTransaction && (
+                      <div className="text-xs text-gray-500 mt-1">
+                        Last: {item.lastTransaction.type}{' '}
+                        {item.lastTransaction.quantity} tons
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         )}
 
         {!isLoading && inventory.length === 0 && (

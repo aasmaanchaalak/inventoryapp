@@ -204,13 +204,13 @@ const QuotationsDashboard = () => {
 
   return (
     <div className="max-w-7xl mx-auto p-6 bg-white rounded-lg shadow-md">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-3xl font-bold text-gray-900">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 space-y-4 sm:space-y-0">
+        <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
           Quotations Dashboard
         </h2>
         <button
           onClick={() => setShowCreateModal(true)}
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 flex items-center space-x-2"
+          className="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-150 flex items-center justify-center space-x-2"
         >
           <svg
             className="w-5 h-5"
@@ -307,99 +307,179 @@ const QuotationsDashboard = () => {
             </div>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Quotation #
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Customer
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Total Amount
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Created Date
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Validity
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {quotations.map((quotation) => (
-                  <tr key={quotation._id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">
-                        {quotation.quotationNumber ||
-                          `QT-${quotation._id.slice(-6)}`}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className="flex-shrink-0 h-10 w-10">
-                          <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                            <span className="text-sm font-medium text-blue-600">
-                              {quotation.leadId?.name
-                                ?.charAt(0)
-                                .toUpperCase() || 'Q'}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900">
-                            {quotation.leadId?.name || 'N/A'}
-                          </div>
-                          <div className="text-sm text-gray-500">
-                            {quotation.leadId?.phone || 'N/A'}
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      {getQuotationStatusBadge(quotation.status)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {formatCurrency(quotation.totalAmount)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {formatDate(quotation.createdAt)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {quotation.validity} days
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <div className="flex space-x-2">
-                        <button className="text-blue-600 hover:text-blue-900">
-                          View
-                        </button>
-                        <button className="text-green-600 hover:text-green-900">
-                          Edit
-                        </button>
-                        <button className="text-purple-600 hover:text-purple-900">
-                          PDF
-                        </button>
-                        <button
-                          onClick={() => handleConvertToPO(quotation)}
-                          className="text-orange-600 hover:text-orange-900"
-                        >
-                          Convert to PO
-                        </button>
-                      </div>
-                    </td>
+          <>
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Quotation #
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Customer
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Status
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Total Amount
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Created Date
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Validity
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {quotations.map((quotation) => (
+                    <tr key={quotation._id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm font-medium text-gray-900">
+                          {quotation.quotationNumber ||
+                            `QT-${quotation._id.slice(-6)}`}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <div className="flex-shrink-0 h-10 w-10">
+                            <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                              <span className="text-sm font-medium text-blue-600">
+                                {quotation.leadId?.name
+                                  ?.charAt(0)
+                                  .toUpperCase() || 'Q'}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="ml-4">
+                            <div className="text-sm font-medium text-gray-900">
+                              {quotation.leadId?.name || 'N/A'}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              {quotation.leadId?.phone || 'N/A'}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {getQuotationStatusBadge(quotation.status)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {formatCurrency(quotation.totalAmount)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {formatDate(quotation.createdAt)}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                        {quotation.validity} days
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <div className="flex space-x-2">
+                          <button className="text-blue-600 hover:text-blue-900">
+                            View
+                          </button>
+                          <button className="text-green-600 hover:text-green-900">
+                            Edit
+                          </button>
+                          <button className="text-purple-600 hover:text-purple-900">
+                            PDF
+                          </button>
+                          <button
+                            onClick={() => handleConvertToPO(quotation)}
+                            className="text-orange-600 hover:text-orange-900"
+                          >
+                            Convert to PO
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Card View */}
+            <div className="md:hidden space-y-4 p-4">
+              {quotations.map((quotation) => (
+                <div
+                  key={quotation._id}
+                  className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm"
+                >
+                  {/* Header */}
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center">
+                      <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                        <span className="text-sm font-medium text-blue-600">
+                          {quotation.leadId?.name?.charAt(0).toUpperCase() ||
+                            'Q'}
+                        </span>
+                      </div>
+                      <div className="ml-3">
+                        <div className="text-sm font-medium text-gray-900">
+                          {quotation.quotationNumber ||
+                            `QT-${quotation._id.slice(-6)}`}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {formatDate(quotation.createdAt)}
+                        </div>
+                      </div>
+                    </div>
+                    {getQuotationStatusBadge(quotation.status)}
+                  </div>
+
+                  {/* Customer Info */}
+                  <div className="mb-3">
+                    <div className="text-sm font-medium text-gray-900">
+                      {quotation.leadId?.name || 'N/A'}
+                    </div>
+                    <div className="text-sm text-gray-500">
+                      {quotation.leadId?.phone || 'N/A'}
+                    </div>
+                  </div>
+
+                  {/* Amount and Validity */}
+                  <div className="flex justify-between items-center mb-3">
+                    <div>
+                      <div className="text-xs text-gray-500">Total Amount</div>
+                      <div className="text-sm font-medium text-gray-900">
+                        {formatCurrency(quotation.totalAmount)}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-gray-500">Validity</div>
+                      <div className="text-sm font-medium text-gray-900">
+                        {quotation.validity} days
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="flex flex-wrap gap-2 pt-3 border-t border-gray-100">
+                    <button className="px-3 py-1 text-xs bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200">
+                      View
+                    </button>
+                    <button className="px-3 py-1 text-xs bg-green-100 text-green-700 rounded-md hover:bg-green-200">
+                      Edit
+                    </button>
+                    <button className="px-3 py-1 text-xs bg-purple-100 text-purple-700 rounded-md hover:bg-purple-200">
+                      PDF
+                    </button>
+                    <button
+                      onClick={() => handleConvertToPO(quotation)}
+                      className="px-3 py-1 text-xs bg-orange-100 text-orange-700 rounded-md hover:bg-orange-200"
+                    >
+                      Convert to PO
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         )}
 
         {!isLoading && quotations.length === 0 && (
@@ -411,12 +491,17 @@ const QuotationsDashboard = () => {
 
       {/* Pagination */}
       {pagination.totalPages > 1 && (
-        <div className="mt-6 flex items-center justify-between">
-          <div className="text-sm text-gray-700">
-            Showing page {pagination.currentPage} of {pagination.totalPages} (
-            {pagination.total} total quotations)
+        <div className="mt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+          <div className="text-sm text-gray-700 text-center sm:text-left">
+            <span className="hidden sm:inline">
+              Showing page {pagination.currentPage} of {pagination.totalPages} (
+              {pagination.total} total quotations)
+            </span>
+            <span className="sm:hidden">
+              Page {pagination.currentPage} of {pagination.totalPages}
+            </span>
           </div>
-          <div className="flex space-x-2">
+          <div className="flex space-x-2 justify-center sm:justify-end">
             <button
               onClick={() => handlePageChange(pagination.currentPage - 1)}
               disabled={pagination.currentPage <= 1}
@@ -438,14 +523,14 @@ const QuotationsDashboard = () => {
       {/* Create Quotation Modal */}
       {showCreateModal && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-          <div className="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-2/3 xl:w-1/2 shadow-lg rounded-md bg-white">
+          <div className="relative top-4 sm:top-20 mx-auto p-4 sm:p-5 border w-11/12 md:w-3/4 lg:w-2/3 xl:w-1/2 max-w-4xl shadow-lg rounded-md bg-white max-h-[95vh] sm:max-h-[90vh]">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-bold text-gray-900">
                 Create New Quotation
               </h3>
               <button
                 onClick={() => setShowCreateModal(false)}
-                className="text-gray-400 hover:text-gray-600"
+                className="text-gray-400 hover:text-gray-600 p-1"
               >
                 <svg
                   className="w-6 h-6"
@@ -462,7 +547,7 @@ const QuotationsDashboard = () => {
                 </svg>
               </button>
             </div>
-            <div className="max-h-96 overflow-y-auto">
+            <div className="max-h-[75vh] sm:max-h-96 overflow-y-auto">
               <QuotationForm
                 onSuccess={() => {
                   setShowCreateModal(false);

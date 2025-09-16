@@ -186,8 +186,8 @@ const POGenerator = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-3xl font-bold text-gray-900 mb-6">
+    <div className="max-w-4xl mx-auto p-4 sm:p-6 bg-white rounded-lg shadow-md">
+      <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">
         Generate Purchase Order
       </h2>
 
@@ -349,8 +349,8 @@ const POGenerator = () => {
               </div>
             </div>
 
-            {/* Items Table */}
-            <div className="overflow-x-auto">
+            {/* Items Table - Desktop */}
+            <div className="hidden md:block overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-100">
                   <tr>
@@ -400,15 +400,47 @@ const POGenerator = () => {
                 </tbody>
               </table>
             </div>
+
+            {/* Items Cards - Mobile */}
+            <div className="md:hidden space-y-3">
+              {selectedQuotation.items?.map((item, index) => (
+                <div
+                  key={index}
+                  className="bg-white border border-gray-200 rounded-lg p-3"
+                >
+                  <div className="flex justify-between items-start mb-2">
+                    <div>
+                      <div className="font-medium text-gray-900">
+                        {item.type}
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        {item.size} × {item.thickness}mm
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="font-medium text-gray-900">
+                        {formatCurrency(item.total)}
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        {item.quantity} tons
+                      </div>
+                    </div>
+                  </div>
+                  <div className="text-sm text-gray-600">
+                    Rate: {formatCurrency(item.rate)} per ton
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 
         {/* Submit Button */}
-        <div className="flex justify-end space-x-4">
+        <div className="flex flex-col sm:flex-row sm:justify-end space-y-3 sm:space-y-0 sm:space-x-4">
           <button
             type="button"
             onClick={() => reset()}
-            className="px-6 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full sm:w-auto px-6 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           >
             Reset Form
           </button>
@@ -416,7 +448,7 @@ const POGenerator = () => {
           <button
             type="submit"
             disabled={isCreatingPO || isSubmitting || !selectedQuotation}
-            className="px-6 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full sm:w-auto px-6 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isCreatingPO ? 'Generating PO...' : 'Generate Purchase Order'}
           </button>
@@ -426,7 +458,7 @@ const POGenerator = () => {
       {/* Confirmation Modal */}
       {showConfirmation && poNumber && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-          <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+          <div className="relative top-10 sm:top-20 mx-auto p-5 border w-11/12 sm:w-96 max-w-md shadow-lg rounded-md bg-white">
             <div className="mt-3 text-center">
               <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
                 <svg
@@ -456,16 +488,16 @@ const POGenerator = () => {
                   {selectedQuotation?.quotationNumber}.
                 </p>
               </div>
-              <div className="mt-6 flex space-x-3 justify-center">
+              <div className="mt-6 flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 justify-center">
                 <button
                   onClick={handleDownloadPDF}
-                  className="px-4 py-2 text-sm font-medium text-white bg-purple-600 border border-transparent rounded-md shadow-sm hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  className="w-full sm:w-auto px-4 py-2 text-sm font-medium text-white bg-purple-600 border border-transparent rounded-md shadow-sm hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
                 >
                   Download PDF
                 </button>
                 <button
                   onClick={closeConfirmation}
-                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full sm:w-auto px-4 py-2 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
                   Close
                 </button>
