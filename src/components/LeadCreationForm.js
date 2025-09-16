@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useApi } from '../hooks/useApi';
+import { getApiUrl } from '../utils/api';
 import { STEEL_TUBE_CATEGORIES } from '../config/productCategories';
 import { LEAD_SOURCES } from '../config/leadSources';
 import { FormError } from './common';
@@ -61,7 +62,7 @@ const LeadCreationForm = () => {
 
   const onSubmit = async (data) => {
     try {
-      const result = await createLead('http://localhost:5001/api/leads', data);
+      const result = await createLead(getApiUrl('/api/leads'), data);
 
       if (result.success) {
         alert(result.message || 'Lead created successfully!');

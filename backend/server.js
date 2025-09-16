@@ -7,8 +7,56 @@ require('dotenv').config();
 const app = express();
 const PORT = process.env.PORT || 5001;
 
+// CORS Configuration for Railway and localhost
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+
+    // Define allowed origins
+    const allowedOrigins = [
+      'http://localhost:3000', // Local development frontend
+      'http://localhost:3001', // Alternative local port
+      'https://localhost:3000', // HTTPS local development
+      'https://localhost:3001', // HTTPS alternative local port
+    ];
+
+    // Add Railway domains dynamically
+    if (origin.includes('.railway.app')) {
+      allowedOrigins.push(origin);
+    }
+
+    // Add any custom domains (production)
+    if (process.env.FRONTEND_URL) {
+      allowedOrigins.push(process.env.FRONTEND_URL);
+    }
+
+    // Check if origin is allowed
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.log(`CORS blocked origin: ${origin}`);
+      console.log(`Allowed origins: ${allowedOrigins.join(', ')}`);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: [
+    'Origin',
+    'X-Requested-With',
+    'Content-Type',
+    'Accept',
+    'Authorization',
+    'Cache-Control',
+    'Pragma',
+  ],
+  exposedHeaders: ['Content-Range', 'X-Content-Range'],
+  maxAge: 600, // Cache preflight for 10 minutes
+};
+
 // Middleware
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
